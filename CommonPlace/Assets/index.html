@@ -1,0 +1,257 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CommonPlace</title>
+<meta name="author" content="http://craigdietrich.com">
+<link rel="stylesheet" href="common/css/bootstrap.min.css">
+<link rel="stylesheet" href="common/css/main.css">
+<script src="common/js/jquery-3.2.1.min.js"></script>
+<script src="common/js/bootstrap.min.js"></script>
+<script src="common/js/jquery.touchwipe.min.js"></script>
+<script>
+var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
+var timer = 300;
+var paths = [];
+var path_index = 0;
+var project_index = -1;
+var desc_max_length = 500;
+// Get paths and projects
+$(document).ready(function() {
+	$('#site').attr('src', primary+'index');
+	reset_timer();
+	get_paths(primary, function(_paths) {
+		paths = _paths.slice();
+		if ($('#countdown').data('start') <= 0) next_project();
+        $('#nav, #arrow-up').fadeTo('slow', 1);
+		set_panel();
+	});
+});
+// Go get the paths from a Scalar book and build an array of paths and projects
+function get_paths(url, callback) {
+	var paths = [];
+	var parsed = [];
+	$.ajax({
+	    url: url+'rdf/instancesof/path?rec=1&format=json&t='+Date.now(),
+	    jsonp: "callback",
+	    dataType: "jsonp",
+	    format:'json',
+	    success: function(response) {
+	    	var _ordinal = 1;
+			for (var uri in response) {
+				var path = {};
+				if ('http://www.openannotation.org/ns/Annotation' != response[uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
+				path.version_uri = response[uri]['http://www.openannotation.org/ns/hasBody'][0].value;
+				path.content_uri = version_uri_to_content_uri(path.version_uri);
+				if ('undefined' != typeof(parsed[path.content_uri])) continue;
+				parsed.push(path.content_uri);
+				path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
+				path.desc = ('undefined'!=typeof(response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
+				path.ordinal = ('undefined'!=typeof(response[path.version_uri]['http://id3.org/id3v2.4.0#Track'])) ? parseInt(response[path.version_uri]['http://id3.org/id3v2.4.0#Track'][0].value) : 0;
+				if (!path.ordinal) {
+					path.ordinal = _ordinal;
+					_ordinal++;
+				} else {
+					_ordinal = path.ordinal + 1;
+				};
+				path.contents = [];
+				for (var key in response) {
+					if ('http://www.openannotation.org/ns/Annotation' != response[key]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
+					if (path.version_uri != response[key]['http://www.openannotation.org/ns/hasBody'][0].value) continue;
+					var content = {};
+					content.target = response[key]['http://www.openannotation.org/ns/hasTarget'][0].value;
+					content.version_uri = content.target.substr(0, content.target.lastIndexOf('#'));
+					content.content_uri = version_uri_to_content_uri(content.version_uri);
+					content.index = parseInt(content.target.substr(content.target.indexOf('index=')+6));
+					content.title = response[content.version_uri]['http://purl.org/dc/terms/title'][0].value;
+					content.project_url = response[content.version_uri]['http://purl.org/dc/terms/description'][0].value;
+					content.thumb = ('undefined'!=typeof(response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
+					if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png'; 
+					content.content = ('undefined'!=typeof(response[content.version_uri]['http://rdfs.org/sioc/ns#content'])) ? response[content.version_uri]['http://rdfs.org/sioc/ns#content'][0].value : null;
+                    content.creator = ('undefined' != typeof (response[content.version_uri]['http://purl.org/dc/terms/creator'])) ? response[content.version_uri]['http://purl.org/dc/terms/creator'][0].value : null;
+                    path.contents.push(content);
+				};
+				paths[(path.ordinal-1)] = path;
+			};
+			callback(paths);
+	    },
+	    error: function(err) {
+	    	console.log(err);
+	    	callback(paths);
+	    }
+	});	
+};
+// Go to the next project on the path
+function prev_project() {
+	project_index--;
+	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
+	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
+	go_to_site(paths[path_index].contents[project_index].project_url);
+	pagination();
+	set_panel();
+};
+// Go to the previous project on the path
+function next_project() {
+	project_index++;
+	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;  // Start over
+	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
+	go_to_site(paths[path_index].contents[project_index].project_url);
+	pagination();
+	set_panel();
+};
+// Set left/right arrows
+function pagination() {
+    /*
+	var $prev = $('#prev').removeClass('disabled');
+    var $next = $('#next').removeClass('disabled');
+	if (project_index < 1) $prev.addClass('disabled');
+	if (project_index >= paths[path_index].contents.length) $next.addClass('disabled');
+    */
+};
+// Determine the platform and load the project then reset the timer
+function go_to_site(_url) {
+	var _scalar = function(response, url) {
+		console.log('Scalar: '+url);
+        for (var uri in response) break;
+        if ('undefined'==typeof(response[uri]['http://purl.org/dc/terms/isPartOf'])) {
+        	alert('Scalar: could not find dcterms:isPartOf field for '+url);
+        	return;
+        }
+        var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
+        var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'');
+        $('#site').unbind('load').on("load", function() {
+			reset_timer(timer);
+        }).fadeIn('slow').attr('src', plugin);		
+	};
+	var _omeka = function(url) {
+		console.log('Omeka: '+url);
+		var plugin = url + '/plugins/AutoNavigate/index.html';
+        $('#site').unbind('load').on("load", function() {
+			reset_timer(timer);
+        }).fadeIn('slow').attr('src', plugin);	
+	};
+	var _crossroads = function(url) {
+		console.log('Crossroads: '+url);
+	};
+	if ('/'==_url.substr(_url.length-1, 1)) _url = _url.substr(0, _url.length-1);
+	// Figure out whether the URL is to a Scalar, Omeka, or Crossroads project then route to the appropriate function
+	if (-1 != _url.indexOf('crossroads.')) _crossroads(_url);
+	var url = _url + '/rdf/?format=json';
+	$.ajax({
+	    url: url,
+	    jsonp: "callback",
+	    dataType: "jsonp",
+	    format:'json',
+	    success: function(response) {
+			_scalar(response, _url);
+	    },
+	    error: function(err) {  // TODO: check this with https sites
+	    	_omeka(_url);
+	    }
+	});
+};
+// Restart the timer
+function reset_timer(start) {
+	if ('undefined'!=typeof(interval)) {
+		clearInterval(interval);
+		interval = null;
+	}
+	if ('undefined'==typeof(start)) start = 10;
+	$('#countdown').text(start+' sec').data('start', start);
+	interval = setInterval(function() {
+		start--;
+		$('#countdown').text(start + ' sec').data('start', start);
+		if (!start) {
+			clearInterval(interval);
+			interval = null;
+			//next_project();
+			return;
+		};
+	}, 1000);
+};
+// Set the popup panel's content based on the current project
+function set_panel() {
+	$('#panel .row:not(:first)').remove();
+	$pathTitle = $('#panel .path-title:first');
+	$pathTitle.find('.title').text(paths[path_index].title);
+	$pathTitle.find('.desc').text(paths[path_index].desc);
+    var $row = null;
+    var colspan = 6;
+    console.log(paths[path_index]);
+	for (var j = 0; j < paths[path_index].contents.length; j++) {
+        if (j == 0 || j % colspan == 0) $row = $('<div class="row"></div>').appendTo('#panel > div:first');
+		var $cell = $('<div class="col"></div>').appendTo($row);
+		$cell.data('project_index', j);
+        if (j == project_index) $cell.addClass('hl');
+        $('<img src="' + paths[path_index].contents[j].thumb + '" class="rounded" /><br />').appendTo($cell);
+        $('<h6>' + paths[path_index].contents[j].title + '</h6>').appendTo($cell);
+        var creator = (paths[path_index].contents[j].creator) ? paths[path_index].contents[j].creator : 'No authors listed';
+        $creator = $('<p class="creator">' + creator + '</p>').appendTo($cell);
+        $('<div class="gradient"><div>').appendTo($cell);
+    };
+    if (j % colspan != 0) {
+        for (var k = (j % colspan); k < colspan; k++) {
+            $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
+        };
+    };
+	$('#panel').find('.col').click(function() {
+		var index = parseInt($(this).data('project_index'));
+		project_index = index - 1;
+		next_project();
+		$('#panel').fadeOut('slow');
+	});
+    $('#logo-wrapper, #arrow-up').off('click').click(function() {
+		var $panel = $('#panel');
+		if ($panel.is(':visible')) {
+            $panel.fadeOut('slow');
+            $('#arrow-up').removeClass('down');
+		} else {
+            $panel.fadeIn('shlow');
+            $('#arrow-up').addClass('down');
+		};
+    });
+    /*
+    $("#imagegallery").touchwipe({
+     wipeLeft: function() { alert("left"); },
+     wipeRight: function() { alert("right"); },
+     wipeUp: function() { alert("up"); },
+     wipeDown: function() { alert("down"); },
+     min_move_x: 20,
+     min_move_y: 20,
+     preventDefaultEvents: true
+    });
+    */
+};
+// Utils
+function version_uri_to_content_uri(uri) {
+	if (-1 == uri.indexOf('.')) return uri;
+	uri = uri.substr(0, uri.lastIndexOf('.'));
+	return uri;
+};
+</script>
+</head>
+<body>
+<div id="countdown"></div>
+<iframe id="site" src=""></iframe>
+<div id="panel">
+	<div class="container-fluid">
+	 	<div class="row">
+    		<div class="col path-title">
+     		 	<h2 class="title"></h2>
+     		 	<p class="desc"></p>
+    		</div>
+		</div>
+	</div>
+</div>
+<div id="arrow-up"></div>
+<div id="nav" class="row">
+	<div class="col text-left">
+		<a href="javascript:void(null);" id="prev" class="disabled">&larr;</a>
+	</div>
+	<div class="col text-center" id="logo-wrapper"></div>
+	<div class="col text-right">
+		<a href="javascript:void(null);" id="next" class="disabled">&rarr;</a>
+	</div>
+</div>
+</body>
+</html>

@@ -107,6 +107,15 @@
     <None Include="CommonPlace_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\common\css\bootstrap.min.css" />
+    <Content Include="Assets\common\css\commonplace-logo.png" />
+    <Content Include="Assets\common\css\down-arrow.png" />
+    <Content Include="Assets\common\css\main.css" />
+    <Content Include="Assets\common\css\up-arrow.png" />
+    <Content Include="Assets\common\js\bootstrap.min.js" />
+    <Content Include="Assets\common\js\jquery-3.2.1.min.js" />
+    <Content Include="Assets\common\js\jquery.touchwipe.min.js" />
+    <Content Include="Assets\index.html" />
     <Content Include="Assets\Large-Square.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-125.png" />
@@ -163,6 +172,7 @@
       <Version>6.1.5</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
