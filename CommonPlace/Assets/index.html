@@ -87,7 +87,6 @@ function prev_project() {
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
 	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
 	go_to_site(paths[path_index].contents[project_index].project_url);
-	pagination();
 	set_panel();
 };
 // Go to the previous project on the path
@@ -96,17 +95,7 @@ function next_project() {
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;  // Start over
 	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
 	go_to_site(paths[path_index].contents[project_index].project_url);
-	pagination();
 	set_panel();
-};
-// Set left/right arrows
-function pagination() {
-    /*
-	var $prev = $('#prev').removeClass('disabled');
-    var $next = $('#next').removeClass('disabled');
-	if (project_index < 1) $prev.addClass('disabled');
-	if (project_index >= paths[path_index].contents.length) $next.addClass('disabled');
-    */
 };
 // Determine the platform and load the project then reset the timer
 function go_to_site(_url) {
@@ -121,17 +110,20 @@ function go_to_site(_url) {
         var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'');
         $('#site').unbind('load').on("load", function() {
 			reset_timer(timer);
-        }).fadeIn('slow').attr('src', plugin);		
+        }).fadeIn('slow').attr('src', plugin);	
+        set_messages('', '');
 	};
 	var _omeka = function(url) {
 		console.log('Omeka: '+url);
 		var plugin = url + '/plugins/AutoNavigate/index.html';
         $('#site').unbind('load').on("load", function() {
 			reset_timer(timer);
-        }).fadeIn('slow').attr('src', plugin);	
+        }).fadeIn('slow').attr('src', plugin);
+        set_messages('', '');
 	};
 	var _crossroads = function(url) {
-		console.log('Crossroads: '+url);
+        console.log('Crossroads: ' + url);
+        set_messages('', '');
 	};
 	if ('/'==_url.substr(_url.length-1, 1)) _url = _url.substr(0, _url.length-1);
 	// Figure out whether the URL is to a Scalar, Omeka, or Crossroads project then route to the appropriate function
@@ -149,6 +141,16 @@ function go_to_site(_url) {
 	    	_omeka(_url);
 	    }
 	});
+};
+function set_messages(first, last) {
+    if ('undefined' == typeof(first)) first = '';
+    if ('undefined' == typeof (last)) last = '';
+    $('#nav').find('.col:first').fadeOut(function () {
+        $(this).html(first).fadeIn();
+    });
+    $('#nav').find('.col:last').fadeOut(function () {
+        $(this).html(last).fadeIn();
+    });
 };
 // Restart the timer
 function reset_timer(start) {
@@ -198,7 +200,8 @@ function set_panel() {
 		var index = parseInt($(this).data('project_index'));
 		project_index = index - 1;
 		next_project();
-		$('#panel').fadeOut('slow');
+        $('#panel').fadeOut('slow');
+        $('#arrow-up').removeClass('down');
 	});
     $('#logo-wrapper, #arrow-up').off('click').click(function() {
 		var $panel = $('#panel');
@@ -245,13 +248,9 @@ function version_uri_to_content_uri(uri) {
 </div>
 <div id="arrow-up"></div>
 <div id="nav" class="row">
-	<div class="col text-left">
-		<a href="javascript:void(null);" id="prev" class="disabled">&larr;</a>
-	</div>
+	<div class="col"></div>
 	<div class="col text-center" id="logo-wrapper"></div>
-	<div class="col text-right">
-		<a href="javascript:void(null);" id="next" class="disabled">&rarr;</a>
-	</div>
+	<div class="col"></div>
 </div>
 </body>
 </html>
