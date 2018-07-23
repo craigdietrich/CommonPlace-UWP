@@ -43,8 +43,13 @@ namespace CommonPlace
         {
             // Load CommonPlace local HTML
             string src = "ms-appx-web:///Assets/index.html";
-            await WebView.ClearTemporaryWebDataAsync();
+            //await WebView.ClearTemporaryWebDataAsync();
             this.MyWebView.Navigate(new Uri(src));
+        }
+
+        private void MyWebView_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
+        {
+
         }
     }
 }

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="common/css/main.css">
 <script src="common/js/jquery-3.2.1.min.js"></script>
 <script src="common/js/bootstrap.min.js"></script>
-<script src="common/js/jquery.touchwipe.min.js"></script>
+<script src="common/js/jstorage.min.js"></script>
 <script>
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var timer = 300;
@@ -25,14 +25,16 @@ $(document).ready(function() {
 		if ($('#countdown').data('start') <= 0) next_project();
         $('#nav, #arrow-up').fadeTo('slow', 1);
 		set_panel();
-	});
+    });
+    if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
+    // localStorage.setItem("test_storage", "Craig");
 });
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
 	var paths = [];
 	var parsed = [];
 	$.ajax({
-	    url: url+'rdf/instancesof/path?rec=1&format=json&t='+Date.now(),
+	    url: url+'rdf/instancesof/path?rec=1&format=json&t='+(new Date().getTime()),
 	    jsonp: "callback",
 	    dataType: "jsonp",
 	    format:'json',
@@ -107,23 +109,23 @@ function go_to_site(_url) {
         	return;
         }
         var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
-        var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'');
-        $('#site').unbind('load').on("load", function() {
-			reset_timer(timer);
-        }).fadeIn('slow').attr('src', plugin);	
-        set_messages('', '');
-	};
-	var _omeka = function(url) {
-		console.log('Omeka: '+url);
-		var plugin = url + '/plugins/AutoNavigate/index.html';
+        var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'')+'&t='+(new Date().getTime());
         $('#site').unbind('load').on("load", function() {
 			reset_timer(timer);
         }).fadeIn('slow').attr('src', plugin);
-        set_messages('', '');
+        //set_messages('', '');
+	};
+	var _omeka = function(url) {
+		console.log('Omeka: '+url);
+		var plugin = url + '/plugins/AutoNavigate/index.html?t='+(new Date().getTime());
+        $('#site').unbind('load').on("load", function() {
+			reset_timer(timer);
+        }).fadeIn('slow').attr('src', plugin);
+        //set_messages('', '');
 	};
 	var _crossroads = function(url) {
         console.log('Crossroads: ' + url);
-        set_messages('', '');
+        //set_messages('', '');
 	};
 	if ('/'==_url.substr(_url.length-1, 1)) _url = _url.substr(0, _url.length-1);
 	// Figure out whether the URL is to a Scalar, Omeka, or Crossroads project then route to the appropriate function
@@ -196,14 +198,14 @@ function set_panel() {
             $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
         };
     };
-	$('#panel').find('.col').click(function() {
+	$('#panel').find('.col').bind('mousedown', function() {
 		var index = parseInt($(this).data('project_index'));
 		project_index = index - 1;
 		next_project();
         $('#panel').fadeOut('slow');
         $('#arrow-up').removeClass('down');
 	});
-    $('#logo-wrapper, #arrow-up').off('click').click(function() {
+    $('#logo-wrapper, #arrow-up').off('mousedown').bind('mousedown', function() {
 		var $panel = $('#panel');
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
@@ -213,17 +215,6 @@ function set_panel() {
             $('#arrow-up').addClass('down');
 		};
     });
-    /*
-    $("#imagegallery").touchwipe({
-     wipeLeft: function() { alert("left"); },
-     wipeRight: function() { alert("right"); },
-     wipeUp: function() { alert("up"); },
-     wipeDown: function() { alert("down"); },
-     min_move_x: 20,
-     min_move_y: 20,
-     preventDefaultEvents: true
-    });
-    */
 };
 // Utils
 function version_uri_to_content_uri(uri) {

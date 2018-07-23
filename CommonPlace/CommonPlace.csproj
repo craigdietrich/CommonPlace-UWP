@@ -114,7 +114,7 @@
     <Content Include="Assets\common\css\up-arrow.png" />
     <Content Include="Assets\common\js\bootstrap.min.js" />
     <Content Include="Assets\common\js\jquery-3.2.1.min.js" />
-    <Content Include="Assets\common\js\jquery.touchwipe.min.js" />
+    <Content Include="Assets\common\js\jstorage.min.js" />
     <Content Include="Assets\index.html" />
     <Content Include="Assets\Large-Square.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
