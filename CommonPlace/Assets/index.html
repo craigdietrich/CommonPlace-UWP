@@ -113,7 +113,7 @@ function go_to_site(_url) {
         $('#site').unbind('load').on("load", function() {
 			reset_timer(timer);
         }).fadeIn('slow').attr('src', plugin);
-        //set_messages('', '');
+        set_messages('', 'Read more at <mark>scalar.me/12345</mark>');
 	};
 	var _omeka = function(url) {
 		console.log('Omeka: '+url);

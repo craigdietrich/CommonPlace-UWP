@@ -7,7 +7,7 @@
 }
 #panel .col {padding-top:12px; cursor:pointer;}
 #panel .row:not(:first-child) .col {max-height:186px; margin-bottom:18px; overflow:hidden; position:relative;}
-#panel .gradient {position:absolute; top:0px; left:0px; bottom:0px; right:0px; background: linear-gradient(to bottom, rgba(0,0,0,0) 80%,rgba(0,0,0,1) 100%);}
+#panel .gradient {position:absolute; top:0px; left:0px; bottom:0px; right:0px; background: linear-gradient(to bottom, rgba(0,0,0,0) 85%,rgba(0,0,0,1) 100%);}
 #panel .col.hl {background-color:#333333; border-radius:5px;}
 #panel .col.hl .gradient {background: linear-gradient(to bottom, rgba(0,0,0,0) 80%,rgba(51,51,51,1) 100%);}
 #panel h2 {margin-bottom:1rem;}
@@ -26,11 +26,12 @@
 #nav {position:absolute; top:95%; bottom:0px; left:0px; right:0px; background-color:#3c3a3c; color:#f3803a; opacity:0; overflow:hidden;}
 #nav span, #nav img {cursor:pointer;}
 #nav.row {margin-left:0; margin-right:0;}
-#nav .col {overflow:hidden;}
+#nav .col {overflow:hidden; border-left:solid 1px #000000; border-right:solid 1px #000000;}
 #nav a {font-size:2rem; padding-left:20px; padding-right:20px; color:#de691b; font-weight:bold; line-height:1.15;}
 #nav a:hover {text-decoration:none;}
-#logo-wrapper {background-image:url(commonplace-logo.png); height:100%; cursor:pointer; background-position:center center; background-size:70%; background-repeat:no-repeat;}
-#nav .col:not(#logo-wrapper) {padding-top:0.7rem; text-align:center; font-size:0.9rem; color:#888888;}
-#nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#aaaaaa;}
-#nav .col:first-of-type {}
-#nav .col:last-of-type {}
+#logo-wrapper {
+    background-image:url(commonplace-logo.png); height:100%; cursor:pointer; background-position:center center; background-size:70%; 
+    background-repeat:no-repeat; background-color:#494649;
+}
+#nav .col:not(#logo-wrapper) {padding-top:0.8rem; text-align:center; font-size:0.8rem; color:#777777;}
+#nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
