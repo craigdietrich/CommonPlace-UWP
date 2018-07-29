@@ -9,6 +9,6 @@
     Background="Black">
 
     <Grid Background="Black">
-        <WebView x:Name="MyWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DefaultBackgroundColor="Black" />
+        <WebView x:Name="MyWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DefaultBackgroundColor="Black" ScriptNotify="MainWebView_ScriptNotify" />
     </Grid>
 </Page>

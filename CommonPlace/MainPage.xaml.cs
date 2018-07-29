@@ -15,6 +15,9 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.ViewManagement;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Windows.Data.Json;
+using Windows.ApplicationModel.Email;
+using Windows.ApplicationModel.Background;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -50,6 +53,18 @@ namespace CommonPlace
         private void MyWebView_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
 
+        }
+
+        private async void MainWebView_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+           // JObject json = JObject.Parse(e.Value);
+            string method = "email";
+            switch (method)
+            {
+                case "email":
+                    var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
+                    break;
+            }
         }
     }
 }

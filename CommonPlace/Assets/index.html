@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="common/css/bootstrap.min.css">
 <link rel="stylesheet" href="common/css/main.css">
 <script src="common/js/jquery-3.2.1.min.js"></script>
+<script src="common/js/popper.min.js"></script>
 <script src="common/js/bootstrap.min.js"></script>
 <script src="common/js/jstorage.min.js"></script>
 <script>
@@ -113,7 +114,17 @@ function go_to_site(_url) {
         $('#site').unbind('load').on("load", function() {
 			reset_timer(timer);
         }).fadeIn('slow').attr('src', plugin);
-        set_messages('', 'Read more at <mark>scalar.me/12345</mark>');
+        set_messages(
+            '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+            'Read more at <mark>blackquotidian.com</mark>',
+            function (col) {
+                $(col).find('a:last').click(function () {
+                    send_email();
+                });
+            },
+            null
+        );
+
 	};
 	var _omeka = function(url) {
 		console.log('Omeka: '+url);
@@ -144,16 +155,42 @@ function go_to_site(_url) {
 	    }
 	});
 };
-function set_messages(first, last) {
+function set_messages(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
     if ('undefined' == typeof (last)) last = '';
     $('#nav').find('.col:first').fadeOut(function () {
-        $(this).html(first).fadeIn();
+        var $this = $(this);
+        $this.removeClass('has-btn');
+        if (first.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
+        $this.html(first).fadeIn(function () {
+            if ('function' == typeof (first_callback)) first_callback(this);
+        });
     });
     $('#nav').find('.col:last').fadeOut(function () {
-        $(this).html(last).fadeIn();
+        var $this = $(this);
+        $this.removeClass('has-btn');
+        if (last.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
+        $(this).html(last).fadeIn(function () {
+            if ('function' == typeof (last_callback)) last_callback(this);
+        });
     });
 };
+function get_messages() {
+    var first = $('#nav').find('.col:first').html();
+    var last = $('#nav').find('.col:last').html();
+    return [first, last];
+}
+// Ask for an email address then send the current project to it
+function send_email() {
+    var title = paths[path_index].contents[project_index].title;
+    var target = paths[path_index].contents[project_index].target;
+    var url = paths[path_index].contents[project_index].project_url;
+    var email = null;
+    var $modal = $('#emailModal');
+    $modal.find('p:first').html('Send me<br /><b>' + title + '</b>');
+    $modal.modal();
+    //window.external.notify(JSON.stringify({ method: "SetValueToNative", param: "this value is from webView." }));
+}
 // Restart the timer
 function reset_timer(start) {
 	if ('undefined'!=typeof(interval)) {
@@ -198,6 +235,7 @@ function set_panel() {
             $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
         };
     };
+    var existing_messages = null;
 	$('#panel').find('.col').bind('mousedown', function() {
 		var index = parseInt($(this).data('project_index'));
 		project_index = index - 1;
@@ -210,9 +248,15 @@ function set_panel() {
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
             $('#arrow-up').removeClass('down');
+            if (null != existing_messages) set_messages(existing_messages[0], existing_messages[1]);
 		} else {
-            $panel.fadeIn('shlow');
+            $panel.fadeIn('slow');
             $('#arrow-up').addClass('down');
+            existing_messages = get_messages();
+            set_messages(
+                '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
+                '<a href="javascript:void(null);" class="btn-dotted">Administer</a>'
+            );
 		};
     });
 };
@@ -239,9 +283,34 @@ function version_uri_to_content_uri(uri) {
 </div>
 <div id="arrow-up"></div>
 <div id="nav" class="row">
-	<div class="col"></div>
-	<div class="col text-center" id="logo-wrapper"></div>
-	<div class="col"></div>
+    <div class="col"></div>
+    <div class="col text-center" id="logo-wrapper"></div>
+    <div class="col"></div>
+</div>
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p></p>
+        <form>
+            <div class="form-group">
+                <input type="email" class="form-control" placeholder="me@example.com">
+                <!--
+                <br />
+                <small class="form-text text-muted">
+                    We'll send you the URL to the project you're currently reading.<br />
+                    Your email address doesn't get saved and will never be shared.
+                </small>
+                -->
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Send email</button>
+      </div>
+    </div>
+  </div>
 </div>
 </body>
 </html>
