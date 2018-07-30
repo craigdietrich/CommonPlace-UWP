@@ -37,4 +37,7 @@
 #nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
 .btn-dotted {padding:6px 12px 6px 12px; border:dotted 1px #de691b; border-radius:10px; font-size:smaller;}
 #nav .col:not(#logo-wrapper).has-btn {padding-top:0.7rem;}
-#emailModal .modal-footer {border-top:none;}
+.modal-lg {max-width:80% !important;}
+#aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none;}
+#aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
+#aboutProjectModal .content {font-size:0.8rem;}

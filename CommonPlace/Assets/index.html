@@ -118,6 +118,9 @@ function go_to_site(_url) {
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
             'Read more at <mark>blackquotidian.com</mark>',
             function (col) {
+                $(col).find('a:first').click(function () {
+                    about_project();
+                });
                 $(col).find('a:last').click(function () {
                     send_email();
                 });
@@ -179,6 +182,22 @@ function get_messages() {
     var first = $('#nav').find('.col:first').html();
     var last = $('#nav').find('.col:last').html();
     return [first, last];
+}
+// Provide information about the current project
+function about_project() {
+    var title = paths[path_index].contents[project_index].title;
+    var thumb = paths[path_index].contents[project_index].thumb;
+    var url = paths[path_index].contents[project_index].project_url;
+    var human_url = url.replace('/index', '').replace(/^https?:\/\//, '');
+    var content = paths[path_index].contents[project_index].content;
+    var $modal = $('#aboutProjectModal');
+    var $body = $modal.find('.modal-body');
+    $body.empty();
+    var $row = $('<div class="container-fluid"><div class="row"><div class="col"></div><div class="col"></div></div></div>').appendTo($body);
+    $('<img src="' + thumb + '" class="thumb rounded" /><br />').appendTo($row.find('.col:first'));
+    $('<p><b>' + title + '</b><br /><small>' + human_url + '</small></p>').appendTo($row.find('.col:first'));
+    $('<p class="content">' + content + '</p>').appendTo($row.find('.col:last'));
+    $modal.modal();    
 }
 // Ask for an email address then send the current project to it
 function send_email() {
@@ -286,6 +305,16 @@ function version_uri_to_content_uri(uri) {
     <div class="col"></div>
     <div class="col text-center" id="logo-wrapper"></div>
     <div class="col"></div>
+</div>
+<div class="modal fade" id="aboutProjectModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal fade" id="emailModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
