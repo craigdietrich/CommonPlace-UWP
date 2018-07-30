@@ -158,6 +158,7 @@ function go_to_site(_url) {
 	    }
 	});
 };
+// Set HTML into the left/right of the nav bar
 function set_messages(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
     if ('undefined' == typeof (last)) last = '';
@@ -178,6 +179,7 @@ function set_messages(first, last, first_callback, last_callback) {
         });
     });
 };
+// Return what is present in the left/right of the nav bar
 function get_messages() {
     var first = $('#nav').find('.col:first').html();
     var last = $('#nav').find('.col:last').html();
@@ -188,7 +190,7 @@ function about_project() {
     var title = paths[path_index].contents[project_index].title;
     var thumb = paths[path_index].contents[project_index].thumb;
     var url = paths[path_index].contents[project_index].project_url;
-    var human_url = url.replace('/index', '').replace(/^https?:\/\//, '');
+    var human_url = url.replace('/index', '').replace(/^https?:\/\//, '').replace(/\/$/, '');
     var content = paths[path_index].contents[project_index].content;
     var $modal = $('#aboutProjectModal');
     var $body = $modal.find('.modal-body');
