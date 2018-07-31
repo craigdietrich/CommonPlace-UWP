@@ -185,6 +185,10 @@ function get_messages() {
     var last = $('#nav').find('.col:last').html();
     return [first, last];
 }
+// Provide information about CommonPlace
+function about_platform() {
+    $('#aboutPlatformModal').modal();
+}
 // Provide information about the current project
 function about_project() {
     var title = paths[path_index].contents[project_index].title;
@@ -269,14 +273,20 @@ function set_panel() {
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
             $('#arrow-up').removeClass('down');
-            if (null != existing_messages) set_messages(existing_messages[0], existing_messages[1]);
+            if (null != existing_messages) set_messages(existing_messages[0], existing_messages[1]);  // TODO: this won't work
 		} else {
             $panel.fadeIn('slow');
             $('#arrow-up').addClass('down');
             existing_messages = get_messages();
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
-                '<a href="javascript:void(null);" class="btn-dotted">Administer</a>'
+                '<a href="javascript:void(null);" class="btn-dotted">Administer</a>',
+                function (col) {
+                    $(col).find('a:first').click(function () {
+                        about_platform();
+                    });
+                },
+                null
             );
 		};
     });
@@ -307,6 +317,39 @@ function version_uri_to_content_uri(uri) {
     <div class="col"></div>
     <div class="col text-center" id="logo-wrapper"></div>
     <div class="col"></div>
+</div>
+<div class="modal fade" id="aboutPlatformModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <img src="Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
+                        <p><b>CommonPlace</b></p>
+                        <p class="content">
+                            Maecenas sagittis turpis vitae felis accumsan condimentum. Aliquam erat volutpat. Etiam placerat mollis felis, sit amet accumsan nisi placerat vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vestibulum quam risus, ut tempus ipsum fringilla id.
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p class="content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sodales id leo in commodo. Morbi rhoncus odio ut ligula auctor vestibulum. Maecenas pulvinar sem eu nibh suscipit lacinia. Sed aliquam felis in felis tristique placerat. Quisque molestie ornare risus in varius. Phasellus auctor sagittis tempus. Proin ut dui eu nulla molestie bibendum. Morbi nec porttitor magna, maximus facilisis velit.
+                        </p>
+                        <p class="content">
+                            Suspendisse et blandit quam, non pulvinar tortor. Proin tincidunt semper ultricies. Aliquam congue arcu ipsum, pulvinar egestas nibh hendrerit sed. Etiam eu dolor at enim rutrum pharetra id volutpat quam. Aliquam libero metus, finibus id orci eu, mollis accumsan magna.
+                        </p>
+                        <p class="content">
+                            Donec aliquam augue neque, eu mollis dui commodo vel. Donec consequat vulputate lobortis. Morbi ac cursus tortor. Nam venenatis ante in nunc dignissim finibus. Duis consectetur eleifend dui, non lobortis nibh sagittis a. Cras et erat sapien. Sed finibus, nibh at rhoncus pulvinar, turpis dolor vestibulum elit, ut feugiat velit erat eget augue.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal fade" id="aboutProjectModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
