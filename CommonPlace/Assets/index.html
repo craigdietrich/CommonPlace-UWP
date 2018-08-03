@@ -116,7 +116,7 @@ function go_to_site(_url) {
         }).fadeIn('slow').attr('src', plugin);
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-            'Read more at <mark>blackquotidian.com</mark>',
+            '',
             function (col) {
                 $(col).find('a:first').click(function () {
                     about_project();
@@ -273,7 +273,19 @@ function set_panel() {
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
             $('#arrow-up').removeClass('down');
-            if (null != existing_messages) set_messages(existing_messages[0], existing_messages[1]);  // TODO: this won't work
+            set_messages(
+                '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+                '',
+                function (col) {
+                    $(col).find('a:first').click(function () {
+                        about_project();
+                    });
+                    $(col).find('a:last').click(function () {
+                        send_email();
+                    });
+                },
+                null
+            );
 		} else {
             $panel.fadeIn('slow');
             $('#arrow-up').addClass('down');
