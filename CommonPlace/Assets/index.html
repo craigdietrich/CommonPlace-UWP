@@ -5,11 +5,13 @@
 <title>CommonPlace</title>
 <meta name="author" content="http://craigdietrich.com">
 <link rel="stylesheet" href="common/css/bootstrap.min.css">
+<link rel="stylesheet" href="common/css/jqbtk.css">
 <link rel="stylesheet" href="common/css/main.css">
 <script src="common/js/jquery-3.2.1.min.js"></script>
 <script src="common/js/popper.min.js"></script>
 <script src="common/js/bootstrap.min.js"></script>
 <script src="common/js/jstorage.min.js"></script>
+<script src="common/js/jqbtk.js"></script>
 <script>
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var timer = 300;
@@ -187,7 +189,7 @@ function get_messages() {
 }
 // Provide information about CommonPlace
 function about_platform() {
-    $('#aboutPlatformModal').modal();
+    $('#aboutPlatformModal').modal({backdrop:'static'});
 }
 // Provide information about the current project
 function about_project() {
@@ -203,7 +205,7 @@ function about_project() {
     $('<img src="' + thumb + '" class="thumb rounded" /><br />').appendTo($row.find('.col:first'));
     $('<p><b>' + title + '</b><br /><small>' + human_url + '</small></p>').appendTo($row.find('.col:first'));
     $('<p class="content">' + content + '</p>').appendTo($row.find('.col:last'));
-    $modal.modal();    
+    $modal.modal({backdrop:'static'});    
 }
 // Ask for an email address then send the current project to it
 function send_email() {
@@ -213,7 +215,9 @@ function send_email() {
     var email = null;
     var $modal = $('#emailModal');
     $modal.find('p:first').html('Send me<br /><b>' + title + '</b>');
-    $modal.modal();
+    $modal.modal({backdrop:'static'});
+    $modal.find('input[type="email"]').keyboard();
+    //$modal.find('input[type="email"]').focus();
     //window.external.notify(JSON.stringify({ method: "SetValueToNative", param: "this value is from webView." }));
 }
 // Restart the timer
@@ -380,7 +384,7 @@ function version_uri_to_content_uri(uri) {
         <p></p>
         <form>
             <div class="form-group">
-                <input type="email" class="form-control" placeholder="me@example.com">
+                <input type="email" class="keyboard form-control" placeholder="me@example.com">
                 <!--
                 <br />
                 <small class="form-text text-muted">
