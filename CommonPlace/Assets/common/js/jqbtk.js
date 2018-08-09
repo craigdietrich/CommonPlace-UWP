@@ -308,10 +308,10 @@
                                     btn.addClass('jqbtk-space').html('Space');
                                     break;
                                 case 'del':
-                                    btn.addClass('jqbtk-del').html('Delete');
+                                    btn.addClass('jqbtk-del').html('Backspace');
                                     break;
                                 case 'enter':
-                                    btn.addClass('jqbtk-enter').html('Enter');
+                                    btn.addClass('jqbtk-enter').html('Continue');
                                     break;
                                 default:
                                     btn.text(btn.attr('data-value' + (keyboardShift ? '-alt' : '')));
@@ -320,6 +320,7 @@
                         });
                         content.append(lineContent);
                     });
+                    content.append('<br clear="both" />');
                     return content;
                 },
                 html: true,

@@ -68,12 +68,17 @@ function get_paths(url, callback) {
 					content.version_uri = content.target.substr(0, content.target.lastIndexOf('#'));
 					content.content_uri = version_uri_to_content_uri(content.version_uri);
 					content.index = parseInt(content.target.substr(content.target.indexOf('index=')+6));
-					content.title = response[content.version_uri]['http://purl.org/dc/terms/title'][0].value;
-					content.project_url = response[content.version_uri]['http://purl.org/dc/terms/description'][0].value;
-					content.thumb = ('undefined'!=typeof(response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
-					if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png'; 
-					content.content = ('undefined'!=typeof(response[content.version_uri]['http://rdfs.org/sioc/ns#content'])) ? response[content.version_uri]['http://rdfs.org/sioc/ns#content'][0].value : null;
-                    content.creator = ('undefined' != typeof (response[content.version_uri]['http://purl.org/dc/terms/creator'])) ? response[content.version_uri]['http://purl.org/dc/terms/creator'][0].value : null;
+                    content.title = response[content.version_uri]['http://purl.org/dc/terms/title'][0].value;
+                    content.description = ('undefined' != typeof (response[content.version_uri]['http://purl.org/dc/terms/description'])) ? response[content.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
+                    content.content = ('undefined' != typeof (response[content.version_uri]['http://rdfs.org/sioc/ns#content'])) ? response[content.version_uri]['http://rdfs.org/sioc/ns#content'][0].value : null;
+                    content.thumb = ('undefined' != typeof (response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
+                    if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png'; 
+                    content.url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'][0].value : null;
+                    content.short_url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'][0].value : null;
+                    content.authors = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'][0].value : null;
+                    content.institution = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'][0].value : null;
+                    content.publisher = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'][0].value : null;
+                    content.date = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'][0].value : null;
                     path.contents.push(content);
 				};
 				paths[(path.ordinal-1)] = path;
@@ -90,16 +95,16 @@ function get_paths(url, callback) {
 function prev_project() {
 	project_index--;
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
-	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
-	go_to_site(paths[path_index].contents[project_index].project_url);
+	console.log('Going to project: '+paths[path_index].contents[project_index].url);
+	go_to_site(paths[path_index].contents[project_index].url);
 	set_panel();
 };
 // Go to the previous project on the path
 function next_project() {
 	project_index++;
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;  // Start over
-	console.log('Going to project: '+paths[path_index].contents[project_index].project_url);
-	go_to_site(paths[path_index].contents[project_index].project_url);
+	console.log('Going to project: '+paths[path_index].contents[project_index].url);
+	go_to_site(paths[path_index].contents[project_index].url);
 	set_panel();
 };
 // Determine the platform and load the project then reset the timer
@@ -118,7 +123,7 @@ function go_to_site(_url) {
         }).fadeIn('slow').attr('src', plugin);
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-            '',
+            'Read more at <mark>' + paths[path_index].contents[project_index].short_url + '</mark>',
             function (col) {
                 $(col).find('a:first').click(function () {
                     about_project();
@@ -193,18 +198,24 @@ function about_platform() {
 }
 // Provide information about the current project
 function about_project() {
-    var title = paths[path_index].contents[project_index].title;
-    var thumb = paths[path_index].contents[project_index].thumb;
-    var url = paths[path_index].contents[project_index].project_url;
+    var url = paths[path_index].contents[project_index].url;
     var human_url = url.replace('/index', '').replace(/^https?:\/\//, '').replace(/\/$/, '');
-    var content = paths[path_index].contents[project_index].content;
     var $modal = $('#aboutProjectModal');
     var $body = $modal.find('.modal-body');
     $body.empty();
     var $row = $('<div class="container-fluid"><div class="row"><div class="col"></div><div class="col"></div></div></div>').appendTo($body);
-    $('<img src="' + thumb + '" class="thumb rounded" /><br />').appendTo($row.find('.col:first'));
-    $('<p><b>' + title + '</b><br /><small>' + human_url + '</small></p>').appendTo($row.find('.col:first'));
-    $('<p class="content">' + content + '</p>').appendTo($row.find('.col:last'));
+    $('<img src="' + paths[path_index].contents[project_index].thumb + '" class="thumb rounded" /><br />').appendTo($row.find('.col:first'));
+    $('<p><b>' + paths[path_index].contents[project_index].title + '</b><br /><small>' + human_url + '</small></p>').appendTo($row.find('.col:first'));
+    if (paths[path_index].contents[project_index].description) $('<p class="content">' + paths[path_index].contents[project_index].description + '</p>').appendTo($row.find('.col:first'));
+    if (paths[path_index].contents[project_index].authors) $('<p class="content">By ' + paths[path_index].contents[project_index].authors + '</p>').appendTo($row.find('.col:first'));
+    var str = '<p class="content">';
+    if (paths[path_index].contents[project_index].institution) str += paths[path_index].contents[project_index].institution + '<br />';
+    if (paths[path_index].contents[project_index].publisher) str += 'Published by ' + paths[path_index].contents[project_index].publisher;
+    if (paths[path_index].contents[project_index].publisher && paths[path_index].contents[project_index].date) str += ', ';
+    if (paths[path_index].contents[project_index].date) str += paths[path_index].contents[project_index].date;
+    str += '</p>';
+    $row.find('.col:first').append(str);    
+    if (paths[path_index].contents[project_index].content) $('<p class="content">' + paths[path_index].contents[project_index].content + '</p>').appendTo($row.find('.col:last'));
     $modal.modal({backdrop:'static'});    
 }
 // Ask for an email address then send the current project to it
@@ -234,7 +245,7 @@ function reset_timer(start) {
 		if (!start) {
 			clearInterval(interval);
 			interval = null;
-			//next_project();
+			next_project();
 			return;
 		};
 	}, 1000);
@@ -255,8 +266,9 @@ function set_panel() {
         if (j == project_index) $cell.addClass('hl');
         $('<img src="' + paths[path_index].contents[j].thumb + '" class="rounded" /><br />').appendTo($cell);
         $('<h6>' + paths[path_index].contents[j].title + '</h6>').appendTo($cell);
-        var creator = (paths[path_index].contents[j].creator) ? paths[path_index].contents[j].creator : 'No authors listed';
-        $creator = $('<p class="creator">' + creator + '</p>').appendTo($cell);
+        if (paths[path_index].contents[j].institution) $cell.append('<p class="institution">'+paths[path_index].contents[j].institution+'</p>');
+        var authors = (paths[path_index].contents[j].authors) ? paths[path_index].contents[j].authors : 'No authors listed';
+        $authors = $('<p class="authors">By ' + authors + '</p>').appendTo($cell);
         $('<div class="gradient"><div>').appendTo($cell);
     };
     if (j % colspan != 0) {
@@ -279,7 +291,7 @@ function set_panel() {
             $('#arrow-up').removeClass('down');
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-                '',
+                'Read more at <mark>' + paths[path_index].contents[project_index].short_url+'</mark>',
                 function (col) {
                     $(col).find('a:first').click(function () {
                         about_project();
