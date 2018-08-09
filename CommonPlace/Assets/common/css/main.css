@@ -31,10 +31,10 @@
 #nav a {color:#e06029;}
 #nav a:hover {text-decoration:none;}
 #logo-wrapper {
-    background-image:url(commonplace-logo.png); height:100%; cursor:pointer; background-position:center center; background-size:60%; 
+    background-image:url(commonplace-logo.png); height:95%; margin-top:1px; cursor:pointer; background-position:center center; background-size:50%; 
     background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649;
 }
-#nav .col:not(#logo-wrapper) {padding-top:0.8rem; text-align:center; font-size:0.8rem; color:#777777;}
+#nav .col:not(#logo-wrapper) {padding-top:0.5rem; text-align:center; font-size:0.8rem; color:#777777;}
 #nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
 .btn-dotted {padding:5px 12px 5px 12px; border:dotted 1px #e06029; border-radius:10px; font-size:smaller;}
 #nav .col:not(#logo-wrapper).has-btn {padding-top:0.5rem;}
