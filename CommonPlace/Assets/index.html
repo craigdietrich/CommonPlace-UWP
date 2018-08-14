@@ -14,21 +14,22 @@
 <script src="common/js/jqbtk.js"></script>
 <script>
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
-var timer = 300;
 var paths = [];
 var path_index = 0;
 var project_index = -1;
 var desc_max_length = 500;
 // Get paths and projects
 $(document).ready(function() {
-	$('#site').attr('src', primary+'index');
-	reset_timer();
+    $('#site').attr('src', primary + 'index');
 	get_paths(primary, function(_paths) {
 		paths = _paths.slice();
-		if ($('#countdown').data('start') <= 0) next_project();
         $('#nav, #arrow-up').fadeTo('slow', 1);
-		set_panel();
+        set_panel();
+        reset_timer(10);  // Timer for the splash page
     });
+    window.addEventListener("message", function (event) {
+        if ('autonavigate_finished' == event.data) next_project();
+    }, false);
     if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
     // localStorage.setItem("test_storage", "Craig");
 });
@@ -74,7 +75,7 @@ function get_paths(url, callback) {
                     content.thumb = ('undefined' != typeof (response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
                     if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png'; 
                     content.url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'][0].value : null;
-                    content.short_url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'][0].value : null;
+                    content.short_url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'][0].value : '(no url)';
                     content.authors = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'][0].value : null;
                     content.institution = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'][0].value : null;
                     content.publisher = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'][0].value : null;
@@ -119,7 +120,7 @@ function go_to_site(_url) {
         var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
         var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'')+'&t='+(new Date().getTime());
         $('#site').unbind('load').on("load", function() {
-			reset_timer(timer);
+			// Nothing to do
         }).fadeIn('slow').attr('src', plugin);
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
@@ -140,7 +141,7 @@ function go_to_site(_url) {
 		console.log('Omeka: '+url);
 		var plugin = url + '/plugins/AutoNavigate/index.html?t='+(new Date().getTime());
         $('#site').unbind('load').on("load", function() {
-			reset_timer(timer);
+			// Nothing to do
         }).fadeIn('slow').attr('src', plugin);
         //set_messages('', '');
 	};
@@ -238,10 +239,8 @@ function reset_timer(start) {
 		interval = null;
 	}
 	if ('undefined'==typeof(start)) start = 10;
-	$('#countdown').text(start+' sec').data('start', start);
 	interval = setInterval(function() {
 		start--;
-		$('#countdown').text(start + ' sec').data('start', start);
 		if (!start) {
 			clearInterval(interval);
 			interval = null;
@@ -276,7 +275,6 @@ function set_panel() {
             $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
         };
     };
-    var existing_messages = null;
 	$('#panel').find('.col').bind('mousedown', function() {
 		var index = parseInt($(this).data('project_index'));
 		project_index = index - 1;
@@ -305,10 +303,9 @@ function set_panel() {
 		} else {
             $panel.fadeIn('slow');
             $('#arrow-up').addClass('down');
-            existing_messages = get_messages();
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
-                '<a href="javascript:void(null);" class="btn-dotted">Administer</a>',
+                '<a href="javascript:void(null);" class="btn-dotted">Refresh</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Admin</a>',
                 function (col) {
                     $(col).find('a:first').click(function () {
                         about_platform();
@@ -328,7 +325,6 @@ function version_uri_to_content_uri(uri) {
 </script>
 </head>
 <body>
-<div id="countdown"></div>
 <iframe id="site" src=""></iframe>
 <div id="panel">
 	<div class="container-fluid">
