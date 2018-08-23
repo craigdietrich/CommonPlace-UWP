@@ -35,7 +35,8 @@
 }
 #nav .col:not(#logo-wrapper) {padding-top:0.5rem; text-align:center; font-size:0.8rem; color:#777777;}
 #nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
-.btn-dotted {padding:5px 12px 5px 12px; border:dotted 1px #e06029; border-radius:10px; font-size:smaller;}
+.btn-dotted {padding:5px 12px 5px 12px; border:dotted 1px #e06029; border-radius:10px; font-size:smaller; background-color:#494649;}
+.btn-dotted.blank {color:#494649 !important;}
 #nav .col:not(#logo-wrapper).has-btn {padding-top:0.45rem;}
 .modal-lg {max-width:850px !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}

@@ -124,7 +124,7 @@ function go_to_site(_url) {
         }).fadeIn('slow').attr('src', plugin);
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-            'Read more at <mark>' + paths[path_index].contents[project_index].short_url + '</mark>',
+            '<a href="javascript:void(null);" class="btn-dotted blank">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted blank">Email this project</a>',
             function (col) {
                 $(col).find('a:first').click(function () {
                     about_project();
@@ -287,25 +287,29 @@ function set_panel() {
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
             $('#arrow-up').removeClass('down');
-            set_messages(
-                '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-                'Read more at <mark>' + paths[path_index].contents[project_index].short_url+'</mark>',
-                function (col) {
-                    $(col).find('a:first').click(function () {
-                        about_project();
-                    });
-                    $(col).find('a:last').click(function () {
-                        send_email();
-                    });
-                },
-                null
-            );
+            if (project_index > -1) {
+                set_messages(
+                    '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+                    '<a href="javascript:void(null);" class="btn-dotted blank">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted blank">Email this project</a>',
+                    function (col) {
+                        $(col).find('a:first').click(function () {
+                            about_project();
+                        });
+                        $(col).find('a:last').click(function () {
+                            send_email();
+                        });
+                    },
+                    null
+                );
+            } else {
+                set_messages('', '');
+            }
 		} else {
             $panel.fadeIn('slow');
             $('#arrow-up').addClass('down');
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
-                '<a href="javascript:void(null);" class="btn-dotted">Refresh</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Admin</a>',
+                '<a href="javascript:void(null);" class="btn-dotted">Advanced features</a>',
                 function (col) {
                     $(col).find('a:first').click(function () {
                         about_platform();
