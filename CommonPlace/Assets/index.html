@@ -222,15 +222,27 @@ function about_project() {
 // Ask for an email address then send the current project to it
 function send_email() {
     var title = paths[path_index].contents[project_index].title;
-    var target = paths[path_index].contents[project_index].target;
-    var url = paths[path_index].contents[project_index].project_url;
-    var email = null;
+    var url = paths[path_index].contents[project_index].url;
     var $modal = $('#emailModal');
     $modal.find('p:first').html('Send me<br /><b>' + title + '</b>');
     $modal.modal({backdrop:'static'});
     $modal.find('input[type="email"]').keyboard();
+    $modal.find('.btn-primary:last').click(function (event) {
+        event.stopPropagation();
+        var address = $modal.find('input[type="email"]').val();
+        if (!address.length || -1 == address.indexOf('@') || -1 == address.indexOf('.')) {
+            $modal.find('input[type="email"]').focus();
+            return;
+        };
+        $('#emailModal').modal('hide');
+        var json = {};
+        json.method = 'email';
+        json.address = address;
+        json.title = title;
+        json.url = url;
+        window.external.notify(JSON.stringify(json));
+    });
     //$modal.find('input[type="email"]').focus();
-    //window.external.notify(JSON.stringify({ method: "SetValueToNative", param: "this value is from webView." }));
 }
 // Restart the timer
 function reset_timer(start) {

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<emailSettings>
+	<smtpHost></smtpHost>
+  <smtpUsername></smtpUsername>
+  <smtpPassword></smtpPassword>
+  <smtpSecure></smtpSecure>
+  <smtpPort></smtpPort>
+</emailSettings>
