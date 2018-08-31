@@ -68,7 +68,7 @@ namespace CommonPlace
                     string title = json.GetObject().GetNamedString("title");
                     string url = json.GetObject().GetNamedString("url");
                     // Create email
-                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), true, smtpUsername, smtpPassword);
+                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), false, smtpUsername, smtpPassword);
                     EmailMessage emailMessage = new EmailMessage();
                     emailMessage.To.Add(new EmailRecipient(address));
                     //emailMessage.Bcc.Add(new EmailRecipient("someone3@anotherdomain.com"));

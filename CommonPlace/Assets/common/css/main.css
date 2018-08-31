@@ -33,11 +33,14 @@
     background-image:url(commonplace-logo.png); height:93%; margin-top:1px; cursor:pointer; background-position:center center; background-size:50%; 
     background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649;
 }
-#nav .col:not(#logo-wrapper) {padding-top:0.5rem; text-align:center; font-size:0.8rem; color:#777777;}
+#nav .col:not(#logo-wrapper) {/* padding-top:0.5rem; */ text-align:center; font-size:0.8rem; color:#777777;}
 #nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
-.btn-dotted {padding:5px 12px 5px 12px; border:dotted 1px #e06029; border-radius:10px; font-size:smaller; background-color:#494649;}
-.btn-dotted.blank {color:#494649 !important;}
-#nav .col:not(#logo-wrapper).has-btn {padding-top:0.45rem;}
+.btn-dotted {
+    padding:6px 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; font-size:0.8rem; background-color:#494649; 
+    height:93%; text-shadow: 0px 0px 1px #000000; vertical-align:middle; display:inline-block;
+}
+.btn-dotted.blank {color:#494649 !important; text-shadow:none;}
+#nav .col:not(#logo-wrapper).has-btn {/* padding-top:0.45rem; */}
 .modal-lg {max-width:850px !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}
 #aboutPlatformModal .thumb, #aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
