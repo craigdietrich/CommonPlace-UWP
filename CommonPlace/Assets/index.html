@@ -29,6 +29,8 @@ $(document).ready(function() {
     });
     window.addEventListener("message", function (event) {
         if ('autonavigate_finished' == event.data) next_project();
+        if ('autonavigate_click' == event.data) $('#nav').find('.col:first, .col:last').tooltip('hide');
+        if ('autonavigate_user_interaction' == event.data) $('#nav').find('.col:first, .col:last').tooltip('hide');;
     }, false);
     if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
     // localStorage.setItem("test_storage", "Craig");
@@ -119,21 +121,20 @@ function go_to_site(_url) {
         }
         var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
         var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'')+'&t='+(new Date().getTime());
-        $('#site').unbind('load').on("load", function() {
-			// Nothing to do
-        }).fadeIn('slow').attr('src', plugin);
+        $('#site').unbind('load').on("load", function () {}).fadeIn('slow').attr('src', plugin);
         set_messages(
-            '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-            '<a href="javascript:void(null);" class="btn-dotted blank">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted blank">Email this project</a>',
+            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
+            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
             function (col) {
                 $(col).find('a:first').click(function () {
                     about_project();
                 });
+            },
+            function (col) {
                 $(col).find('a:last').click(function () {
                     send_email();
                 });
-            },
-            null
+            }
         );
 
 	};
@@ -170,7 +171,7 @@ function go_to_site(_url) {
 function set_messages(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
     if ('undefined' == typeof (last)) last = '';
-    $('#nav').find('.col:first').fadeOut(function () {
+    $('#nav').find('.col:nth-of-type(2)').fadeOut(function () {
         var $this = $(this);
         $this.removeClass('has-btn');
         if (first.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
@@ -178,7 +179,7 @@ function set_messages(first, last, first_callback, last_callback) {
             if ('function' == typeof (first_callback)) first_callback(this);
         });
     });
-    $('#nav').find('.col:last').fadeOut(function () {
+    $('#nav').find('.col:nth-of-type(4)').fadeOut(function () {
         var $this = $(this);
         $this.removeClass('has-btn');
         if (last.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
@@ -186,13 +187,9 @@ function set_messages(first, last, first_callback, last_callback) {
             if ('function' == typeof (last_callback)) last_callback(this);
         });
     });
+    $('#nav').find('.col:first, .col:last').animate({ opacity: 0 }).animate({ opacity: 1 });
+    $('#nav').find('.col:first, .col:last').tooltip({trigger:'click'});
 };
-// Return what is present in the left/right of the nav bar
-function get_messages() {
-    var first = $('#nav').find('.col:first').html();
-    var last = $('#nav').find('.col:last').html();
-    return [first, last];
-}
 // Provide information about CommonPlace
 function about_platform() {
     $('#aboutPlatformModal').modal({backdrop:'static'});
@@ -300,17 +297,18 @@ function set_panel() {
             $('#arrow-up').removeClass('down');
             if (project_index > -1) {
                 set_messages(
-                    '<a href="javascript:void(null);" class="btn-dotted">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
-                    '<a href="javascript:void(null);" class="btn-dotted blank">About this project</a> &nbsp; &nbsp; <a href="javascript:void(null);" class="btn-dotted blank">Email this project</a>',
+                    '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
+                    '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
                     function (col) {
                         $(col).find('a:first').click(function () {
                             about_project();
                         });
+                    },
+                    function (col) {
                         $(col).find('a:last').click(function () {
                             send_email();
                         });
-                    },
-                    null
+                    }
                 );
             } else {
                 set_messages('', '');
@@ -351,11 +349,12 @@ function version_uri_to_content_uri(uri) {
 		</div>
 	</div>
 </div>
-<div id="arrow-up"></div>
 <div id="nav" class="row">
+    <div class="col" id="scroll-wrapper" data-toggle="tooltip" title="You can scroll projects with your finger"></div>
     <div class="col"></div>
     <div class="col text-center" id="logo-wrapper"></div>
     <div class="col"></div>
+    <div class="col" id="pointer-wrapper" data-toggle="tooltip" title="Click on links and buttons to visit new pages"></div>
 </div>
 <div class="modal fade" id="aboutPlatformModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

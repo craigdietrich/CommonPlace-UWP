@@ -118,7 +118,8 @@
     <Content Include="Assets\common\css\down-arrow.png" />
     <Content Include="Assets\common\css\jqbtk.css" />
     <Content Include="Assets\common\css\main.css" />
-    <Content Include="Assets\common\css\up-arrow.png" />
+    <Content Include="Assets\common\css\pointer.png" />
+    <Content Include="Assets\common\css\scroll.png" />
     <Content Include="Assets\common\js\bootstrap.min.js" />
     <Content Include="Assets\common\js\jqbtk.js" />
     <Content Include="Assets\common\js\jquery-3.2.1.min.js" />
