@@ -36,7 +36,6 @@ namespace CommonPlace
             string src = "ms-appx-web:///Assets/index.html";
             //await WebView.ClearTemporaryWebDataAsync();
             this.MyWebView.Navigate(new Uri(src));
-
             // Alert for testing
             //MessageDialog showDialog = new MessageDialog("smtpPassword: " + smtpPassword);
             //var result = await showDialog.ShowAsync();

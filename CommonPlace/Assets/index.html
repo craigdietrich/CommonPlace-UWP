@@ -17,21 +17,31 @@ var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var paths = [];
 var path_index = 0;
 var project_index = -1;
-var desc_max_length = 500;
-// Get paths and projects
 $(document).ready(function() {
+    // Load the home screen
     $('#site').attr('src', primary + 'index');
+    // Get projects and start the rotation
 	get_paths(primary, function(_paths) {
 		paths = _paths.slice();
-        $('#nav, #arrow-up').fadeTo('slow', 1);
+        $('#nav').fadeTo('slow', 1);
         set_panel();
-        reset_timer(10);  // Timer for the splash page
+        reset_timer(5);  // Timer for the splash page
     });
+    // Messages from the auto-navigate plugin
     window.addEventListener("message", function (event) {
-        if ('autonavigate_finished' == event.data) next_project();
-        if ('autonavigate_click' == event.data) $('#nav').find('.col:first, .col:last').tooltip('hide');
-        if ('autonavigate_user_interaction' == event.data) $('#nav').find('.col:first, .col:last').tooltip('hide');;
+        switch (event.data) {
+            case 'autonavigate_finished':
+                next_project();
+                break;
+            case 'autonavigate_click':
+                $('#nav').find('.col:first, .col:last').tooltip('hide');
+                break;
+            case 'autonavigate_user_interaction':
+                $('#nav').find('.col:first, .col:last').tooltip('hide');
+                break;
+        }
     }, false);
+    // Store panel information such as custom projects and sorting
     if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
     // localStorage.setItem("test_storage", "Craig");
 });
@@ -82,6 +92,8 @@ function get_paths(url, callback) {
                     content.institution = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'][0].value : null;
                     content.publisher = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'][0].value : null;
                     content.date = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'][0].value : null;
+                    content.slideDeckNumSlides = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'][0].value) : 0;
+                    content.slideDeckSecondsPerSlide = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'][0].value) : 0;
                     path.contents.push(content);
 				};
 				paths[(path.ordinal-1)] = path;
@@ -98,22 +110,19 @@ function get_paths(url, callback) {
 function prev_project() {
 	project_index--;
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
-	console.log('Going to project: '+paths[path_index].contents[project_index].url);
 	go_to_site(paths[path_index].contents[project_index].url);
 	set_panel();
 };
 // Go to the previous project on the path
 function next_project() {
 	project_index++;
-	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;  // Start over
-	console.log('Going to project: '+paths[path_index].contents[project_index].url);
+	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
 	go_to_site(paths[path_index].contents[project_index].url);
 	set_panel();
 };
-// Determine the platform and load the project then reset the timer
+// Determine the platform and load the project
 function go_to_site(_url) {
 	var _scalar = function(response, url) {
-		console.log('Scalar: '+url);
         for (var uri in response) break;
         if ('undefined'==typeof(response[uri]['http://purl.org/dc/terms/isPartOf'])) {
         	alert('Scalar: could not find dcterms:isPartOf field for '+url);
@@ -121,7 +130,7 @@ function go_to_site(_url) {
         }
         var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
         var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'')+'&t='+(new Date().getTime());
-        $('#site').unbind('load').on("load", function () {}).fadeIn('slow').attr('src', plugin);
+        $('#site').fadeIn('slow').attr('src', plugin);
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
             '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
@@ -136,42 +145,71 @@ function go_to_site(_url) {
                 });
             }
         );
-
 	};
 	var _omeka = function(url) {
-		console.log('Omeka: '+url);
 		var plugin = url + '/plugins/AutoNavigate/index.html?t='+(new Date().getTime());
-        $('#site').unbind('load').on("load", function() {
-			// Nothing to do
-        }).fadeIn('slow').attr('src', plugin);
-        //set_messages('', '');
+        $('#site').fadeIn('slow').attr('src', plugin);
+        set_messages(
+            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
+            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+            function (col) {
+                $(col).find('a:first').click(function () {
+                    about_project();
+                });
+            },
+            function (col) {
+                $(col).find('a:last').click(function () {
+                    send_email();
+                });
+            }
+        );
 	};
 	var _crossroads = function(url) {
-        console.log('Crossroads: ' + url);
-        //set_messages('', '');
-	};
-	if ('/'==_url.substr(_url.length-1, 1)) _url = _url.substr(0, _url.length-1);
-	// Figure out whether the URL is to a Scalar, Omeka, or Crossroads project then route to the appropriate function
-	if (-1 != _url.indexOf('crossroads.')) _crossroads(_url);
-	var url = _url + '/rdf/?format=json';
-	$.ajax({
-	    url: url,
-	    jsonp: "callback",
-	    dataType: "jsonp",
-	    format:'json',
-	    success: function(response) {
-			_scalar(response, _url);
-	    },
-	    error: function(err) {  // TODO: check this with https sites
-	    	_omeka(_url);
-	    }
-	});
+        // TODO: Crossroads plugin
+    };
+    var _googleslides = function (url) {
+        var $site = $('#site');
+        $site.fadeIn('slow').off('load').on('load', function () {
+            var $custom = $('<div class="custom_msg"></div>').insertAfter($site).hide();
+            $custom.html('<span id="timer"></span> <b>' + paths[path_index].contents[project_index].title + '</b> by ' + paths[path_index].contents[project_index].authors);
+            $custom.fadeIn('slow');
+        }).attr('src', url);
+        reset_timer( (paths[path_index].contents[project_index].slideDeckNumSlides * paths[path_index].contents[project_index].slideDeckSecondsPerSlide) + paths[path_index].contents[project_index].slideDeckSecondsPerSlide );
+    };
+    // Stop any customizations from previously loaded project
+    stop_timer();
+    $('#site').off('load');
+    $('.custom_msg').fadeOut('slow', function () {
+        $(this).remove();
+    });
+	// Figure out what platform the project is running on then route to the appropriate function above
+    if ('/' == _url.substr(_url.length - 1, 1)) _url = _url.substr(0, _url.length - 1);
+    if (-1 != _url.toLowerCase().indexOf('crossroads.')) {
+        _crossroads(_url);
+    } else if (-1 != _url.toLowerCase().indexOf('.google.com/presentation')) {
+        _googleslides(_url);
+    } else {
+        var url = _url + '/rdf/?format=json';
+        $.ajax({
+            url: url,
+            jsonp: "callback",
+            dataType: "jsonp",
+            format: 'json',
+            success: function (response) {
+                _scalar(response, _url);
+            },
+            error: function (err) {
+                _omeka(_url);
+            }
+        });
+    };
 };
-// Set HTML into the left/right of the nav bar
+// Set HTML into the nav bar's left and right slots
 function set_messages(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
     if ('undefined' == typeof (last)) last = '';
-    $('#nav').find('.col:nth-of-type(2)').fadeOut(function () {
+    var $nav = $('#nav');
+    $nav.find('.col:nth-of-type(2)').fadeOut(function() {
         var $this = $(this);
         $this.removeClass('has-btn');
         if (first.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
@@ -179,7 +217,7 @@ function set_messages(first, last, first_callback, last_callback) {
             if ('function' == typeof (first_callback)) first_callback(this);
         });
     });
-    $('#nav').find('.col:nth-of-type(4)').fadeOut(function () {
+    $nav.find('.col:nth-of-type(4)').fadeOut(function () {
         var $this = $(this);
         $this.removeClass('has-btn');
         if (last.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
@@ -187,12 +225,12 @@ function set_messages(first, last, first_callback, last_callback) {
             if ('function' == typeof (last_callback)) last_callback(this);
         });
     });
-    $('#nav').find('.col:first, .col:last').animate({ opacity: 0 }).animate({ opacity: 1 });
-    $('#nav').find('.col:first, .col:last').tooltip({trigger:'click'});
+    $nav.find('.col:first, .col:last').tooltip({ trigger: 'click' }).animate({ opacity: 0 }).animate({ opacity: 1 });
 };
 // Provide information about CommonPlace
 function about_platform() {
-    $('#aboutPlatformModal').modal({backdrop:'static'});
+    // TODO: get this information from the primary
+    $('#aboutPlatformModal').modal({ backdrop: 'static' });
 }
 // Provide information about the current project
 function about_project() {
@@ -214,7 +252,11 @@ function about_project() {
     str += '</p>';
     $row.find('.col:first').append(str);    
     if (paths[path_index].contents[project_index].content) $('<p class="content">' + paths[path_index].contents[project_index].content + '</p>').appendTo($row.find('.col:last'));
-    $modal.modal({backdrop:'static'});    
+    $modal.modal({ backdrop: 'static' });
+    $modal.off('hidden.bs.modal').on('hidden.bs.modal', function (event) {
+        child_timer(true);
+    });
+    child_timer(false);
 }
 // Ask for an email address then send the current project to it
 function send_email() {
@@ -232,6 +274,7 @@ function send_email() {
             return;
         };
         $('#emailModal').modal('hide');
+        child_timer(true);
         var json = {};
         json.method = 'email';
         json.address = address;
@@ -239,6 +282,10 @@ function send_email() {
         json.url = url;
         window.external.notify(JSON.stringify(json));
     });
+    $modal.off('hidden.bs.modal').on('hidden.bs.modal', function (event) {
+        child_timer(true);
+    });
+    child_timer(false);
 }
 // Restart the timer
 function reset_timer(start) {
@@ -248,7 +295,8 @@ function reset_timer(start) {
 	}
 	if ('undefined'==typeof(start)) start = 10;
 	interval = setInterval(function() {
-		start--;
+        start--;
+        $('#timer').text(start + ' sec');
 		if (!start) {
 			clearInterval(interval);
 			interval = null;
@@ -257,6 +305,22 @@ function reset_timer(start) {
 		};
 	}, 1000);
 };
+// Stop timer
+function stop_timer() {
+    if ('undefined' != typeof (interval)) {
+        clearInterval(interval);
+        interval = null;
+    }    
+}
+// Start/stop auto-navigate timer
+function child_timer(bool) {
+    if ('undefined' == typeof (bool)) bool = false;
+    if (bool) {
+        $('#site')[0].contentWindow.postMessage("autonavigate_reset_timer", '*');
+    } else {
+        $('#site')[0].contentWindow.postMessage("autonavigate_stop_timer", '*');
+    };
+}
 // Set the popup panel's content based on the current project
 function set_panel() {
 	$('#panel .row:not(:first)').remove();
@@ -290,11 +354,10 @@ function set_panel() {
         $('#panel').fadeOut('slow');
         $('#arrow-up').removeClass('down');
 	});
-    $('#logo-wrapper, #arrow-up').off('mousedown').bind('mousedown', function() {
+    $('#logo-wrapper').off('mousedown').bind('mousedown', function() {
 		var $panel = $('#panel');
 		if ($panel.is(':visible')) {
             $panel.fadeOut('slow');
-            $('#arrow-up').removeClass('down');
             if (project_index > -1) {
                 set_messages(
                     '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
@@ -313,9 +376,9 @@ function set_panel() {
             } else {
                 set_messages('', '');
             }
+            child_timer(true);
 		} else {
             $panel.fadeIn('slow');
-            $('#arrow-up').addClass('down');
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
                 '<a href="javascript:void(null);" class="btn-dotted">Advanced features</a>',
@@ -326,6 +389,7 @@ function set_panel() {
                 },
                 null
             );
+            child_timer(false);
 		};
     });
 };

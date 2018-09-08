@@ -1,5 +1,9 @@
 ﻿body {background-color:#000000; font-family:Verdana; overflow:hidden;}
 #site {position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:7; border:0; background-color:#000000;}
+.custom_msg {
+    position:absolute; left:10%; right:10%; top:5px; z-index:8; background-color:#000000; color:#888888; border-radius:10px;
+    text-align:center; padding:6px 10px 6px 10px; overflow:hidden; font-size:smaller;
+}
 #panel {
 	position:absolute; top:0px; bottom:0px; left:0px; right:0px; background-color:#000000; color:#cccccc; z-index:8; 
 	padding-left:40px; padding-right:40px; overflow:auto; display:none;
@@ -19,7 +23,7 @@
 #panel .authors {font-size:0.7rem; font-weight:normal; line-height:150%;}
 #nav {
     position:absolute; top:95%; bottom:4px; left:20%; right:20%; border-radius:15px;
-    color:#f3803a; opacity:0; overflow:hidden; z-index:8; bachground-color:white;
+    color:#f3803a; opacity:0; overflow:hidden; z-index:8;
 }
 #nav span, #nav img {cursor:pointer;}
 #nav.row {margin-left:0; margin-right:0;}
