@@ -171,10 +171,12 @@ function go_to_site(_url) {
         var $site = $('#site');
         $site.fadeIn('slow').off('load').on('load', function () {
             var $custom = $('<div class="custom_msg"></div>').insertAfter($site).hide();
-            $custom.html('<span id="timer"></span> <b>' + paths[path_index].contents[project_index].title + '</b> by ' + paths[path_index].contents[project_index].authors);
+            $custom.html('<b>' + paths[path_index].contents[project_index].title + '</b> by ' + paths[path_index].contents[project_index].authors);
             $custom.fadeIn('slow');
         }).attr('src', url);
-        reset_timer( (paths[path_index].contents[project_index].slideDeckNumSlides * paths[path_index].contents[project_index].slideDeckSecondsPerSlide) + paths[path_index].contents[project_index].slideDeckSecondsPerSlide );
+        var the_time = (paths[path_index].contents[project_index].slideDeckNumSlides + 1) * paths[path_index].contents[project_index].slideDeckSecondsPerSlide;
+        the_time = the_time + Math.round((paths[path_index].contents[project_index].slideDeckNumSlides + 1) * 0.4);
+        reset_timer( the_time );
     };
     // Stop any customizations from previously loaded project
     stop_timer();
@@ -265,7 +267,7 @@ function send_email() {
     var $modal = $('#emailModal');
     $modal.find('p:first').html('Send me<br /><b>' + title + '</b>');
     $modal.modal({backdrop:'static'});
-    $modal.find('input[type="email"]').keyboard();
+    $modal.find('input[type="email"]').val('').keyboard();
     $modal.find('.btn-primary:last').click(function (event) {
         event.stopPropagation();
         var address = $modal.find('input[type="email"]').val();
@@ -296,7 +298,6 @@ function reset_timer(start) {
 	if ('undefined'==typeof(start)) start = 10;
 	interval = setInterval(function() {
         start--;
-        $('#timer').text(start + ' sec');
 		if (!start) {
 			clearInterval(interval);
 			interval = null;

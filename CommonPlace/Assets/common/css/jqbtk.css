@@ -12,7 +12,13 @@
 }
 .jqbtk-container .jqbtk-del {
     width: 5.6em;
-    float:left;
+    margin-right:20px;
+}
+.jqbtk-container .jqbtk-domain-oxy {
+    width: 5.6em;
+}
+.jqbtk-container .jqbtk-domain-gmail {
+    width: 7.0em;
 }
 .jqbtk-container .jqbtk-shift {
 	width: 4.4em;
@@ -21,7 +27,7 @@
     width: 5.6em;
     background-color:#007bff;
     color:#ffffff;
-    float:right;
+    margin-left:20px;
 }
 .popover {
 	max-width: 800px;

@@ -1,6 +1,6 @@
 // jQuery Bootstrap Touch Keyboard plugin
 // By Matthew Dawkins
-// Edited by Craig to change the keyboard and add 'enter' key events for use in the send email modal
+// Edited by Craig to move things around and add a few buttons
 (function($) {
     $.fn.keyboard = function(options) {
         // Settings
@@ -56,6 +56,8 @@
                 ],
                 [
                     ['del', 'del'],
+                    ['@oxy.edu','@oxy.edu'],
+                    ['@gmail.com','@gmail.com'],
                     ['enter', 'enter']
                 ]
             ],
@@ -204,6 +206,12 @@
                 case 'del':
                     currentContent = currentContent.substr(0, currentContent.length - 1);
                     break;
+                case '@oxy.edu':
+                    currentContent += '@oxy.edu';
+                    break;
+                case '@gmail.com':
+                    currentContent += '@gmail.com';
+                    break;
                 case 'enter':
                     console.log('enter');
                     break;
@@ -267,6 +275,8 @@
                 switch ($(this).attr('data-value')) {
                     case 'shift':
                     case 'del':
+                    case '@oxy.edu':
+                    case '@gmail.com':
                     case 'space':
                     case 'enter':
                         break;
@@ -309,6 +319,12 @@
                                     break;
                                 case 'del':
                                     btn.addClass('jqbtk-del').html('Backspace');
+                                    break;
+                                case '@oxy.edu':
+                                    btn.addClass('jqbtk-domain-oxy').html('@oxy.edu');
+                                    break;
+                                case '@gmail.com':
+                                    btn.addClass('jqbtk-domain-gmail').html('@gmail.com');
                                     break;
                                 case 'enter':
                                     btn.addClass('jqbtk-enter').html('Continue');
