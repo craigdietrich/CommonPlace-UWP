@@ -6,12 +6,15 @@
 <meta name="author" content="http://craigdietrich.com">
 <link rel="stylesheet" href="common/css/bootstrap.min.css">
 <link rel="stylesheet" href="common/css/jqbtk.css">
+<link rel="stylesheet" href="common/css/crossroads.css">
 <link rel="stylesheet" href="common/css/main.css">
 <script src="common/js/jquery-3.2.1.min.js"></script>
 <script src="common/js/popper.min.js"></script>
 <script src="common/js/bootstrap.min.js"></script>
 <script src="common/js/jstorage.min.js"></script>
 <script src="common/js/jqbtk.js"></script>
+<script src="common/js/jquery.textfill.min.js"></script>
+<script src="common/js/jquery.crossroads.js"></script>
 <script>
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var paths = [];
@@ -165,7 +168,27 @@ function go_to_site(_url) {
         );
 	};
 	var _crossroads = function(url) {
-        // TODO: Crossroads plugin
+        $crossroads = $('#crossroads');
+        $('#site').attr('src', '')
+        $crossroads.crossroads({
+            title: paths[path_index].contents[project_index].title,
+            authors: paths[path_index].contents[project_index].authors,
+            url: _url
+        });
+        set_messages(
+            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
+            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+            function (col) {
+                $(col).find('a:first').click(function () {
+                    about_project();
+                });
+            },
+            function (col) {
+                $(col).find('a:last').click(function () {
+                    send_email();
+                });
+            }
+        );
     };
     var _googleslides = function (url) {
         var $site = $('#site');
@@ -176,7 +199,8 @@ function go_to_site(_url) {
         }).attr('src', url);
         var the_time = (paths[path_index].contents[project_index].slideDeckNumSlides + 1) * paths[path_index].contents[project_index].slideDeckSecondsPerSlide;
         the_time = the_time + Math.round((paths[path_index].contents[project_index].slideDeckNumSlides + 1) * 0.4);
-        reset_timer( the_time );
+        reset_timer(the_time);
+        set_messages();
     };
     // Stop any customizations from previously loaded project
     stop_timer();
@@ -184,6 +208,7 @@ function go_to_site(_url) {
     $('.custom_msg').fadeOut('slow', function () {
         $(this).remove();
     });
+    $('#crossroads').crossroads('destroy');
 	// Figure out what platform the project is running on then route to the appropriate function above
     if ('/' == _url.substr(_url.length - 1, 1)) _url = _url.substr(0, _url.length - 1);
     if (-1 != _url.toLowerCase().indexOf('crossroads.')) {
@@ -227,7 +252,8 @@ function set_messages(first, last, first_callback, last_callback) {
             if ('function' == typeof (last_callback)) last_callback(this);
         });
     });
-    $nav.find('.col:first, .col:last').tooltip({ trigger: 'click' }).animate({ opacity: 0 }).animate({ opacity: 1 });
+    $nav.find('.col:first, .col:last').tooltip({ trigger: 'click' }).animate({ opacity: 0 })
+    if (first.length || last.length) $nav.find('.col:first, .col:last').animate({ opacity: 1 });
 };
 // Provide information about CommonPlace
 function about_platform() {
@@ -404,6 +430,7 @@ function version_uri_to_content_uri(uri) {
 </head>
 <body>
 <iframe id="site" src=""></iframe>
+<div id="crossroads"></div>
 <div id="panel">
 	<div class="container-fluid">
 	 	<div class="row">
