@@ -115,6 +115,7 @@
   <ItemGroup>
     <Content Include="Assets\common\css\bootstrap.min.css" />
     <Content Include="Assets\common\css\commonplace-logo.png" />
+    <Content Include="Assets\common\css\crossroads-logo.png" />
     <Content Include="Assets\common\css\crossroads.css" />
     <Content Include="Assets\common\css\down-arrow.png" />
     <Content Include="Assets\common\css\jqbtk.css" />
@@ -168,7 +169,9 @@
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="EmailConfig.xml" />
+    <Content Include="EmailConfig.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

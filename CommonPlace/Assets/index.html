@@ -125,7 +125,7 @@ function next_project() {
 };
 // Determine the platform and load the project
 function go_to_site(_url) {
-	var _scalar = function(response, url) {
+    var _scalar = function (response, url) {
         for (var uri in response) break;
         if ('undefined'==typeof(response[uri]['http://purl.org/dc/terms/isPartOf'])) {
         	alert('Scalar: could not find dcterms:isPartOf field for '+url);
@@ -168,7 +168,7 @@ function go_to_site(_url) {
         );
 	};
 	var _crossroads = function(url) {
-        $crossroads = $('#crossroads');
+        var $crossroads = $('#crossroads');
         $('#site').attr('src', '')
         $crossroads.crossroads({
             title: paths[path_index].contents[project_index].title,
