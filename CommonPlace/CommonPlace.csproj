@@ -119,6 +119,7 @@
     <Content Include="Assets\common\css\crossroads.css" />
     <Content Include="Assets\common\css\down-arrow.png" />
     <Content Include="Assets\common\css\jqbtk.css" />
+    <Content Include="Assets\common\css\justify-icon.png" />
     <Content Include="Assets\common\css\main.css" />
     <Content Include="Assets\common\css\pointer.png" />
     <Content Include="Assets\common\css\scroll.png" />

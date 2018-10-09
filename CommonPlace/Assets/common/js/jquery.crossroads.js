@@ -54,7 +54,11 @@
         $self.empty().fadeIn('slow');
 
         var $header = $('<div class="sidebar"><div class="header"></div></div>').appendTo($self);
-        if ('string' == typeof (opts.title) && opts.title.length) $('<div class="title">' + opts.title + '</div>').appendTo($header);
+        if ('string' == typeof (opts.title) && opts.title.length) $('<div class="title"><div class="justify">&nbsp;</div>' + opts.title + '</div>').appendTo($header);
+        $header.mousedown(function () {
+            var json = { method: 'coming_soon' };
+            window.external.notify(JSON.stringify(json));
+        });
 
         var $wrapper = $('<div class="wrapper"></div>').appendTo($self);
         var $table = $('<table class="content"><tbody><tr></tr></tbody></table>').appendTo($wrapper);
@@ -156,26 +160,56 @@
             $table = $self.find('table').eq(0);
             $el = $table.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
             if (!anim) {
-                $table.find('td.current').removeClass('current').children('div').css({
+                // Hide old
+                $table.find('td.current').find('.mast').hide();
+                $table.find('td.current').prev().css('padding-top', '60px');
+                $table.find('td.current').next().css('padding-top', '60px');
+                $table.find('td.current').removeClass('current').css({
+                    'padding-top': '60px'
+                }).children('div').css({
                     zoom : '30%'
                 });
+                // Show new
                 $table.css('left', x);
-                $el.addClass('current').children('div').css({
+                $el.find('.mast').show();
+                $el.addClass('current').css({
+                    'padding-top': '0px'
+                }).children('div').css({
                     zoom : '100%'
                 });
-                reset_timer();
+                $el.prev().css('padding-top', '0px');
+                $el.next().css('padding-top', '0px');
+                reset_timer(3);
             } else {
-                $table.find('td.current').removeClass('current').children('div').animate({
+                // Hide old
+                $table.find('td.current').find('.mast').fadeOut(opts.duration / 4, function () {
+                    $el.find('.mast').fadeIn(opts.duration / 4);
+                });
+                $table.find('td').not($el.prev()).not($el.next()).not($el).animate({
+                    'padding-top': '60px'
+                }, { duration: opts.duration, queue: false });
+                $table.find('td.current').removeClass('current').animate({
+                    'padding-top': '60px'
+                }, { duration: opts.duration, queue: false }).children('div').animate({
                     zoom: '30%'
-                }, opts.duration);
-                $el.addClass('current').children('div').animate({
+                }, { duration: opts.duration, queue: false });
+                // Show new
+                $el.addClass('current').animate({
+                    'padding-top': '0px'
+                }, { duration: opts.duration, queue: false }).children('div').animate({
                     zoom: '100%'
-                }, opts.duration);
+                }, { duration: opts.duration, queue: false });
+                $el.prev().animate({
+                    'padding-top': '0px'
+                }, { duration: opts.duration, queue: false });
+                $el.next().animate({
+                    'padding-top': '0px'
+                }, { duration: opts.duration, queue: false });
                 $table.animate({
                     left: x
-                }, opts.duration, function () {
+                }, { duration: opts.duration, queue: false, complete: function () {
                     reset_timer();
-                });
+                }});
             };
             index++;
             opts.item_index = index;
@@ -186,7 +220,7 @@
                 clearInterval(crossroads_interval);
                 interval = null;
             }
-            crossroads_start = opts.pause;  // Global
+            crossroads_start = ('undefined'==typeof(start)) ? opts.pause : start;  // Global
             crossroads_interval = setInterval(function () {  // Global
                 crossroads_start--;
                 if (!crossroads_start) {
@@ -199,6 +233,8 @@
         }
 
         set_data(project_id(opts.url), function () {
+            // Blank first page
+            var $blank = $('<td class="blank"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
             // Title page
             var $cell = $('<td class="title_card"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
             $cell.find('.inner').html('<h4>International Programs Office Dispatch Contest</h4>');
@@ -227,7 +263,7 @@
                             break;
                         case 'quote':
                             props.content = '&ldquo;' + props.title + '&rdquo;';
-                            props.content += ' <span class="by">&mdash;&nbsp;' + props.credit + '</span>';
+                            props.content += '<br /><span class="by">' + props.credit + '</span>';
                             $inside.html('<span>' + props.content + '</span>');
                             break;
                         case 'dispatch':
@@ -242,8 +278,10 @@
             };
             $row.find('.bucket > div > div, .quote > div > div, .assertion > div > div').textfill();
             $row.find('.title_card > div > div, .bucket > div > div').vertMiddle();
-            $row.find('td').children('div').css({
-                zoom: '30%'
+            $row.find('td').css({
+                'padding-top': '60px'
+            }).children('div').css({
+                zoom: '30%',
             });
             center(0, false);
             $table.animate({

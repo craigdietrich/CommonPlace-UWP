@@ -52,6 +52,10 @@ namespace CommonPlace
             string method = json.GetObject().GetNamedString("method");
             switch (method)
             {
+                case "coming_soon":
+                    MessageDialog showDialog = new MessageDialog("CommonPlace feature coming soon!");
+                    var result = await showDialog.ShowAsync();
+                    break;
                 case "email":
                     // Load Email SMTP settings
                     string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
@@ -77,5 +81,14 @@ namespace CommonPlace
                     break;
             }
         }
+
+        public static string GetAppVersion()
+        {
+            Package package = Package.Current;
+            PackageId packageId = package.Id;
+            PackageVersion version = packageId.Version;
+            return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
+        }
+
     }
 }

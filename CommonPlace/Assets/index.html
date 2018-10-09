@@ -6,6 +6,7 @@
 <meta name="author" content="http://craigdietrich.com">
 <link rel="stylesheet" href="common/css/bootstrap.min.css">
 <link rel="stylesheet" href="common/css/jqbtk.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo">
 <link rel="stylesheet" href="common/css/crossroads.css">
 <link rel="stylesheet" href="common/css/main.css">
 <script src="common/js/jquery-3.2.1.min.js"></script>
@@ -48,6 +49,9 @@ $(document).ready(function() {
     if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
     // localStorage.setItem("test_storage", "Craig");
 });
+function version_num(num) {
+    $('.version_num').text(num);
+}
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
 	var paths = [];
@@ -432,14 +436,15 @@ function version_uri_to_content_uri(uri) {
 <iframe id="site" src=""></iframe>
 <div id="crossroads"></div>
 <div id="panel">
-	<div class="container-fluid">
-	 	<div class="row">
-    		<div class="col path-title">
-     		 	<h2 class="title"></h2>
-     		 	<p class="desc"></p>
-    		</div>
-		</div>
-	</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col path-title">
+                <h2 class="title"></h2>
+                <p class="desc"></p>
+            </div>
+        </div>
+    </div>
+    <div class="version_num"></div>
 </div>
 <div id="nav" class="row">
     <div class="col" id="scroll-wrapper" data-toggle="tooltip" title="You can scroll projects with your finger"></div>
