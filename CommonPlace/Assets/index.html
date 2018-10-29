@@ -171,13 +171,25 @@ function go_to_site(_url) {
             }
         );
 	};
-	var _crossroads = function(url) {
+    var _crossroads = function (url) {
+        $('#site').attr('src', '');
+        if ('undefined' == typeof (crossroads_projects)) crossroads_projects = null;  // Global
+        if (null == crossroads_projects) {
+            $.fn.crossroads('get_projects', function (project_list) {
+                crossroads_projects = project_list.slice();
+                console.log('Attained projects');
+                _crossroads(url);
+            });
+            return;
+        };
+        $('<div id="crossroads" data-url="'+url+'"></div>').insertAfter('#site');
         var $crossroads = $('#crossroads');
-        $('#site').attr('src', '')
         $crossroads.crossroads({
             title: paths[path_index].contents[project_index].title,
             authors: paths[path_index].contents[project_index].authors,
-            url: _url
+            url: _url,
+            projects: crossroads_projects,
+            item_index: 0
         });
         set_messages(
             '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
@@ -212,7 +224,7 @@ function go_to_site(_url) {
     $('.custom_msg').fadeOut('slow', function () {
         $(this).remove();
     });
-    $('#crossroads').crossroads('destroy');
+    $('#crossroads').crossroads('destroy').remove();
 	// Figure out what platform the project is running on then route to the appropriate function above
     if ('/' == _url.substr(_url.length - 1, 1)) _url = _url.substr(0, _url.length - 1);
     if (-1 != _url.toLowerCase().indexOf('crossroads.')) {
@@ -434,7 +446,6 @@ function version_uri_to_content_uri(uri) {
 </head>
 <body>
 <iframe id="site" src=""></iframe>
-<div id="crossroads"></div>
 <div id="panel">
     <div class="container-fluid">
         <div class="row">
