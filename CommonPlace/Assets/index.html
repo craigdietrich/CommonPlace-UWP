@@ -279,6 +279,7 @@ function about_platform() {
 // Advanced features in the panel
 function advanced_options() {
     $('#advancedOptionsModal').modal({ backdrop: 'static' });
+    $('#advancedOptionsModal').find('.modal-body .show').collapse('hide');
     if (!$('#advancedOptionsModal').data('event_established')) {
         $('#advancedOptionsModal').data('event_established', true);
         $('#advancedOptionsModal').find('.modal-body p > button').click(function() {
