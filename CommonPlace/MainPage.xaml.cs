@@ -52,9 +52,12 @@ namespace CommonPlace
             string method = json.GetObject().GetNamedString("method");
             switch (method)
             {
+                case "restart":
+                    this.MyWebView.Refresh();
+                    break;
                 case "coming_soon":
-                    MessageDialog showDialog = new MessageDialog("CommonPlace feature coming soon!");
-                    var result = await showDialog.ShowAsync();
+                    MessageDialog showComingSoonDialog = new MessageDialog("CommonPlace feature coming soon!");
+                    var comingSoonResult = await showComingSoonDialog.ShowAsync();
                     break;
                 case "email":
                     // Load Email SMTP settings

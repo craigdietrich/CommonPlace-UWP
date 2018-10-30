@@ -276,6 +276,22 @@ function about_platform() {
     // TODO: get this information from the primary
     $('#aboutPlatformModal').modal({ backdrop: 'static' });
 }
+// Advanced features in the panel
+function advanced_options() {
+    $('#advancedOptionsModal').modal({ backdrop: 'static' });
+    if (!$('#advancedOptionsModal').data('event_established')) {
+        $('#advancedOptionsModal').data('event_established', true);
+        $('#advancedOptionsModal').find('.modal-body p > button').click(function() {
+            $(this).closest('.modal-content').find('.show').collapse('hide');
+        });
+        $('#advancedOptionsModal').find('#restartMessage button').click(function () {
+            $(this).closest('.modal').modal('toggle');
+            var json = {};
+            json.method = 'restart';
+            window.external.notify(JSON.stringify(json));
+        });
+    };
+}
 // Provide information about the current project
 function about_project() {
     var url = paths[path_index].contents[project_index].url;
@@ -424,13 +440,17 @@ function set_panel() {
             $panel.fadeIn('slow');
             set_messages(
                 '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
-                '<a href="javascript:void(null);" class="btn-dotted">Advanced features</a>',
+                '<a href="javascript:void(null);" class="btn-dotted">Advanced options</a>',
                 function (col) {
                     $(col).find('a:first').click(function () {
                         about_platform();
                     });
                 },
-                null
+                function (col) {
+                    $(col).find('a:first').click(function () {
+                        advanced_options();
+                    });
+                }
             );
             child_timer(false);
 		};
@@ -495,6 +515,29 @@ function version_uri_to_content_uri(uri) {
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
+  </div>
+</div>
+<div class="modal fade" id="advancedOptionsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Advanced options</h5>
+          </div>
+          <div class="modal-body">
+              <!-- restart -->
+              <p><button class="btn btn-default" type="button" data-toggle="collapse" data-target="#restartMessage" aria-expanded="false" aria-controls="restartMessage">Restart CommonPlace</button></p>
+              <div class="collapse" id="restartMessage">
+                  <div class="card card-body">
+                      Restarting CommonPlace will reload the app with any new content that might exist in connected data sources. CommonPlace will then begin, as typical, with the first project in the default collection.<br />
+                      <button class="btn btn-primary">Restart</button>
+                  </div>
+              </div>
+              <!-- choose a new collection -->
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+      </div>
   </div>
 </div>
 <div class="modal fade" id="aboutProjectModal" tabindex="-1" role="dialog">
