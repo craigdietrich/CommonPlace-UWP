@@ -56,3 +56,6 @@
 #aboutPlatformModal .thumb {background-color:#6e6e6e;}
 #advancedOptionsModal .modal-header, #advancedOptionsModal .modal-footer {border:0;}
 #advancedOptionsModal .card-body > button {width:100px; margin-top:12px;}
+#advancedOptionsModal .card-body > .btn-group {margin-top:12px;}
+#choosePathDropdown {min-width:200px; text-align:left; }
+#advancedOptionsModal .collapse {margin-bottom:12px;}

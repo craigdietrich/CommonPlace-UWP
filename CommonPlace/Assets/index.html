@@ -19,14 +19,17 @@
 <script>
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var paths = [];
-var path_index = 0;
+var path_index = 1;
 var project_index = -1;
 $(document).ready(function() {
     // Load the home screen
     $('#site').attr('src', primary + 'index');
     // Get projects and start the rotation
-	get_paths(primary, function(_paths) {
-		paths = _paths.slice();
+    get_paths(primary, function (_paths) {
+        paths = _paths.slice();  // TODO
+        console.log(paths);
+        path_index = get_path_index();
+        console.log('path_index: ' + path_index);
         $('#nav').fadeTo('slow', 1);
         set_panel();
         reset_timer(5);  // Timer for the splash page
@@ -45,12 +48,14 @@ $(document).ready(function() {
                 break;
         }
     }, false);
-    // Store panel information such as custom projects and sorting
-    if (typeof (Storage) === "undefined") set_messages('localStorage not supported');
-    // localStorage.setItem("test_storage", "Craig");
 });
 function version_num(num) {
     $('.version_num').text(num);
+}
+// Get the path index either from localStorage or default to the first path
+function get_path_index() {
+    var index = $.jStorage.get('commonplace_path_index', 0);
+    return index;
 }
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
@@ -282,9 +287,11 @@ function advanced_options() {
     $('#advancedOptionsModal').find('.modal-body .show').collapse('hide');
     if (!$('#advancedOptionsModal').data('event_established')) {
         $('#advancedOptionsModal').data('event_established', true);
+        // Close other panels when a new one is opened
         $('#advancedOptionsModal').find('.modal-body p > button').click(function() {
             $(this).closest('.modal-content').find('.show').collapse('hide');
         });
+        // Restart CommonPlace
         $('#advancedOptionsModal').find('#restartMessage button').click(function () {
             $(this).closest('.modal').modal('toggle');
             var json = {};
@@ -292,6 +299,30 @@ function advanced_options() {
             window.external.notify(JSON.stringify(json));
         });
     };
+    // Write options in the choose path pulldown
+    var $choosePathDropdown = $('#choosePathDropdown');
+    $choosePathDropdown.next().empty();
+    for (var j = 0; j < paths.length; j++) {
+        var $el = $('<a class="dropdown-item" href="javascript:void(null);" data-path-index="' + j + '">' + paths[j].title + '</a>').appendTo($choosePathDropdown.next());
+        if (j == path_index) $el.addClass('active');
+    };
+    $choosePathDropdown.next().children().mousedown(function () {
+        var $this = $(this);
+        var index = $this.data('path-index');
+        if (index == path_index) return;
+        var title = $this.text();
+        $choosePathDropdown.data('path-index', index).text(title + ' ');
+    });
+    $('#choosePath').find('button:last').off('mousedown').mousedown(function () {
+        var index = $choosePathDropdown.data('path-index');
+        if ('undefined' != typeof (index)) {
+            $.jStorage.set('commonplace_path_index', parseInt(index));
+            $(this).closest('.modal').modal('toggle');
+            var json = {};
+            json.method = 'restart';
+            window.external.notify(JSON.stringify(json));
+        }
+    });
 }
 // Provide information about the current project
 function about_project() {
@@ -389,7 +420,9 @@ function set_panel() {
 	$pathTitle.find('.desc').text(paths[path_index].desc);
     var $row = null;
     var colspan = 6;
+    console.log('Chosen path: ');
     console.log(paths[path_index]);
+    // Write project icons
 	for (var j = 0; j < paths[path_index].contents.length; j++) {
         if (j == 0 || j % colspan == 0) $row = $('<div class="row"></div>').appendTo('#panel > div:first');
 		var $cell = $('<div class="col"></div>').appendTo($row);
@@ -407,13 +440,15 @@ function set_panel() {
             $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
         };
     };
+    // Clicking a project icon chooses that project
 	$('#panel').find('.col').bind('mousedown', function() {
 		var index = parseInt($(this).data('project_index'));
 		project_index = index - 1;
 		next_project();
         $('#panel').fadeOut('slow');
         $('#arrow-up').removeClass('down');
-	});
+    });
+    // Open and close the panel
     $('#logo-wrapper').off('mousedown').bind('mousedown', function() {
 		var $panel = $('#panel');
 		if ($panel.is(':visible')) {
@@ -531,6 +566,20 @@ function version_uri_to_content_uri(uri) {
                   <div class="card card-body">
                       Restarting CommonPlace will reload the app with any new content that might exist in connected data sources. CommonPlace will then begin, as typical, with the first project in the default collection.<br />
                       <button class="btn btn-primary">Restart</button>
+                  </div>
+              </div>
+              <p><button class="btn btn-default" type="button" data-toggle="collapse" data-target="#choosePath" aria-expanded="false" aria-controls="choosePath">Switch to a different collection</button></p>
+              <div class="collapse" id="choosePath">
+                  <div class="card card-body">
+                      The connected data sources may contain multiple collections of projects. You can choose one below which will restart CommonPlace with the new collection set as the default.<br />
+                      <div class="btn-group">
+                          <div class="dropdown dropup">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="choosePathDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose a collection </button>
+                            <div class="dropdown-menu" aria-labelledby="choosePathDropdown"></div>
+                          </div>
+                          &nbsp; &nbsp; 
+                          <button type="button" class="btn btn-primary">Swtich</button>
+                      </div>
                   </div>
               </div>
               <!-- choose a new collection -->
