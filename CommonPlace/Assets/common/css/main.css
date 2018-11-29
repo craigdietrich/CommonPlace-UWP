@@ -21,7 +21,6 @@
 #panel h6 {font-weight:bold; font-size:0.7rem; line-height:150%;}
 #panel .institution {font-size:0.7rem; font-weight:normal; line-height:150%; margin-bottom:0.4rem;}
 #panel .authors {font-size:0.7rem; font-weight:normal; line-height:150%;}
-#panel .version_num {position:absolute; top:2px; left:0px; right:0px; font-size:12px; color:#999999; height:16px; text-align:center;}
 #nav {position:absolute; top:95%; bottom:4px; left:20%; right:20%; border-radius:15px; color:#f3803a; opacity:0; z-index:8;}
 #nav span, #nav img {cursor:pointer;}
 #nav.row {margin-left:0; margin-right:0;}
@@ -40,11 +39,10 @@
     background-image:url(pointer.png); height:92%; flex-grow:0.1; margin-top:1px; cursor:pointer; background-position:center center; background-size:40%; 
     background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649; box-shadow:0px 0px 3px #666666; opacity:0;
 }
-#nav .col:not(#logo-wrapper) {/* padding-top:0.5rem; */ text-align:center; font-size:0.8rem; color:#777777;}
-#nav .col mark {padding:0px 0px 0px 0px;; background-color:inherit; color:#999999;}
+#nav .col:not(#logo-wrapper) {text-align:center; color:#777777;}
 .btn-dotted {
-    padding:5px 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; font-size:0.75rem; background-color:#494649; 
-    height:92%; text-shadow: 0px 0px 1px #000000; vertical-align:middle; display:inline-block; box-shadow:0px 0px 3px #666666;
+    padding:0.6vh 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; /*font-size:0.75rem;*/  font-size:1.75vh;
+    height:92%; background-color:#494649; text-shadow: 0px 0px 1px #000000; vertical-align:middle; display:inline-block; box-shadow:0px 0px 3px #666666;
 }
 .btn-dotted.blank {color:#494649 !important; text-shadow:none;}
 #nav .col:not(#logo-wrapper).has-btn {/* padding-top:0.45rem; */}

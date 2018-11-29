@@ -17,6 +17,7 @@
 <script src="common/js/jquery.textfill.min.js"></script>
 <script src="common/js/jquery.crossroads.js"></script>
 <script>
+var app_info = {};
 var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
 var paths = [];
 var path_index = 1;
@@ -49,13 +50,11 @@ $(document).ready(function() {
         }
     }, false);
 });
-function version_num(num) {
-    $('.version_num').text(num);
-}
-// Get the path index either from localStorage or default to the first path
-function get_path_index() {
-    var index = $.jStorage.get('commonplace_path_index', 0);
-    return index;
+// Get info from the app itself
+function set_app_vars(version_num, short_description, long_description) {
+    app_info.version_num = version_num;
+    app_info.short_description = short_description;
+    app_info.long_description = long_description;
 }
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
@@ -118,6 +117,11 @@ function get_paths(url, callback) {
 	    }
 	});	
 };
+// Get the path index either from localStorage or default to the first path
+function get_path_index() {
+    var index = $.jStorage.get('commonplace_path_index', 0);
+    return index;
+}
 // Go to the next project on the path
 function prev_project() {
 	project_index--;
@@ -278,7 +282,9 @@ function set_messages(first, last, first_callback, last_callback) {
 };
 // Provide information about CommonPlace
 function about_platform() {
-    // TODO: get this information from the primary
+    if ('undefined' != typeof(app_info.version_num)) $('.version_num').text(app_info.version_num);
+    if ('undefined' != typeof(app_info.short_description)) $('.app_description').html(nl2br(app_info.short_description.trim()));
+    if ('undefined' != typeof(app_info.long_description)) $('.app_content').html(nl2br(app_info.long_description.trim()));
     $('#aboutPlatformModal').modal({ backdrop: 'static' });
 }
 // Advanced features in the panel
@@ -498,6 +504,10 @@ function version_uri_to_content_uri(uri) {
 	uri = uri.substr(0, uri.lastIndexOf('.'));
 	return uri;
 };
+function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
+  var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>';
+  return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
 </script>
 </head>
 <body>
@@ -511,7 +521,6 @@ function version_uri_to_content_uri(uri) {
             </div>
         </div>
     </div>
-    <div class="version_num"></div>
 </div>
 <div id="nav" class="row">
     <div class="col" id="scroll-wrapper" data-toggle="tooltip" title="You can scroll projects with your finger"></div>
@@ -530,18 +539,15 @@ function version_uri_to_content_uri(uri) {
                         <img src="Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
                         <p><b>CommonPlace</b></p>
                         <p class="content">
-                            Maecenas sagittis turpis vitae felis accumsan condimentum. Aliquam erat volutpat. Etiam placerat mollis felis, sit amet accumsan nisi placerat vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vestibulum quam risus, ut tempus ipsum fringilla id.
+                            Version <span class="version_num">(version unknown)</span>
+                        </p>
+                        <p class="content">
+                            <span class="app_description"></span>
                         </p>
                     </div>
                     <div class="col">
                         <p class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sodales id leo in commodo. Morbi rhoncus odio ut ligula auctor vestibulum. Maecenas pulvinar sem eu nibh suscipit lacinia. Sed aliquam felis in felis tristique placerat. Quisque molestie ornare risus in varius. Phasellus auctor sagittis tempus. Proin ut dui eu nulla molestie bibendum. Morbi nec porttitor magna, maximus facilisis velit.
-                        </p>
-                        <p class="content">
-                            Suspendisse et blandit quam, non pulvinar tortor. Proin tincidunt semper ultricies. Aliquam congue arcu ipsum, pulvinar egestas nibh hendrerit sed. Etiam eu dolor at enim rutrum pharetra id volutpat quam. Aliquam libero metus, finibus id orci eu, mollis accumsan magna.
-                        </p>
-                        <p class="content">
-                            Donec aliquam augue neque, eu mollis dui commodo vel. Donec consequat vulputate lobortis. Morbi ac cursus tortor. Nam venenatis ante in nunc dignissim finibus. Duis consectetur eleifend dui, non lobortis nibh sagittis a. Cras et erat sapien. Sed finibus, nibh at rhoncus pulvinar, turpis dolor vestibulum elit, ut feugiat velit erat eget augue.
+                            <span class="app_content"></span>
                         </p>
                     </div>
                 </div>

@@ -41,9 +41,17 @@ namespace CommonPlace
             //var result = await showDialog.ShowAsync();
         }
 
-        private void MyWebView_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
+        private async void MyWebView_ContendLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-
+            // Load appsettings
+            string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "AppConfig.xml");
+            XDocument loadedData = XDocument.Load(XMLFilePath);
+            XElement generalElement = loadedData.Element("appSettings");
+            string short_description = (string)generalElement.Element("shortDescription");
+            string long_description = (string)generalElement.Element("longDescription");
+            var version_num = GetAppVersion();
+            string[] js_args = { version_num, short_description, long_description };
+            string returnValue = await this.MyWebView.InvokeScriptAsync("set_app_vars", js_args);
         }
 
         private async void MainWebView_ScriptNotify(object sender, NotifyEventArgs e)
@@ -90,8 +98,12 @@ namespace CommonPlace
             Package package = Package.Current;
             PackageId packageId = package.Id;
             PackageVersion version = packageId.Version;
-            return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
+            return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
         }
 
+        private void MyWebView_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+        {
+
+        }
     }
 }
