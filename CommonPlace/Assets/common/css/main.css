@@ -49,11 +49,12 @@
 .modal-lg {max-width:850px !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}
 #aboutPlatformModal .thumb, #aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
-#aboutPlatformModal p small, #aboutProjectModal p small {line-height:1; color:#666666;}
+#aboutPlatformModal p small {font-size:0.7rem; display:block;}
 #aboutPlatformModal .content, #aboutProjectModal .content {font-size:0.7rem;}
 #aboutPlatformModal .thumb {background-color:#6e6e6e;}
 #advancedOptionsModal .modal-header, #advancedOptionsModal .modal-footer {border:0;}
 #advancedOptionsModal .card-body > button {width:100px; margin-top:12px;}
 #advancedOptionsModal .card-body > .btn-group {margin-top:12px;}
-#choosePathDropdown {min-width:200px; text-align:left; }
+#choosePathDropdown {max-width:500px; text-align:left; overflow:hidden;}
 #advancedOptionsModal .collapse {margin-bottom:12px;}
+#aboutProjectModal p small {line-height:1; color:#666666;}

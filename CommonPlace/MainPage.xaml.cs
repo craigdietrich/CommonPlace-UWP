@@ -32,9 +32,7 @@ namespace CommonPlace
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // Load CommonPlace local HTML
             string src = "ms-appx-web:///Assets/index.html";
-            //await WebView.ClearTemporaryWebDataAsync();
             this.MyWebView.Navigate(new Uri(src));
             // Alert for testing
             //MessageDialog showDialog = new MessageDialog("smtpPassword: " + smtpPassword);
@@ -43,14 +41,14 @@ namespace CommonPlace
 
         private async void MyWebView_ContendLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            // Load appsettings
             string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "AppConfig.xml");
             XDocument loadedData = XDocument.Load(XMLFilePath);
             XElement generalElement = loadedData.Element("appSettings");
+            string authors = (string)generalElement.Element("authors");
             string short_description = (string)generalElement.Element("shortDescription");
             string long_description = (string)generalElement.Element("longDescription");
             var version_num = GetAppVersion();
-            string[] js_args = { version_num, short_description, long_description };
+            string[] js_args = { version_num, authors, short_description, long_description };
             string returnValue = await this.MyWebView.InvokeScriptAsync("set_app_vars", js_args);
         }
 
@@ -99,11 +97,6 @@ namespace CommonPlace
             PackageId packageId = package.Id;
             PackageVersion version = packageId.Version;
             return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
-        }
-
-        private void MyWebView_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
-        {
-
         }
     }
 }

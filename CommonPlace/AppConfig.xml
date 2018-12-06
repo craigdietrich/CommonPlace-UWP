@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <appSettings>
-  <shortDescription>
-    This is the short description.
-  </shortDescription>
-  <longDescription>
-    This is the long description.
-    
-    This is also the long description.
-  </longDescription>
+  <authors>By Christopher Gilman &amp; Craig Dietrich</authors>
+  <shortDescription></shortDescription>
+  <longDescription></longDescription>
 </appSettings>

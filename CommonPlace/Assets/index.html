@@ -23,23 +23,22 @@ var paths = [];
 var path_index = 1;
 var project_index = -1;
 $(document).ready(function() {
-    // Load the home screen
-    $('#site').attr('src', primary + 'index');
     // Get projects and start the rotation
     get_paths(primary, function (_paths) {
         paths = _paths.slice();  // TODO
         console.log(paths);
         path_index = get_path_index();
         console.log('path_index: ' + path_index);
-        $('#nav').fadeTo('slow', 1);
         set_panel();
-        reset_timer(5);  // Timer for the splash page
+        $('#nav').fadeTo('slow', 1, function () {
+            animate_next_project();
+        });
     });
     // Messages from the auto-navigate plugin
     window.addEventListener("message", function (event) {
         switch (event.data) {
             case 'autonavigate_finished':
-                next_project();
+                animate_next_project();
                 break;
             case 'autonavigate_click':
                 $('#nav').find('.col:first, .col:last').tooltip('hide');
@@ -51,10 +50,19 @@ $(document).ready(function() {
     }, false);
 });
 // Get info from the app itself
-function set_app_vars(version_num, short_description, long_description) {
+function set_app_vars(version_num, authors, short_description, long_description) {
     app_info.version_num = version_num;
+    app_info.authors = authors;
     app_info.short_description = short_description;
     app_info.long_description = long_description;
+};
+// Sort paths by title
+function path_compare(a,b) {
+    if (a.title < b.title)
+        return -1;
+    if (a.title > b.title)
+        return 1;
+    return 0;
 }
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
@@ -66,23 +74,16 @@ function get_paths(url, callback) {
 	    dataType: "jsonp",
 	    format:'json',
 	    success: function(response) {
-	    	var _ordinal = 1;
-			for (var uri in response) {
+            for (var uri in response) {
 				var path = {};
 				if ('http://www.openannotation.org/ns/Annotation' != response[uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
 				path.version_uri = response[uri]['http://www.openannotation.org/ns/hasBody'][0].value;
-				path.content_uri = version_uri_to_content_uri(path.version_uri);
-				if ('undefined' != typeof(parsed[path.content_uri])) continue;
-				parsed.push(path.content_uri);
+                path.content_uri = version_uri_to_content_uri(path.version_uri);
+                console.log(path.content_uri);
+                if (-1 != parsed.indexOf(path.content_uri)) continue;
+                parsed.push(path.content_uri);
 				path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
 				path.desc = ('undefined'!=typeof(response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
-				path.ordinal = ('undefined'!=typeof(response[path.version_uri]['http://id3.org/id3v2.4.0#Track'])) ? parseInt(response[path.version_uri]['http://id3.org/id3v2.4.0#Track'][0].value) : 0;
-				if (!path.ordinal) {
-					path.ordinal = _ordinal;
-					_ordinal++;
-				} else {
-					_ordinal = path.ordinal + 1;
-				};
 				path.contents = [];
 				for (var key in response) {
 					if ('http://www.openannotation.org/ns/Annotation' != response[key]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
@@ -107,8 +108,9 @@ function get_paths(url, callback) {
                     content.slideDeckSecondsPerSlide = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'][0].value) : 0;
                     path.contents.push(content);
 				};
-				paths[(path.ordinal-1)] = path;
-			};
+                paths.push(path);
+            };
+            paths.sort(path_compare);
 			callback(paths);
 	    },
 	    error: function(err) {
@@ -135,6 +137,40 @@ function next_project() {
 	if ('undefined'==typeof(paths[path_index].contents[project_index])) project_index = 0;
 	go_to_site(paths[path_index].contents[project_index].url);
 	set_panel();
+};
+// Go to the next project but first visit the panel and select the next project
+function animate_next_project(step) {
+    if ('undefined' == typeof(step)) step = 1;
+    switch (step) {
+        case 1:
+            if ($('#panel').is(':visible') || $('.modal.show').length) return;
+            $('#logo-wrapper').mousedown();
+            setTimeout(function () {
+                animate_next_project(2);
+            }, 9000);
+            break;
+        case 2:
+            if (!$('#panel').is(':visible') || $('.modal.show').length) return;
+            if ($('#panel').find('.col.hl').length) {
+                var $this = $('#panel').find('.col.hl').eq(0);
+                $this.removeClass('hl');
+                if ($this.next(':not(.empty)').length) {
+                    $this.next(':not(.empty)').addClass('hl');
+                } else {
+                    $('#panel').find('.row:not(:first)').eq(0).find('.col').eq(0).addClass('hl');
+                };
+            } else {
+                $('#panel').find('.row:not(:first)').eq(0).find('.col').eq(0).addClass('hl');
+            };
+            setTimeout(function () {
+                animate_next_project(3);
+            }, 2000);
+            break;
+        case 3:
+            if (!$('#panel').is(':visible') || $('.modal.show').length) return;
+            $('#panel').find('.col.hl').mousedown();
+            break;
+    };
 };
 // Determine the platform and load the project
 function go_to_site(_url) {
@@ -227,6 +263,9 @@ function go_to_site(_url) {
         reset_timer(the_time);
         set_messages();
     };
+    var html5site = function (url) {
+        // TODO
+    };
     // Stop any customizations from previously loaded project
     stop_timer();
     $('#site').off('load');
@@ -282,9 +321,10 @@ function set_messages(first, last, first_callback, last_callback) {
 };
 // Provide information about CommonPlace
 function about_platform() {
-    if ('undefined' != typeof(app_info.version_num)) $('.version_num').text(app_info.version_num);
-    if ('undefined' != typeof(app_info.short_description)) $('.app_description').html(nl2br(app_info.short_description.trim()));
-    if ('undefined' != typeof(app_info.long_description)) $('.app_content').html(nl2br(app_info.long_description.trim()));
+    if ('undefined' != typeof(app_info.version_num)) $('.version_num').text("Version "+app_info.version_num);
+    if ('undefined' != typeof(app_info.authors)) $('.app_authors').html(nl2br(app_info.authors.trim()));
+    if ('undefined' != typeof(app_info.short_description)) $('.app_short_description').html(nl2br(app_info.short_description.trim()));
+    if ('undefined' != typeof(app_info.long_description)) $('.app_long_description').html(nl2br(app_info.long_description.trim()));
     $('#aboutPlatformModal').modal({ backdrop: 'static' });
 }
 // Advanced features in the panel
@@ -309,15 +349,17 @@ function advanced_options() {
     var $choosePathDropdown = $('#choosePathDropdown');
     $choosePathDropdown.next().empty();
     for (var j = 0; j < paths.length; j++) {
+        if (j == path_index) continue;
         var $el = $('<a class="dropdown-item" href="javascript:void(null);" data-path-index="' + j + '">' + paths[j].title + '</a>').appendTo($choosePathDropdown.next());
         if (j == path_index) $el.addClass('active');
     };
     $choosePathDropdown.next().children().mousedown(function () {
         var $this = $(this);
-        var index = $this.data('path-index');
-        if (index == path_index) return;
+        var index = parseInt($this.data('path-index'));
         var title = $this.text();
         $choosePathDropdown.data('path-index', index).text(title + ' ');
+        $choosePathDropdown.next().children().removeClass('active');
+        $choosePathDropdown.next().children('[data-path-index="' + index + '"]').addClass('active');
     });
     $('#choosePath').find('button:last').off('mousedown').mousedown(function () {
         var index = $choosePathDropdown.data('path-index');
@@ -397,7 +439,7 @@ function reset_timer(start) {
 		if (!start) {
 			clearInterval(interval);
 			interval = null;
-			next_project();
+			animate_next_project();
 			return;
 		};
 	}, 1000);
@@ -426,8 +468,6 @@ function set_panel() {
 	$pathTitle.find('.desc').text(paths[path_index].desc);
     var $row = null;
     var colspan = 6;
-    console.log('Chosen path: ');
-    console.log(paths[path_index]);
     // Write project icons
 	for (var j = 0; j < paths[path_index].contents.length; j++) {
         if (j == 0 || j % colspan == 0) $row = $('<div class="row"></div>').appendTo('#panel > div:first');
@@ -443,16 +483,19 @@ function set_panel() {
     };
     if (j % colspan != 0) {
         for (var k = (j % colspan); k < colspan; k++) {
-            $cell = $('<div class="col">&nbsp;</div>').appendTo($row);
+            $cell = $('<div class="col empty">&nbsp;</div>').appendTo($row);
         };
     };
     // Clicking a project icon chooses that project
-	$('#panel').find('.col').bind('mousedown', function() {
-		var index = parseInt($(this).data('project_index'));
-		project_index = index - 1;
-		next_project();
-        $('#panel').fadeOut('slow');
-        $('#arrow-up').removeClass('down');
+    $('#panel').find('.col').each(function () {
+        var $this = $(this);
+        if ($this.closest('header').length) return;
+        $this.bind('mousedown', function () {
+            var index = parseInt($(this).data('project_index'));
+            project_index = index - 1;
+            next_project();
+            $('#panel').fadeOut('slow');
+        });
     });
     // Open and close the panel
     $('#logo-wrapper').off('mousedown').bind('mousedown', function() {
@@ -514,12 +557,12 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
 <iframe id="site" src=""></iframe>
 <div id="panel">
     <div class="container-fluid">
-        <div class="row">
+        <header class="row">
             <div class="col path-title">
                 <h2 class="title"></h2>
                 <p class="desc"></p>
             </div>
-        </div>
+        </header>
     </div>
 </div>
 <div id="nav" class="row">
@@ -536,18 +579,19 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
             <div class="container-fluid">
                 <div class="row">
                     <div class="col">
-                        <img src="Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
-                        <p><b>CommonPlace</b></p>
-                        <p class="content">
-                            Version <span class="version_num">(version unknown)</span>
+                        <img src="common/css/Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
+                        <p>
+                            <b>CommonPlace</b>
+                            <small class="app_authors"></small>
+                            <small class="version_num"></small>
                         </p>
                         <p class="content">
-                            <span class="app_description"></span>
+                            <span class="app_short_description"></span>
                         </p>
                     </div>
                     <div class="col">
                         <p class="content">
-                            <span class="app_content"></span>
+                            <span class="app_long_description"></span>
                         </p>
                     </div>
                 </div>
@@ -584,7 +628,7 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                             <div class="dropdown-menu" aria-labelledby="choosePathDropdown"></div>
                           </div>
                           &nbsp; &nbsp; 
-                          <button type="button" class="btn btn-primary">Swtich</button>
+                          <button type="button" class="btn btn-primary">Switch</button>
                       </div>
                   </div>
               </div>
@@ -614,13 +658,6 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
         <form>
             <div class="form-group">
                 <input type="email" class="keyboard form-control" placeholder="me@example.com">
-                <!--
-                <br />
-                <small class="form-text text-muted">
-                    We'll send you the URL to the project you're currently reading.<br />
-                    Your email address doesn't get saved and will never be shared.
-                </small>
-                -->
             </div>
         </form>
       </div>
