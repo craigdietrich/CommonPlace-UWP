@@ -121,7 +121,7 @@
                 } else if ('document' == item.resource.resource_type) {
 
                 } else if ('data' == item.resource.resource_type) {
-                    if (resource.img_original && resource.img_original.length) {
+                    if (item.resource.img_original && item.resource.img_original.length) {
                         props.title = item.title;
                         props.credit = item.credit;
                         props.url = opts.base_url + item.resource.img_original.substr(0, item.resource.img_original.indexOf('?'));
@@ -147,6 +147,7 @@
                         props.credit = item.credit;
                     };
                 };
+                if ('undefined' == typeof (props.title)) return false;
                 props.title = props.title.replace(/\*/g, '');  // Crossroads' brand of italics
                 props.contributor = item.resource.Owner.name;
                 return props;
@@ -203,7 +204,7 @@
                     });
                     $el.prev().css('padding-top', '0px');
                     $el.next().css('padding-top', '0px');
-                    reset_timer(3);
+                    reset_timer(10);
                 } else {
                     // Hide old
                     $table.find('td.current').find('.mast').fadeOut({ duration: (opts.duration / 4), queue: false });
@@ -262,10 +263,6 @@
             }
 
             set_data(project_id(opts.url), function () {
-                // Blank first page
-                for (var j = 0; j < 3; j++) {
-                    var $blank = $('<td class="blank"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
-                };
                 // Title page
                 if (null !== opts.projects) {
                     var project = null;
@@ -288,7 +285,8 @@
                     var $cell = $('<td class="bucket"><div><div class="inner"><span>' + opts.buckets[j].label + '</span></div></div><div class="mast"></div></td>').appendTo($row);
                     for (var k = 0; k < opts.buckets[j].bucket_resources.length; k++) {
                         var props = get_props(opts.buckets[j].bucket_resources[k]);
-                        console.log(props);
+                        //console.log(props);
+                        if (!props) continue;
                         var $cell = $('<td class="' + props.type + '"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
                         $cell.data('bucket', opts.buckets[j]);
                         $cell.data('resource', opts.buckets[j].bucket_resources[k])
@@ -325,6 +323,7 @@
                 }).children('div').css({
                     zoom: '30%',
                 });
+                //center($row.children().length-1, false);
                 center(0, false);
                 $table.animate({
                     'opacity': 1

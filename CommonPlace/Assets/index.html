@@ -79,7 +79,6 @@ function get_paths(url, callback) {
 				if ('http://www.openannotation.org/ns/Annotation' != response[uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
 				path.version_uri = response[uri]['http://www.openannotation.org/ns/hasBody'][0].value;
                 path.content_uri = version_uri_to_content_uri(path.version_uri);
-                console.log(path.content_uri);
                 if (-1 != parsed.indexOf(path.content_uri)) continue;
                 parsed.push(path.content_uri);
 				path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
@@ -152,23 +151,45 @@ function animate_next_project(step) {
         case 2:
             if (!$('#panel').is(':visible') || $('.modal.show').length) return;
             if ($('#panel').find('.col.hl').length) {
-                var $this = $('#panel').find('.col.hl').eq(0);
+                var index = 0;
+                var total = 0;
+                $('#panel').find('.col:not(.empty):not(.path-title)').each(function (_index) {
+                    if ($(this).hasClass('hl')) index = _index;
+                    total++;
+                });
+                console.log('index ' + index + ' total ' + total);
+                var $this = $('#panel').find('.col:not(.empty):not(.path-title)').eq(index);
                 $this.removeClass('hl');
-                if ($this.next(':not(.empty)').length) {
-                    $this.next(':not(.empty)').addClass('hl');
+                if (index < total - 1) {
+                    $('#panel').find('.col:not(.empty):not(.path-title)').eq(index + 1).addClass('hl');
                 } else {
                     $('#panel').find('.row:not(:first)').eq(0).find('.col').eq(0).addClass('hl');
                 };
             } else {
                 $('#panel').find('.row:not(:first)').eq(0).find('.col').eq(0).addClass('hl');
             };
-            setTimeout(function () {
-                animate_next_project(3);
-            }, 2000);
+            var $el = $('#panel').find('.col.hl').eq(0);
+            var scrollHeight = parseInt($('#panel')[0].scrollHeight);
+            var totalScroll = scrollHeight - parseInt($('#panel').height());
+            var vertBuffer = parseInt($('#nav').height()) * 2;
+            var relativePosition = parseInt($el.position().top) + parseInt($el.height()) + vertBuffer + parseInt($('#panel')[0].scrollTop);
+            var scrollTop = 0;
+            if (relativePosition > parseInt($('#panel').height())) {
+                scrollTop = relativePosition - parseInt($('#panel').height());
+                if (scrollTop > totalScroll) scrollTop = totalScroll;
+            }
+            console.log('relativePosition: ' + relativePosition + ' panel height: ' + $('#panel').height()+' scrollTop: ' + scrollTop + ' totalScroll ' + totalScroll);
+            $('#panel').animate({
+                scrollTop: scrollTop
+            }, 2000, function () {
+                setTimeout(function () {
+                    animate_next_project(3);
+                }, 2000);
+            });
             break;
         case 3:
             if (!$('#panel').is(':visible') || $('.modal.show').length) return;
-            $('#panel').find('.col.hl').mousedown();
+            $('#panel').find('.col.hl').click();
             break;
     };
 };
@@ -464,8 +485,8 @@ function child_timer(bool) {
 function set_panel() {
 	$('#panel .row:not(:first)').remove();
 	$pathTitle = $('#panel .path-title:first');
-	$pathTitle.find('.title').text(paths[path_index].title);
-	$pathTitle.find('.desc').text(paths[path_index].desc);
+	$pathTitle.find('.title').html(paths[path_index].title);
+	$pathTitle.find('.desc').html(paths[path_index].desc);
     var $row = null;
     var colspan = 6;
     // Write project icons
@@ -490,7 +511,7 @@ function set_panel() {
     $('#panel').find('.col').each(function () {
         var $this = $(this);
         if ($this.closest('header').length) return;
-        $this.bind('mousedown', function () {
+        $this.bind('click', function () {
             var index = parseInt($(this).data('project_index'));
             project_index = index - 1;
             next_project();

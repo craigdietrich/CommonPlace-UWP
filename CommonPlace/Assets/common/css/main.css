@@ -16,7 +16,7 @@
 #panel h2 {margin-bottom:1rem;}
 #panel .path-title {padding:40px 20px 16px 20px;}
 #panel .path-title .title, #panel .path-title .desc {text-align:center;}
-#panel .path-title .desc {font-size:1rem;}
+#panel .path-title .desc {font-size:1rem; max-width:700px; margin-left:auto; margin-right:auto;}
 #panel img {margin:0px 12px 0.8rem 0px; width:50px; height:50px;}
 #panel h6 {font-weight:bold; font-size:0.7rem; line-height:150%;}
 #panel .institution {font-size:0.7rem; font-weight:normal; line-height:150%; margin-bottom:0.4rem;}
