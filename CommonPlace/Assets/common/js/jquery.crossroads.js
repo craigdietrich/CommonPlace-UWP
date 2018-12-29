@@ -2,6 +2,7 @@
  * Display Global Crossroads content on a single screen
  * @author  Craig Dietrich
  * @requires jquery.textfill.min.js
+ * @requires hammer.min.js
  */
 (function ($) {
 
@@ -36,7 +37,7 @@
     $.fn.crossroads = function (options) {
 
         var get_projects = function (callback) {
-            // Until can find out how to get just one project, get them all
+            // Until can find out how to get just one project, get them all ~Craig
             var url = 'https://crossroads.oxy.edu/srv/projects.json?sortBy=created_at&sortOrder=desc&template=minimal_for_list&itemsPerPage=10000&page=1';
             console.log(url);
             $.getJSON(url, function (projects) {
@@ -322,6 +323,20 @@
                     'padding-top': '60px'
                 }).children('div').css({
                     zoom: '30%',
+                    });
+                $row.find('td').each(function() {
+                    var hammertime = new Hammer(this);
+                    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+                    hammertime.on('swipeleft', function (ev) {
+                        console.log('swipe left');
+                        console.log(ev);
+                        console.log(ev.target);
+                    });
+                    hammertime.on('swiperight', function (ev) {
+                        console.log('swipe right');
+                        console.log(ev);
+                        console.log(ev.target);
+                    });
                 });
                 //center($row.children().length-1, false);
                 center(0, false);

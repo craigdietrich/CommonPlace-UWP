@@ -124,6 +124,7 @@
     <Content Include="Assets\common\css\scroll.png" />
     <Content Include="Assets\common\css\Square44x44Logo.scale-400.png" />
     <Content Include="Assets\common\js\bootstrap.min.js" />
+    <Content Include="Assets\common\js\hammer.min.js" />
     <Content Include="Assets\common\js\jqbtk.js" />
     <Content Include="Assets\common\js\jquery-3.2.1.min.js" />
     <Content Include="Assets\common\js\jquery.crossroads.js" />
