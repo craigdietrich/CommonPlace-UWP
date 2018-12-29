@@ -23,6 +23,8 @@ var paths = [];
 var path_index = 1;
 var project_index = -1;
 $(document).ready(function() {
+    // Set the iframe height to account for the height of the nav
+    $('#site').height( parseInt($(window).height()) - parseInt($('#nav').height()) );
     // Get projects and start the rotation
     get_paths(primary, function (_paths) {
         paths = _paths.slice();
@@ -185,7 +187,7 @@ function animate_next_project(step) {
             break;
         case 3:
             if (!$('#panel').is(':visible') || $('.modal.show').length) return;
-            $('#panel').find('.col.hl').mousedown();
+            //$('#panel').find('.col.hl').click();
             break;
     };
 };
@@ -480,7 +482,7 @@ function set_panel() {
     $('#panel').find('.col').each(function () {
         var $this = $(this);
         if ($this.closest('header').length) return;
-        $this.on('mousedown', function () {
+        $this.on('click', function () {  // Click not mousedown so the list of projects can be scrolled
             var index = parseInt($(this).data('project_index'));
             project_index = index - 1;
             next_project();
@@ -551,11 +553,11 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
     </div>
 </div>
 <div id="nav" class="row">
-    <div class="col text-right" id="scroll-wrapper"><button class="btn btn-light" title="You can scroll projects with your finger">&nbsp;</button></div>
+    <div class="col"></div>
     <div class="col"></div>
     <div class="col text-center" id="logo-wrapper"><button type="button" class="btn btn-light">CommonPlace Menu</button></div>
     <div class="col"></div>
-    <div class="col" id="pointer-wrapper"><button class="btn btn-light" title="Click on links and buttons to visit new pages">&nbsp;</button></div>
+    <div class="col"></div>
 </div>
 <div class="modal fade" id="aboutPlatformModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
