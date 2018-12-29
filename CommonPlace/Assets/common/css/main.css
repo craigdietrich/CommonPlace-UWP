@@ -1,4 +1,8 @@
-﻿body {background-color:#000000; font-family:Verdana; overflow:hidden;}
+﻿html, body {
+    -ms-content-zooming: none;
+}
+body {background-color:#000000; font-family:Verdana; overflow:hidden;}
+.btn {border-radius:0px;}
 #site {position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:7; border:0; background-color:#000000;}
 .custom_msg {
     position:absolute; left:10%; right:10%; top:5px; z-index:8; background-color:#000000; color:#888888; border-radius:10px;
@@ -6,27 +10,30 @@
 }
 #panel {
 	position:absolute; top:0px; bottom:0px; left:0px; right:0px; background-color:#000000; color:#cccccc; z-index:8; 
-	padding-left:40px; padding-right:40px; overflow:auto; display:none;
+	padding-left:40px; padding-right:40px; overflow:auto; display:none; -ms-overflow-style:none;
 }
+#panel > div {margin-bottom:50px;}
 #panel .col {padding-top:12px; cursor:pointer;}
 #panel .row:not(:first-child) .col {max-height:196px; margin-bottom:18px; overflow:hidden; position:relative;}
 #panel .gradient {position:absolute; top:0px; left:0px; bottom:0px; right:0px; background: linear-gradient(to bottom, rgba(0,0,0,0) 85%,rgba(0,0,0,1) 100%);}
 #panel .col.hl {background-color:#333333; border-radius:5px;}
 #panel .col.hl .gradient {background: linear-gradient(to bottom, rgba(0,0,0,0) 80%,rgba(51,51,51,1) 100%);}
 #panel h2 {margin-bottom:1rem;}
-#panel .path-title {padding:40px 20px 16px 20px;}
+#panel .path-title {padding:40px 20px 12px 20px;}
 #panel .path-title .title, #panel .path-title .desc {text-align:center;}
 #panel .path-title .desc {font-size:1rem; max-width:700px; margin-left:auto; margin-right:auto;}
 #panel img {margin:0px 12px 0.8rem 0px; width:50px; height:50px;}
 #panel h6 {font-weight:bold; font-size:0.7rem; line-height:150%;}
 #panel .institution {font-size:0.7rem; font-weight:normal; line-height:150%; margin-bottom:0.4rem;}
 #panel .authors {font-size:0.7rem; font-weight:normal; line-height:150%;}
-#nav {position:absolute; top:95%; bottom:4px; left:20%; right:20%; border-radius:15px; color:#f3803a; opacity:0; z-index:8;}
-#nav span, #nav img {cursor:pointer;}
+#nav {position:absolute; bottom:0px; left:0px; right:0px; opacity:0; z-index:8; padding:0px 0px 1px 0px; background-color:#000000;}
 #nav.row {margin-left:0; margin-right:0;}
-#nav .col {overflow:hidden;}
-#nav a {color:#e06029;}
-#nav a:hover {text-decoration:none;}
+#nav .col:not(#logo-wrapper) {display:none;}
+#nav .col:first-of-type button, #nav .col:last-of-type button {width:5vw; min-width:initial;}
+#nav button {min-width:18vw; border-radius:0px;}
+#nav #scroll-wrapper button {background-image:url(scroll.png); background-size:1vw; background-repeat:no-repeat; background-position:center center;}
+#nav #pointer-wrapper button {background-image:url(pointer.png); background-size:1.65vw; background-repeat:no-repeat; background-position:center center;}
+/*
 #scroll-wrapper {
     background-image:url(scroll.png); height:92%; flex-grow:0.1; margin-top:1px; cursor:pointer; background-position:center center; background-size:23%; 
     background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649; box-shadow:0px 0px 3px #666666; opacity:0;
@@ -41,12 +48,13 @@
 }
 #nav .col:not(#logo-wrapper) {text-align:center; color:#777777;}
 .btn-dotted {
-    padding:0.6vh 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; /*font-size:0.75rem;*/  font-size:1.75vh;
+    padding:0.6vh 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; font-size:1.75vh;
     height:92%; background-color:#494649; text-shadow: 0px 0px 1px #000000; vertical-align:middle; display:inline-block; box-shadow:0px 0px 3px #666666;
 }
 .btn-dotted.blank {color:#494649 !important; text-shadow:none;}
-#nav .col:not(#logo-wrapper).has-btn {/* padding-top:0.45rem; */}
-.modal-lg {max-width:850px !important;}
+#nav .col:not(#logo-wrapper).has-btn {}
+*/
+.modal-lg {max-width:70% !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}
 #aboutPlatformModal .thumb, #aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
 #aboutPlatformModal p small {font-size:0.7rem; display:block;}
@@ -55,6 +63,9 @@
 #advancedOptionsModal .modal-header, #advancedOptionsModal .modal-footer {border:0;}
 #advancedOptionsModal .card-body > button {width:100px; margin-top:12px;}
 #advancedOptionsModal .card-body > .btn-group {margin-top:12px;}
-#choosePathDropdown {max-width:500px; text-align:left; overflow:hidden;}
+#choosePath .card {padding-top:0.5rem; padding-bottom:0.5rem; max-height:28vh; overflow:auto; padding-left:0; padding-right:0;}
+#choosePath .card > a {padding-top:0.25rem; padding-bottom:0.25rem; padding-left:1.25rem; padding-right:1.25rem;}
+#choosePath .card > a.active {background-color:#dddddd; text-decoration:none;} 
+#choosePath .card > a:active {background-color:#dddddd; text-decoration:none;} 
 #advancedOptionsModal .collapse {margin-bottom:12px;}
 #aboutProjectModal p small {line-height:1; color:#666666;}

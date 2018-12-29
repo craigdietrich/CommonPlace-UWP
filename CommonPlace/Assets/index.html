@@ -25,7 +25,7 @@ var project_index = -1;
 $(document).ready(function() {
     // Get projects and start the rotation
     get_paths(primary, function (_paths) {
-        paths = _paths.slice();  // TODO
+        paths = _paths.slice();
         console.log(paths);
         path_index = get_path_index();
         console.log('path_index: ' + path_index);
@@ -41,10 +41,8 @@ $(document).ready(function() {
                 animate_next_project();
                 break;
             case 'autonavigate_click':
-                $('#nav').find('.col:first, .col:last').tooltip('hide');
                 break;
             case 'autonavigate_user_interaction':
-                $('#nav').find('.col:first, .col:last').tooltip('hide');
                 break;
         }
     }, false);
@@ -58,16 +56,15 @@ function set_app_vars(version_num, authors, short_description, long_description)
 };
 // Sort paths by title
 function path_compare(a,b) {
-    if (a.title < b.title)
-        return -1;
-    if (a.title > b.title)
-        return 1;
+    if (a.title < b.title) return -1;
+    if (a.title > b.title) return 1;
     return 0;
-}
+};
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
+    if('/' != url.substr(-1)) url += '/';
 	var paths = [];
-	var parsed = [];
+    var parsed = [];
 	$.ajax({
 	    url: url+'rdf/instancesof/path?rec=1&format=json&t='+(new Date().getTime()),
 	    jsonp: "callback",
@@ -157,7 +154,6 @@ function animate_next_project(step) {
                     if ($(this).hasClass('hl')) index = _index;
                     total++;
                 });
-                console.log('index ' + index + ' total ' + total);
                 var $this = $('#panel').find('.col:not(.empty):not(.path-title)').eq(index);
                 $this.removeClass('hl');
                 if (index < total - 1) {
@@ -189,7 +185,7 @@ function animate_next_project(step) {
             break;
         case 3:
             if (!$('#panel').is(':visible') || $('.modal.show').length) return;
-            $('#panel').find('.col.hl').click();
+            $('#panel').find('.col.hl').mousedown();
             break;
     };
 };
@@ -204,36 +200,28 @@ function go_to_site(_url) {
         var system = response[uri]['http://purl.org/dc/terms/isPartOf'][0].value;
         var plugin = system + 'system/application/plugins/auto-navigate/index.html?book='+url.replace(system,'')+'&t='+(new Date().getTime());
         $('#site').fadeIn('slow').attr('src', plugin);
-        set_messages(
-            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
-            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+        set_buttons(
+            '<button class="btn btn-light">About project</button>',
+            '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('a:first').click(function () {
-                    about_project();
-                });
+                $(col).find('button').on('mousedown', about_project);
             },
             function (col) {
-                $(col).find('a:last').click(function () {
-                    send_email();
-                });
+                $(col).find('button').on('mousedown', send_email);
             }
         );
 	};
 	var _omeka = function(url) {
 		var plugin = url + '/plugins/AutoNavigate/index.html?t='+(new Date().getTime());
         $('#site').fadeIn('slow').attr('src', plugin);
-        set_messages(
-            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
-            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+        set_buttons(
+            '<button class="btn btn-light">About project</button>',
+            '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('a:first').click(function () {
-                    about_project();
-                });
+                $(col).find('button').on('mousedown', about_project);
             },
             function (col) {
-                $(col).find('a:last').click(function () {
-                    send_email();
-                });
+                $(col).find('button').on('mousedown', send_email);
             }
         );
 	};
@@ -257,18 +245,14 @@ function go_to_site(_url) {
             projects: crossroads_projects,
             item_index: 0
         });
-        set_messages(
-            '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
-            '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+        set_buttons(
+            '<button class="btn btn-light">About project</button>',
+            '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('a:first').click(function () {
-                    about_project();
-                });
+                $(col).find('button').on('mousedown', about_project);
             },
             function (col) {
-                $(col).find('a:last').click(function () {
-                    send_email();
-                });
+                $(col).find('button').on('mousedown', send_email);
             }
         );
     };
@@ -282,7 +266,7 @@ function go_to_site(_url) {
         var the_time = (paths[path_index].contents[project_index].slideDeckNumSlides + 1) * paths[path_index].contents[project_index].slideDeckSecondsPerSlide;
         the_time = the_time + Math.round((paths[path_index].contents[project_index].slideDeckNumSlides + 1) * 0.4);
         reset_timer(the_time);
-        set_messages();
+        set_buttons();
     };
     var html5site = function (url) {
         // TODO
@@ -317,28 +301,19 @@ function go_to_site(_url) {
     };
 };
 // Set HTML into the nav bar's left and right slots
-function set_messages(first, last, first_callback, last_callback) {
+function set_buttons(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
-    if ('undefined' == typeof (last)) last = '';
+    if ('undefined' == typeof(last)) last = '';
     var $nav = $('#nav');
-    $nav.find('.col:nth-of-type(2)').fadeOut(function() {
-        var $this = $(this);
-        $this.removeClass('has-btn');
-        if (first.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
-        $this.html(first).fadeIn(function () {
-            if ('function' == typeof (first_callback)) first_callback(this);
+    $nav.find('.col:not(#logo-wrapper)').fadeOut(function() {
+        $nav.find('.col:nth-of-type(2)').html(first);
+        $nav.find('.col:nth-of-type(4)').html(last);
+        $nav.find('.col:not(#logo-wrapper)').fadeIn(function() {
+            if ('function' == typeof (first_callback)) first_callback($nav.find('.col:nth-of-type(2)'));
+            if ('function' == typeof (last_callback)) last_callback($nav.find('.col:nth-of-type(4)'));
         });
+        $nav.find('button').blur();
     });
-    $nav.find('.col:nth-of-type(4)').fadeOut(function () {
-        var $this = $(this);
-        $this.removeClass('has-btn');
-        if (last.indexOf('btn-dotted') != -1) $this.addClass('has-btn');
-        $(this).html(last).fadeIn(function () {
-            if ('function' == typeof (last_callback)) last_callback(this);
-        });
-    });
-    $nav.find('.col:first, .col:last').tooltip({ trigger: 'click' }).animate({ opacity: 0 })
-    if (first.length || last.length) $nav.find('.col:first, .col:last').animate({ opacity: 1 });
 };
 // Provide information about CommonPlace
 function about_platform() {
@@ -367,29 +342,23 @@ function advanced_options() {
         });
     };
     // Write options in the choose path pulldown
-    var $choosePathDropdown = $('#choosePathDropdown');
-    $choosePathDropdown.next().empty();
+    var $choosePathArea = $('#choosePath .card');
+    $choosePathArea.empty();
     for (var j = 0; j < paths.length; j++) {
         if (j == path_index) continue;
-        var $el = $('<a class="dropdown-item" href="javascript:void(null);" data-path-index="' + j + '">' + paths[j].title + '</a>').appendTo($choosePathDropdown.next());
-        if (j == path_index) $el.addClass('active');
+        var $el = $('<a href="javascript:void(null);" data-path-index="' + j + '">' + paths[j].title + '</a>').appendTo($choosePathArea);
     };
-    $choosePathDropdown.next().children().mousedown(function () {
-        var $this = $(this);
-        var index = parseInt($this.data('path-index'));
-        var title = $this.text();
-        $choosePathDropdown.data('path-index', index).text(title + ' ');
-        $choosePathDropdown.next().children().removeClass('active');
-        $choosePathDropdown.next().children('[data-path-index="' + index + '"]').addClass('active');
-    });
-    $('#choosePath').find('button:last').off('mousedown').mousedown(function () {
-        var index = $choosePathDropdown.data('path-index');
+    $choosePathArea.find('a').click(function () {
+        var index = parseInt($(this).data('path-index'));
         if ('undefined' != typeof (index)) {
-            $.jStorage.set('commonplace_path_index', parseInt(index));
-            $(this).closest('.modal').modal('toggle');
-            var json = {};
-            json.method = 'restart';
-            window.external.notify(JSON.stringify(json));
+            $(this).addClass('active');
+            setTimeout(function () {
+                $.jStorage.set('commonplace_path_index', parseInt(index));
+                $(this).closest('.modal').modal('toggle');
+                var json = {};
+                json.method = 'restart';
+                window.external.notify(JSON.stringify(json));
+            }, 700);
         }
     });
 }
@@ -481,7 +450,7 @@ function child_timer(bool) {
         $('#site')[0].contentWindow.postMessage("autonavigate_stop_timer", '*');
     };
 }
-// Set the popup panel's content based on the current project
+// Set the project panel's content based on the current path
 function set_panel() {
 	$('#panel .row:not(:first)').remove();
 	$pathTitle = $('#panel .path-title:first');
@@ -511,51 +480,46 @@ function set_panel() {
     $('#panel').find('.col').each(function () {
         var $this = $(this);
         if ($this.closest('header').length) return;
-        $this.bind('click', function () {
+        $this.on('mousedown', function () {
             var index = parseInt($(this).data('project_index'));
             project_index = index - 1;
             next_project();
             $('#panel').fadeOut('slow');
+            $('#logo-wrapper button').removeClass('btn-secondary').addClass('btn-light');
         });
     });
     // Open and close the panel
     $('#logo-wrapper').off('mousedown').bind('mousedown', function() {
 		var $panel = $('#panel');
-		if ($panel.is(':visible')) {
+        if ($panel.is(':visible')) {
+            $('#logo-wrapper button').removeClass('btn-secondary').addClass('btn-light');
             $panel.fadeOut('slow');
             if (project_index > -1) {
-                set_messages(
-                    '<a href="javascript:void(null);" class="btn-dotted">About this project</a>',
-                    '<a href="javascript:void(null);" class="btn-dotted">Email this project</a>',
+                set_buttons(
+                    '<button class="btn btn-light">About project</button>',
+                    '<button class="btn btn-light">Email project</button>',
                     function (col) {
-                        $(col).find('a:first').click(function () {
-                            about_project();
-                        });
+                        $(col).find('button').on('mousedown', about_project);
                     },
                     function (col) {
-                        $(col).find('a:last').click(function () {
-                            send_email();
-                        });
+                        $(col).find('button').on('mousedown', send_email);
                     }
                 );
             } else {
-                set_messages('', '');
+                set_buttons('', '');
             }
             child_timer(true);
-		} else {
+        } else {
+            $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
             $panel.fadeIn('slow');
-            set_messages(
-                '<a href="javascript:void(null);" class="btn-dotted">About CommonPlace</a>',
-                '<a href="javascript:void(null);" class="btn-dotted">Advanced options</a>',
+            set_buttons(
+                '<button class="btn btn-light">About CommonPlace</button>',
+                '<button class="btn btn-light">Advanced options</button>',
                 function (col) {
-                    $(col).find('a:first').click(function () {
-                        about_platform();
-                    });
+                    $(col).find('button').on('mousedown', about_platform);
                 },
                 function (col) {
-                    $(col).find('a:first').click(function () {
-                        advanced_options();
-                    });
+                    $(col).find('button').on('mousedown', advanced_options);
                 }
             );
             child_timer(false);
@@ -587,11 +551,11 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
     </div>
 </div>
 <div id="nav" class="row">
-    <div class="col" id="scroll-wrapper" data-toggle="tooltip" title="You can scroll projects with your finger"></div>
+    <div class="col text-right" id="scroll-wrapper"><button class="btn btn-light" title="You can scroll projects with your finger">&nbsp;</button></div>
     <div class="col"></div>
-    <div class="col text-center" id="logo-wrapper"></div>
+    <div class="col text-center" id="logo-wrapper"><button type="button" class="btn btn-light">CommonPlace Menu</button></div>
     <div class="col"></div>
-    <div class="col" id="pointer-wrapper" data-toggle="tooltip" title="Click on links and buttons to visit new pages"></div>
+    <div class="col" id="pointer-wrapper"><button class="btn btn-light" title="Click on links and buttons to visit new pages">&nbsp;</button></div>
 </div>
 <div class="modal fade" id="aboutPlatformModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -641,17 +605,7 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
               </div>
               <p><button class="btn btn-default" type="button" data-toggle="collapse" data-target="#choosePath" aria-expanded="false" aria-controls="choosePath">Switch to a different collection</button></p>
               <div class="collapse" id="choosePath">
-                  <div class="card card-body">
-                      The connected data sources may contain multiple collections of projects. You can choose one below which will restart CommonPlace with the new collection set as the default.<br />
-                      <div class="btn-group">
-                          <div class="dropdown dropup">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="choosePathDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose a collection </button>
-                            <div class="dropdown-menu" aria-labelledby="choosePathDropdown"></div>
-                          </div>
-                          &nbsp; &nbsp; 
-                          <button type="button" class="btn btn-primary">Switch</button>
-                      </div>
-                  </div>
+                  <div class="card card-body"></div>
               </div>
               <!-- choose a new collection -->
           </div>

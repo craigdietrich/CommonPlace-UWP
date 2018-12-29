@@ -114,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\common\css\bootstrap.min.css" />
-    <Content Include="Assets\common\css\commonplace-logo.png" />
     <Content Include="Assets\common\css\crossroads-logo.png" />
     <Content Include="Assets\common\css\crossroads.css" />
     <Content Include="Assets\common\css\down-arrow.png" />
