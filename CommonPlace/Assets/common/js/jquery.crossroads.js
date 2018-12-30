@@ -14,7 +14,8 @@
         buckets: null,
         duration: 4000,
         pause: 10,
-        projects: null
+        projects: null,
+        timer: null
     };
 
     $.fn.vertMiddle = function () {
@@ -228,6 +229,7 @@
             }
 
             var reset_timer = function (index, is_callback) {
+                console.log('[top] opts.timer: ' + opts.timer);
                 if ('undefined' == typeof ($table.data('url'))) return;  // Project has been deleted before timer has come back
                 if ('undefined' == typeof (is_callback)) is_callback = false;
                 console.log('Reset timer - table url: ' + $table.data('url')+' - index: '+index + ' - is_callback: '+is_callback);
@@ -235,9 +237,10 @@
                     center(index);
                     return;
                 }
-                setTimeout(function () {
+                opts.timer = setTimeout(function () {
                     reset_timer(index, true);
                 }, 10000);
+                console.log('[bottom] opts.timer: ' + opts.timer);
             }
 
             set_data(project_id(opts.url), function () {
@@ -296,19 +299,30 @@
                 var $blank = $('<td class="blank"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
                 $row.find('.bucket > div > div, .quote > div > div, .assertion > div > div').textfill();
                 $row.find('.title_card > div > div').vertMiddle();
-                $row.find('td').css({
+                $row.find('td').each(function(index) {
+                    $(this).data('index', index);
+                }).css({
                     'padding-top': '60px'
                 }).children('div').css({
                     zoom: '30%',
-                    });
-                $row.find('td').each(function() {
+                });
+                $row.find('td').each(function () {
                     var hammertime = new Hammer(this);
-                    hammertime.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-                    hammertime.on('panleft', function (ev) {
-                        console.log('pan left');
-                        console.log(ev);
-                        $cell = ($(ev.target).is('td')) ? $(ev.target) : $(ev.target).closest('td');
-                        console.log($cell);
+                    hammertime.get('pan').set({direction: Hammer.DIRECTION_HORIZONTAL});
+                    hammertime.on('pan', function (ev) {
+                        if (null != opts.timer) {  // Stop previous timer
+                            clearTimeout(opts.timer);
+                            opts.timer = null;
+                        };
+                        if (ev.isFinal) {  // Center the chosen item
+                            $table.removeData('pan_start');
+                            $cell = ($(ev.target).is('td')) ? $(ev.target) : $(ev.target).closest('td');
+                            center($cell.data('index'));
+                        } else {  // Move the item along with one's finger
+                            if ('undefined' == typeof ($table.data('pan_start'))) $table.data('pan_start', parseInt($table.css('left')));
+                            var pan_end = $table.data('pan_start') + ev.deltaX;
+                            $table.css('left', pan_end);
+                        };
                     });
                 });
                 //center($row.children().length-1, false);
