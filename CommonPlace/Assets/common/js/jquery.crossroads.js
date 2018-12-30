@@ -12,7 +12,6 @@
         authors: null,
         url: null,
         buckets: null,
-        item_index: 0,
         duration: 4000,
         pause: 10,
         projects: null
@@ -39,7 +38,7 @@
         var get_projects = function (callback) {
             // Until can find out how to get just one project, get them all ~Craig
             var url = 'https://crossroads.oxy.edu/srv/projects.json?sortBy=created_at&sortOrder=desc&template=minimal_for_list&itemsPerPage=10000&page=1';
-            console.log(url);
+            console.log('Getting list of all projects: '+url);
             $.getJSON(url, function (projects) {
                 callback(projects.list);
             });
@@ -47,16 +46,6 @@
 
         if ('string' == typeof (options)) {
             switch (options) {
-                case 'destroy':
-                    if ('undefined' != typeof (crossroads_interval)) {
-                        clearInterval(crossroads_interval);
-                        interval = null;
-                    }
-                    if ('undefined' != typeof (opts)) {
-                        opts.item_index = 0;
-                    }
-                    return this;
-                    break;
                 case 'get_projects':
                     var args = arguments;
                     get_projects(function (projects) {
@@ -75,6 +64,8 @@
             var opts = $.extend({}, defaults, options);
             $self.empty().fadeIn('slow');
 
+            console.log('Current project URL: ' + opts.url);
+
             var $header = $('<div class="sidebar"><div class="header"></div></div>').appendTo($self);
             if ('string' == typeof (opts.title) && opts.title.length) $('<div class="title"><div class="justify">&nbsp;</div>' + opts.title + '</div>').appendTo($header);
             $header.mousedown(function () {
@@ -84,6 +75,7 @@
 
             var $wrapper = $('<div class="wrapper"></div>').appendTo($self);
             var $table = $('<table class="content"><tbody><tr></tr></tbody></table>').appendTo($wrapper);
+            $table.data('url', opts.url);
             var $row = $table.find('tr').eq(0);
 
             var project_id = function (url) {
@@ -92,9 +84,7 @@
             };
 
             var set_data = function (id, callback) {
-                opts.item_index = 0;
                 var url = 'https://crossroads.oxy.edu/srv/projects/' + id + '/buckets.json?page=1&itemsPerPage=all&sortBy=sequence&sortOrder=asc';
-                console.log(url);
                 $.getJSON(url, function (buckets) {
                     opts.buckets = buckets.list;
                     callback();
@@ -157,9 +147,8 @@
             var center = function (index, anim) {
                 if (!$self) return;
                 if ($self.is(':hidden')) return;
-                console.log('Index 1: ' + index);
-                if ('undefined' == typeof (index) || null == index) index = opts.item_index;
-                console.log('Index 2: ' + index);
+                if ('undefined' == typeof (index) || null == index) index = 0;
+                console.log('Centering index: ' + index);
                 if (index > $row.children().length - 1) {
                     window.postMessage('autonavigate_finished', '*');
                     return;
@@ -168,13 +157,9 @@
                 // Clone the table so that we can find a centered position based on all elements being zoomed except the one to be centered
                 $self.find('.wrapper').eq(0).clone().addClass('clone').appendTo($self.find('.wrapper').eq(0).parent()).show();
                 var $clone = $self.find('.wrapper.clone');
-                $clone.find('td').children().css({
-                    zoom: '30%'
-                });
+                $clone.find('td').children().css('zoom', '30%');
                 var $el = $clone.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
-                $el.children('div').css({
-                    zoom: '100%',
-                });
+                $el.children('div').css('zoom', '100%');
                 var $table = $el.closest('table');
                 var current_x = parseInt($table.css('left'));
                 var position = parseInt($el.position().left);
@@ -205,7 +190,7 @@
                     });
                     $el.prev().css('padding-top', '0px');
                     $el.next().css('padding-top', '0px');
-                    reset_timer(10);
+                    reset_timer(++index);
                 } else {
                     // Hide old
                     $table.find('td.current').find('.mast').fadeOut({ duration: (opts.duration / 4), queue: false });
@@ -232,35 +217,27 @@
                     $table.animate({
                         left: x
                     }, {
-                            duration: opts.duration,
-                            queue: false,
-                            complete: function () {
-                                $el.find('.mast').fadeIn(opts.duration / 4);
-                                reset_timer();
-                            }
-                        });
+                        duration: opts.duration,
+                        queue: false,
+                        complete: function () {
+                            $el.find('.mast').fadeIn(opts.duration / 4);
+                            reset_timer(++index);
+                        }
+                    });
                 };
-                index++;
-                opts.item_index = index;
             }
 
-            var reset_timer = function (start) {
-                if ('undefined' != typeof (crossroads_interval)) {
-                    clearInterval(crossroads_interval);
-                    interval = null;
-                };
-                crossroads_start = ('undefined' == typeof (start)) ? opts.pause : start;  // Global
-                crossroads_interval = setInterval(function () {  // Global
-                    crossroads_start--;
-                    if (!crossroads_start) {
-                        clearInterval(crossroads_interval);
-                        crossroads_interval = null;
-                        console.log('SELF: ');
-                        console.log($self);
-                        center();
-                        return;
-                    };
-                }, 1000);
+            var reset_timer = function (index, is_callback) {
+                if ('undefined' == typeof ($table.data('url'))) return;  // Project has been deleted before timer has come back
+                if ('undefined' == typeof (is_callback)) is_callback = false;
+                console.log('Reset timer - table url: ' + $table.data('url')+' - index: '+index + ' - is_callback: '+is_callback);
+                if (is_callback) {
+                    center(index);
+                    return;
+                }
+                setTimeout(function () {
+                    reset_timer(index, true);
+                }, 10000);
             }
 
             set_data(project_id(opts.url), function () {
@@ -326,16 +303,12 @@
                     });
                 $row.find('td').each(function() {
                     var hammertime = new Hammer(this);
-                    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-                    hammertime.on('swipeleft', function (ev) {
-                        console.log('swipe left');
+                    hammertime.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+                    hammertime.on('panleft', function (ev) {
+                        console.log('pan left');
                         console.log(ev);
-                        console.log(ev.target);
-                    });
-                    hammertime.on('swiperight', function (ev) {
-                        console.log('swipe right');
-                        console.log(ev);
-                        console.log(ev.target);
+                        $cell = ($(ev.target).is('td')) ? $(ev.target) : $(ev.target).closest('td');
+                        console.log($cell);
                     });
                 });
                 //center($row.children().length-1, false);
