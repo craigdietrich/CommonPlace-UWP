@@ -145,6 +145,18 @@
                 return props;
             };
 
+            var center_closest = function () {
+                var win_center = parseInt($(window).width()) / 2;
+                $table.find('td').each(function(index) {
+                    var $this = $(this);
+                    var el_center = parseInt($this.offset().left) + (parseInt($this.width()) / 2);
+                    if (win_center <= el_center) {
+                        center(index);
+                        return false;
+                    }
+                });
+            }
+
             var center = function (index, anim) {
                 if (!$self) return;
                 if ($self.is(':hidden')) return;
@@ -155,12 +167,13 @@
                     return;
                 };
                 if ('undefined' == typeof (anim)) anim = true;
-                // Clone the table so that we can find a centered position based on all elements being zoomed except the one to be centered
+                // Clone the table so that we can find a centered position based on all elements being zoomed out except the one to be centered
                 $self.find('.wrapper').eq(0).clone().addClass('clone').appendTo($self.find('.wrapper').eq(0).parent()).show();
                 var $clone = $self.find('.wrapper.clone');
-                $clone.find('td').children().css('zoom', '30%');
+                $clone.find('td').css('padding-top', '5vh').children().css('zoom', '30%').children().css('height', '45vh');
                 var $el = $clone.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
                 $el.children('div').css('zoom', '100%');
+                if ($el.hasClass('bigger')) $el.css('padding-top', '0vh').children('div:first').children('div').css('height', '55vh');
                 var $table = $el.closest('table');
                 var current_x = parseInt($table.css('left'));
                 var position = parseInt($el.position().left);
@@ -174,47 +187,49 @@
                 if (!anim) {
                     // Hide old
                     $table.find('td.current').find('.mast').hide();
-                    $table.find('td.current').prev().css('padding-top', '60px');
-                    $table.find('td.current').next().css('padding-top', '60px');
-                    $table.find('td.current').removeClass('current').css({
-                        'padding-top': '60px'
-                    }).children('div').css({
-                        zoom: '30%'
+                    $table.find('td').each(function () {
+                        $(this).removeClass('current').css({
+                            'padding-top': '5vh'
+                        }).children('div').css({
+                            'zoom': '30%',
+                            'margin-top': '50vh'
+                        }).children('div').css({
+                            'height': '45vh'
+                        });
                     });
                     // Show new
                     $table.css('left', x);
                     $el.find('.mast').show();
-                    $el.addClass('current').css({
-                        'padding-top': '0px'
-                    }).children('div').css({
-                        zoom: '100%'
+                    $el.addClass('current').children('div').css({
+                        'zoom': '100%',
+                        'margin-top': '0vh'
                     });
-                    $el.prev().css('padding-top', '0px');
-                    $el.next().css('padding-top', '0px');
                     reset_timer(++index);
                 } else {
                     // Hide old
                     $table.find('td.current').find('.mast').fadeOut({ duration: (opts.duration / 4), queue: false });
-                    $table.find('td').not($el.prev()).not($el.next()).not($el).animate({
-                        'padding-top': '60px'
-                    }, { duration: opts.duration, queue: false });
-                    $table.find('td.current').removeClass('current').animate({
-                        'padding-top': '60px'
-                    }, { duration: opts.duration, queue: false }).children('div').animate({
-                        zoom: '30%'
-                    }, { duration: opts.duration, queue: false });
+                    $table.find('td').not($el).removeClass('current').each(function() {
+                        $(this).animate({
+                            'padding-top': '5vh'
+                        }, { duration: opts.duration, queue: false }).children('div').animate({
+                            'zoom': '30%',
+                            'margin-top': '50vh'
+                        }, { duration: opts.duration, queue: false }).children('div').animate({
+                            'height': '45vh'
+                        }, { duration: opts.duration, queue: false });
+                    });
                     // Show new
-                    $el.addClass('current').animate({
-                        'padding-top': '0px'
-                    }, { duration: opts.duration, queue: false }).children('div').animate({
-                        zoom: '100%'
+                    $el.addClass('current').children('div').animate({
+                        'zoom': '100%',
+                        'margin-top': '0vh'
                     }, { duration: opts.duration, queue: false });
-                    $el.prev().animate({
-                        'padding-top': '0px'
-                    }, { duration: opts.duration, queue: false });
-                    $el.next().animate({
-                        'padding-top': '0px'
-                    }, { duration: opts.duration, queue: false });
+                    if ($el.hasClass('bigger')) {
+                        $el.animate({
+                            'padding-top': '0vh'
+                        }, { duration: opts.duration, queue: false }).children('div:first').children('div').animate({
+                            'height':'55vh'
+                        }, { duration: opts.duration, queue: false });
+                    };
                     $table.animate({
                         left: x
                     }, {
@@ -276,6 +291,7 @@
                         var $mast = $cell.find('.mast');
                         switch (props.type) {
                             case 'image':
+                                $cell.addClass('bigger');
                                 $inside.append('<img src="' + props.url + '" />');
                                 $mast.append('<div class="title">' + props.title + '</div>');
                                 if (null !== props.credit && props.credit) $mast.append('<div class="credit">' + props.credit + '</div>');
@@ -299,14 +315,21 @@
                 var $blank = $('<td class="blank"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
                 $row.find('.bucket > div > div, .quote > div > div, .assertion > div > div').textfill();
                 $row.find('.title_card > div > div').vertMiddle();
-                $row.find('td').each(function(index) {
+                $row.find('td').each(function (index) {
                     $(this).data('index', index);
-                }).css({
-                    'padding-top': '60px'
-                }).children('div').css({
-                    zoom: '30%',
                 });
-                $row.find('td').each(function () {
+                $row.find('td').each(function(index) {
+                    // Click
+                    $(this).click(function () {
+                        if (null != opts.timer) {  // Stop previous timer
+                            clearTimeout(opts.timer);
+                            opts.timer = null;
+                        };
+                        $table.stop(true).find('td').stop(true).children('div').stop(true).children('div').stop(true);
+                        $table.removeData('pan_start');
+                        center(index);
+                    });
+                    // Pan
                     var hammertime = new Hammer(this);
                     hammertime.get('pan').set({direction: Hammer.DIRECTION_HORIZONTAL});
                     hammertime.on('pan', function (ev) {
@@ -316,10 +339,12 @@
                         };
                         if (ev.isFinal) {  // Center the chosen item
                             $table.removeData('pan_start');
-                            $cell = ($(ev.target).is('td')) ? $(ev.target) : $(ev.target).closest('td');
-                            center($cell.data('index'));
+                            center_closest();
                         } else {  // Move the item along with one's finger
-                            if ('undefined' == typeof ($table.data('pan_start'))) $table.data('pan_start', parseInt($table.css('left')));
+                            if ('undefined' == typeof ($table.data('pan_start'))) {
+                                $table.data('pan_start', parseInt($table.css('left')));
+                                $table.stop(true).find('td').stop(true).children('div').stop(true).children('div').stop(true);
+                            };
                             var pan_end = $table.data('pan_start') + ev.deltaX;
                             $table.css('left', pan_end);
                         };

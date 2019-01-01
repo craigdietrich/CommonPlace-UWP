@@ -3,10 +3,11 @@
 #crossroads .sidebar .header {background-color:#222121; height:50px; background-image:url(crossroads-logo.png); background-repeat:no-repeat; background-size:auto; background-position:12px center;}
 #crossroads .sidebar .title {color:white; background-color:#ed7e42; font-size:0.85rem; white-space:nowrap; padding:6px 22px 6px 14px;}
 #crossroads .sidebar .justify {background-image:url(justify-icon.png); background-size:60%; height:18px; width:20px; background-position:left center; float:left; background-repeat:no-repeat; margin-right:8px; margin-left:4px;}
+
 #crossroads .wrapper {position:absolute; left:0px; right:0px; top:0px; bottom:0px; z-index:6;}
-#crossroads .content {position:relative; top:200px; left:0px; opacity:0;}
-#crossroads .content td {padding:0px; margin:0px; vertical-align:middle; position:relative; height:370px;}
-#crossroads .content td > div {margin:20px;}
+#crossroads .content {position:relative; left:0px; opacity:0; top:23vh;}
+#crossroads .content td {padding:0px 0px 0px 0px; margin:0px; vertical-align:top; position:relative;}
+#crossroads .content td > div {margin:0px 20px 0px 20px;}
 
 #crossroads .content td > .mast {text-align:center; color:#404243; position:absolute; bottom:340px; left:0px; right:0px; display:none;}
 #crossroads .content td > .mast .title {font-size:1.3rem; line-height:140%;}
@@ -16,24 +17,26 @@
 #crossroads .content td.blank > div:first-of-type > div {width:300px; height:320px;}
 
 #crossroads .content td.title_card > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.title_card > div:first-of-type > div {width:600px; height:320px; background-color:#f0f0ec; color:#3e4041; padding:36px 40px 40px 40px;}
+#crossroads .content td.title_card > div:first-of-type > div {width:45vw; height:45vh; background-color:#f0f0ec; color:#3e4041; padding:36px 40px 40px 40px;}
 #crossroads .content td.title_card > div:first-of-type > div h4 {font-size:2.0rem; font-weight:bold; line-height:130%; margin-bottom:0.75rem;}
 #crossroads .content td.title_card > div:first-of-type > div h6 {font-size:0.75rem; font-weight:bold; color:#ed7e42; text-transform:uppercase;}
 #crossroads .content td.title_card > div:first-of-type > div p {font-size:1.25rem; line-height:130%; margin-bottom:0.75rem;}
 
 #crossroads .content td.bucket > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.bucket > div:first-of-type > div {width:600px; height:320px; background-color:#bbc1bc; color:#333333; padding:40px 40px 40px 40px;}
+#crossroads .content td.bucket > div:first-of-type > div {width:45vw; height:45vh; background-color:#bbc1bc; color:#333333; padding:40px 40px 40px 40px;}
 #crossroads .content td.bucket > div:first-of-type > div .by {color:#cccccc; font-size:smaller;}
 
 #crossroads .content td.quote > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.quote > div:first-of-type > div {width:600px; height:320px; background-color:#000000; color:#ffffff; padding:40px 40px 40px 40px;}
+#crossroads .content td.quote > div:first-of-type > div {width:45vw; height:45vh; background-color:#000000; color:#ffffff; padding:40px 40px 40px 40px;}
 #crossroads .content td.quote > div:first-of-type > div .by {color:#cccccc; font-size:small;}
 
 #crossroads .content td.assertion > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.assertion > div:first-of-type > div {width:600px; height:320px; background-color:#666666; color:#ffffff; padding:40px 40px 50px 40px;}
+#crossroads .content td.assertion > div:first-of-type > div {width:45vw; height:45vh; background-color:#666666; color:#ffffff; padding:40px 40px 50px 40px;}
 
-#crossroads .content td.image > div:first-of-type > div {height:320px;}
+#crossroads .content td.image > div:first-of-type > div {height:45vh;}
 #crossroads .content td.image > div:first-of-type > div > img {height:100%; display:block; margin-left:auto; margin-right:auto;}
+
+#crossroads .content td.link > div:first-of-type > div {width:45vw; height:45vh; background-color:#666666; color:#ffffff; padding:30px 20px 30px 20px; }
 
 #crossroads .content td.video {}
 #crossroads .content td.video > div:first-of-type {}
@@ -41,5 +44,4 @@
 #crossroads .content td.audio {}
 #crossroads .content td.audio > div:first-of-type {}
 #crossroads .content td.audio > div:first-of-type > div {}
-#crossroads .content td.link > div:first-of-type > div {width:600px; height:320px; background-color:#666666; color:#ffffff; padding:30px 20px 30px 20px; }
 #crossroads .content td.document > div:first-of-type > div {}

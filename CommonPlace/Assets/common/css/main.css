@@ -30,6 +30,7 @@ body {background-color:#000000; font-family:Verdana; overflow:hidden;}
 #nav button {min-width:18vw; border-radius:0px;}
 #nav #scroll-wrapper button {background-image:url(scroll.png); background-size:1vw; background-repeat:no-repeat; background-position:center center;}
 #nav #pointer-wrapper button {background-image:url(pointer.png); background-size:1.65vw; background-repeat:no-repeat; background-position:center center;}
+#nav .btn .glyph.share {width:14px; height:13px; display:inline-block; margin-right:10px; background-image:url(share.png); background-size:contain; background-repeat:no-repeat; background-position:center center;}
 /*
 #scroll-wrapper {
     background-image:url(scroll.png); height:92%; flex-grow:0.1; margin-top:1px; cursor:pointer; background-position:center center; background-size:23%; 
