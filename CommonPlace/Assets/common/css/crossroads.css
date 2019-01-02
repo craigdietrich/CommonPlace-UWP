@@ -9,7 +9,7 @@
 #crossroads .content td {padding:0px 0px 0px 0px; margin:0px; vertical-align:top; position:relative;}
 #crossroads .content td > div {margin:0px 20px 0px 20px;}
 
-#crossroads .content td > .mast {text-align:center; color:#404243; position:absolute; bottom:340px; left:0px; right:0px; display:none;}
+#crossroads .content td > .mast {text-align:center; color:#404243; position:absolute; bottom:57vh; left:-10%; width:110%; right:0px; display:none;}
 #crossroads .content td > .mast .title {font-size:1.3rem; line-height:140%;}
 #crossroads .content td > .mast .credit {font-size:1.05rem; line-height:130%; padding-top:4px;}
 #crossroads .content td > .mast .address {font-size:0.70rem; line-height:120%; padding-top:8px;}

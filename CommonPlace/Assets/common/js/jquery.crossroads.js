@@ -193,7 +193,7 @@
                         }).children('div').css({
                             'zoom': '30%',
                             'margin-top': '50vh'
-                        }).children('div').css({
+                        }).children('div:not(.title, .credit, .address)').css({
                             'height': '45vh'
                         });
                     });
@@ -214,7 +214,7 @@
                         }, { duration: opts.duration, queue: false }).children('div').animate({
                             'zoom': '30%',
                             'margin-top': '50vh'
-                        }, { duration: opts.duration, queue: false }).children('div').animate({
+                        }, { duration: opts.duration, queue: false }).children('div:not(.title, .credit, .address)').animate({
                             'height': '45vh'
                         }, { duration: opts.duration, queue: false });
                     });
@@ -327,7 +327,12 @@
                         };
                         $table.stop(true).find('td').stop(true).children('div').stop(true).children('div').stop(true);
                         $table.removeData('pan_start');
-                        center(index);
+                        if ($(this).hasClass('current')) {
+                            var json = { method: 'coming_soon' };
+                            window.external.notify(JSON.stringify(json));
+                        } else {
+                            center(index);
+                        };
                     });
                     // Pan
                     var hammertime = new Hammer(this);
