@@ -66,6 +66,7 @@ namespace CommonPlace
                     var comingSoonResult = await showComingSoonDialog.ShowAsync();
                     break;
                 case "email":
+                    return; 
                     // Load Email SMTP settings
                     string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
                     XDocument loadedData = XDocument.Load(XMLFilePath);

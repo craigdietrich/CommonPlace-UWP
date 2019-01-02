@@ -186,7 +186,7 @@
                 $el = $table.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
                 if (!anim) {
                     // Hide old
-                    $table.find('td.current').find('.mast').hide();
+                    $table.find('td').find('.mast:visible').hide();
                     $table.find('td').each(function () {
                         $(this).removeClass('current').css({
                             'padding-top': '5vh'
@@ -207,7 +207,7 @@
                     reset_timer(++index);
                 } else {
                     // Hide old
-                    $table.find('td.current').find('.mast').fadeOut({ duration: (opts.duration / 4), queue: false });
+                    $table.find('td').find('.mast:visible').fadeOut({ duration: (opts.duration / 4), queue: false });
                     $table.find('td').not($el).removeClass('current').each(function() {
                         $(this).animate({
                             'padding-top': '5vh'
@@ -270,7 +270,7 @@
                     if (null != project) {
                         var $cell = $('<td class="title_card"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
                         $cell.find('.inner').html('<h4>' + project.title + '</h4>');
-                        $cell.find('.inner').append('<h6>Question</h6>');
+                        //$cell.find('.inner').append('<h6>Question</h6>');
                         $cell.find('.inner').append('<p>' + project.description + '</p>');
                         $cell.find('.inner').append('<h6>Author</h6>');
                         $cell.find('.inner').append('<p>' + project.Owner.name + '</p>');

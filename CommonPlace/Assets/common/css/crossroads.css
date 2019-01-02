@@ -17,7 +17,7 @@
 #crossroads .content td.blank > div:first-of-type > div {width:300px; height:320px;}
 
 #crossroads .content td.title_card > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.title_card > div:first-of-type > div {width:45vw; height:45vh; background-color:#f0f0ec; color:#3e4041; padding:36px 40px 40px 40px;}
+#crossroads .content td.title_card > div:first-of-type > div {width:45vw; height:45vh; background-color:#ffffff; color:#3e4041; padding:36px 40px 40px 40px;}
 #crossroads .content td.title_card > div:first-of-type > div h4 {font-size:2.0rem; font-weight:bold; line-height:130%; margin-bottom:0.75rem;}
 #crossroads .content td.title_card > div:first-of-type > div h6 {font-size:0.75rem; font-weight:bold; color:#ed7e42; text-transform:uppercase;}
 #crossroads .content td.title_card > div:first-of-type > div p {font-size:1.25rem; line-height:130%; margin-bottom:0.75rem;}
@@ -28,10 +28,10 @@
 
 #crossroads .content td.quote > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
 #crossroads .content td.quote > div:first-of-type > div {width:45vw; height:45vh; background-color:#000000; color:#ffffff; padding:40px 40px 40px 40px;}
-#crossroads .content td.quote > div:first-of-type > div .by {color:#cccccc; font-size:small;}
+#crossroads .content td.quote > div:first-of-type > div .by {color:#2ebb9b; font-size:small;}
 
-#crossroads .content td.assertion > div:first-of-type {border:solid 4px #151515; border-radius:2px;}
-#crossroads .content td.assertion > div:first-of-type > div {width:45vw; height:45vh; background-color:#666666; color:#ffffff; padding:40px 40px 50px 40px;}
+#crossroads .content td.assertion > div:first-of-type {}
+#crossroads .content td.assertion > div:first-of-type > div {width:45vw; height:45vh; background-color:#2aaad4; color:#ffffff; padding:40px 40px 50px 40px;}
 
 #crossroads .content td.image > div:first-of-type > div {height:45vh;}
 #crossroads .content td.image > div:first-of-type > div > img {height:100%; display:block; margin-left:auto; margin-right:auto;}
