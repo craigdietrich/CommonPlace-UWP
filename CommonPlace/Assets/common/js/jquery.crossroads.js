@@ -1,8 +1,8 @@
 ﻿/**
- * Display Global Crossroads content on a single screen
- * @author  Craig Dietrich
- * @requires jquery.textfill.min.js
- * @requires hammer.min.js
+ * @description Display Global Crossroads content on a single screen
+ * @author      craigdietrich.com
+ * @requires    jquery.textfill.min.js
+ * @requires    hammer.min.js
  */
 (function ($) {
 
@@ -96,6 +96,7 @@
                 var props = {};
                 props.type = item.resource.resource_type;
                 props.address = (null !== item.resource.address && item.resource.address.length) ? item.resource.address : null;
+                props.annotation = (null !== item.annotation && item.annotation.length) ? item.annotation : null;
                 if ('quote' == item.resource.resource_type) {
                     props.title = item.title;
                     props.credit = item.credit;
@@ -105,13 +106,13 @@
                     props.url = opts.base_url + item.resource.img_original.substr(0, item.resource.img_original.indexOf('?'));
                     props.thumb = opts.base_url + item.resource.img_thumb.substr(0, item.resource.img_thumb.indexOf('?'));
                 } else if ('video' == item.resource.resource_type) {
-
+                    // TODO
                 } else if ('audio' == item.resource.resource_type) {
-
+                    // TODO
                 } else if ('link' == item.resource.resource_type) {
-
+                    // TODO
                 } else if ('document' == item.resource.resource_type) {
-
+                    // TODO
                 } else if ('data' == item.resource.resource_type) {
                     if (item.resource.img_original && item.resource.img_original.length) {
                         props.title = item.title;
@@ -207,7 +208,7 @@
                     reset_timer(++index);
                 } else {
                     // Hide old
-                    $table.find('td').find('.mast:visible').fadeOut({ duration: (opts.duration / 4), queue: false });
+                    $table.find('td').find('.mast:visible, .anno:visible').fadeOut({ duration: (opts.duration / 4), queue: false });
                     $table.find('td').not($el).removeClass('current').each(function() {
                         $(this).animate({
                             'padding-top': '5vh'
@@ -236,15 +237,14 @@
                         duration: opts.duration,
                         queue: false,
                         complete: function () {
-                            $el.find('.mast').fadeIn(opts.duration / 4);
-                            reset_timer(++index);
+                            $el.find('.mast, .anno').fadeIn(opts.duration / 4);
+                            reset_timer(++index, false, (($el.find('.anno').text().length)?20000:null));
                         }
                     });
                 };
             }
 
-            var reset_timer = function (index, is_callback) {
-                console.log('[top] opts.timer: ' + opts.timer);
+            var reset_timer = function (index, is_callback, timeout) {
                 if ('undefined' == typeof ($table.data('url'))) return;  // Project has been deleted before timer has come back
                 if ('undefined' == typeof (is_callback)) is_callback = false;
                 console.log('Reset timer - table url: ' + $table.data('url')+' - index: '+index + ' - is_callback: '+is_callback);
@@ -252,10 +252,10 @@
                     center(index);
                     return;
                 }
+                if ('undefined' == typeof(timeout) || null == timeout) timeout = 10000;
                 opts.timer = setTimeout(function () {
                     reset_timer(index, true);
-                }, 10000);
-                console.log('[bottom] opts.timer: ' + opts.timer);
+                }, timeout);
             }
 
             set_data(project_id(opts.url), function () {
@@ -283,18 +283,21 @@
                         var props = get_props(opts.buckets[j].bucket_resources[k]);
                         //console.log(props);
                         if (!props) continue;
-                        var $cell = $('<td class="' + props.type + '"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
+                        var $cell = $('<td class="' + props.type + '"><div><div class="inner"></div></div><div class="mast"></div><div class="anno"></div></td>').appendTo($row);
                         $cell.data('bucket', opts.buckets[j]);
                         $cell.data('resource', opts.buckets[j].bucket_resources[k])
                         $cell.data('props', props);
                         var $inside = $cell.find('.inner');
                         var $mast = $cell.find('.mast');
+                        var $anno = $cell.find('.anno');
+                        $anno.css('top', '52vh').text( ((null != props.annotation) ? props.annotation : '') );
                         switch (props.type) {
                             case 'image':
                                 $cell.addClass('bigger');
                                 $inside.append('<img src="' + props.url + '" />');
                                 $mast.append('<div class="title">' + props.title + '</div>');
                                 if (null !== props.credit && props.credit) $mast.append('<div class="credit">' + props.credit + '</div>');
+                                $anno.css('top', '62.5vh')
                                 //if (null !== props.address && props.address) $mast.append('<div class="address">' + props.address + '</div>');
                                 break;
                             case 'quote':
