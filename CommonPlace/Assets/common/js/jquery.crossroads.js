@@ -3,7 +3,6 @@
  * @author      craigdietrich.com
  * @requires    jquery.textfill.min.js
  * @requires    hammer.min.js
- * @requires    jquery-ui-custom.min.js (for easing)
  */
 (function ($) {
 
