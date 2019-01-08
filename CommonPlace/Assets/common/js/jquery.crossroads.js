@@ -3,6 +3,7 @@
  * @author      craigdietrich.com
  * @requires    jquery.textfill.min.js
  * @requires    hammer.min.js
+ * @requires    jquery-ui-custom.min.js (for easing)
  */
 (function ($) {
 
@@ -173,7 +174,7 @@
                 var $clone = $self.find('.wrapper.clone');
                 $clone.find('td').css('padding-top', '5vh').children().css('zoom', '30%').children().css('height', '45vh');
                 var $el = $clone.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
-                $el.children('div').css('zoom', '100%');
+                $el.children('div').css('zoom', '98%');
                 if ($el.hasClass('bigger')) $el.css('padding-top', '0vh').children('div:first').children('div').css('height', '55vh');
                 var $table = $el.closest('table');
                 var current_x = parseInt($table.css('left'));
@@ -202,7 +203,7 @@
                     $table.css('left', x);
                     $el.find('.mast').show();
                     $el.addClass('current').children('div').css({
-                        'zoom': '100%',
+                        'zoom': '98%',
                         'margin-top': '0vh'
                     });
                     reset_timer(++index);
@@ -221,7 +222,7 @@
                     });
                     // Show new
                     $el.addClass('current').children('div').animate({
-                        'zoom': '100%',
+                        'zoom': '98%',
                         'margin-top': '0vh'
                     }, { duration: opts.duration, queue: false });
                     if ($el.hasClass('bigger')) {
