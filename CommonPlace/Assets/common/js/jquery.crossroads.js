@@ -285,7 +285,7 @@
                         if (!props) continue;
                         var $cell = $('<td class="' + props.type + '"><div><div class="inner"></div></div><div class="mast"></div><div class="anno"></div></td>').appendTo($row);
                         $cell.data('bucket', opts.buckets[j]);
-                        $cell.data('resource', opts.buckets[j].bucket_resources[k])
+                        $cell.data('resource', opts.buckets[j].bucket_resources[k]);
                         $cell.data('props', props);
                         var $inside = $cell.find('.inner');
                         var $mast = $cell.find('.mast');
@@ -321,8 +321,7 @@
                 $row.find('td').each(function (index) {
                     $(this).data('index', index);
                 });
-                $row.find('td').each(function(index) {
-                    // Click
+                $row.find('td').each(function (index) {
                     $(this).click(function () {
                         if (null != opts.timer) {  // Stop previous timer
                             clearTimeout(opts.timer);
@@ -330,9 +329,10 @@
                         };
                         $table.stop(true).find('td').stop(true).children('div').stop(true).children('div').stop(true);
                         $table.removeData('pan_start');
+                        // Click (info box)
                         if ($(this).hasClass('current')) {
-                            var json = { method: 'coming_soon' };
-                            window.external.notify(JSON.stringify(json));
+                            show_details(index);
+                        // Click (center)
                         } else {
                             center(index);
                         };
@@ -364,6 +364,21 @@
                     'opacity': 1
                 });
             });
+
+            var show_details = function(index) {
+                var $cell = $table.find('td').eq(index);
+                var bucket = $cell.data('bucket');
+                var resource = $cell.data('resource');
+                var props = $cell.data('props');
+                if ('undefined' == typeof(resource)) return;
+                if ('image' != props.type) return;
+                $self.append('<div class="details_screen"></div>');
+                var $details = $('<div class="details"><div><div></div></div><div><div></div></div></div>').appendTo($self);
+                var $left = $details.children(':first');
+                var $right = $details.children(':last');
+                $left.children(':first').css('background-image', 'url(' + props.url + ')');
+                $right.children(':first').append('<h3>' + props.title + '</h3>');
+            }
 
         });
 
