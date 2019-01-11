@@ -377,7 +377,45 @@
                 var $left = $details.children(':first');
                 var $right = $details.children(':last');
                 $left.children(':first').css('background-image', 'url(' + props.url + ')');
-                $right.children(':first').append('<h3>' + props.title + '</h3>');
+                console.log(resource);
+                var obj = {
+                    'Excerpt Text': [resource.resource.excerpt],
+                    'Credit/Citation': [resource.credit_formatted],
+                    'Source URL': [resource.resource.source_url],
+                    'Courses': [],
+                    'Topics': [],
+                    'Keywords': [],
+                    'Added By': [resource.resource.Owner.name],
+                    'Annotation': [resource.annotation]
+                };
+                for (var j = 0; j < resource.resource.courses.length; j++) {
+                    obj['Courses'].push(resource.resource.courses[j].code + ' ' +resource.resource.courses[j].title);
+                };
+                for (var j = 0; j < resource.resource.keywords.length; j++) {
+                    obj['Keywords'].push(resource.resource.keywords[j].title);
+                };
+                for (var j = 0; j < resource.resource.topics.length; j++) {
+                    obj['Topics'].push(resource.resource.topics[j].title);
+                };
+                var $metadata = $('<table><tbody></tbody></table>').appendTo($right.children(':first'));
+                for (var field in obj) {
+                    var $row = $('<tr></tr>').appendTo($metadata.children('tbody'));
+                    $row.append('<td class="field" valign="top">' + field + '</td>');
+                    $row.append('<td class="value" valugn="top"></td>');
+                    for (var j = 0; j < obj[field].length; j++) {
+                        if (null == obj[field][j]) continue;
+                        $row.children('td:last').append(obj[field][j] + '<br />');
+                    }
+                }
+                $metadata.children('tbody').append('<tr><td class="buttons" colspan="2"><button class="btn btn-crossroads">Add resource to project</button><button class="btn btn-secondary">Email resource</button></tr>');
+                $details.append('<button class="btn btn-secondary close-button">Close</button>');
+                $details.find('.close-button').mousedown(function () {
+                    $('.details_screen, .details').remove();
+                });
+                $details.find('.buttons .btn').mousedown(function () {
+                    var json = { method: 'coming_soon' };
+                    window.external.notify(JSON.stringify(json));
+                });
             }
 
         });

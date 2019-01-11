@@ -1,15 +1,23 @@
 ﻿#crossroads {font-family:'Exo', sans-serif; position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:7; border:0; background-color:#edede7;  display:none;}
+
 #crossroads .sidebar {position:absolute; left:15px; top:12px; z-index:8; color:#7f8180; border-radius:5px; background-color:#f0f0ec; min-width:360px; box-shadow: 2px 2px 5px #999999;}
 #crossroads .sidebar .header {background-color:#222121; height:50px; background-image:url(crossroads-logo.png); background-repeat:no-repeat; background-size:auto; background-position:12px center;}
 #crossroads .sidebar .title {color:white; background-color:#ed7e42; font-size:0.85rem; white-space:nowrap; padding:6px 22px 6px 14px;}
 #crossroads .sidebar .justify {background-image:url(justify-icon.png); background-size:60%; height:18px; width:20px; background-position:left center; float:left; background-repeat:no-repeat; margin-right:8px; margin-left:4px;}
-#crossroads .details_screen {position:absolute; z-index:8; background-color:#000000; opacity:0.85; left:0px; right:0px; width:100%; height:100%;}
-#crossroads .details {position:relative; z-index:8;}
-#crossroads .details, #crossroads .details > div {height:100%;}
+
+#crossroads .details_screen {position:absolute; z-index:8; background-color:#000000; opacity:0.30; top:0px; left:0px; width:100%; height:100%; border-radius:5px;}
+#crossroads .details {position:relative; z-index:9; top:5vh; left:5vw; height:87vh; width:90vw; background-color:#edede7; border-radius:5px;}
+#crossroads .details > div {height:100%;}
 #crossroads .details > div:first-of-type {width:60%; float:left; padding:8vh 3vw 8vh 3vw;}
 #crossroads .details > div:first-of-type > div {width:100%; height:100%; background-size:contain; background-position:center center; background-repeat:no-repeat;}
 #crossroads .details > div:last-of-type {width:39%; float:right;}
-#crossroads .details > div:last-of-type > div {position:relative; top:50%; transform:translateY(-50%); color:#ffffff;}
+#crossroads .details > div:last-of-type > div {position:relative; top:50%; transform:translateY(-50%);}
+#crossroads .details .field {color:#2aaad4; font-weight:bold; font-size:0.85rem; padding:10px 20px 10px 0px;}
+#crossroads .details .value {color:#222222; font-weight:normal; font-size:0.85rem; padding:10px 0px 10px 0px;}
+#crossroads .details .buttons {padding-top:50px !important; white-space:nowrap;}
+#crossroads .details .buttons .btn {margin-right:20px; padding-left:22px; padding-right:22px; }
+#crossroads .details .close-button {position:absolute; bottom:20px; right:26px; padding-left:22px; padding-right:22px; }
+#crossroads .details .btn-crossroads {color:#ffffff; font-weight:bold; background-color:#f3803a; border-color:#f3803a}
 
 #crossroads .wrapper {position:absolute; left:0px; right:0px; top:0px; bottom:0px; z-index:6;}
 #crossroads .content {position:relative; left:0px; opacity:0; top:23vh;}
