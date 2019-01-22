@@ -341,6 +341,15 @@ function advanced_options() {
             json.method = 'restart';
             window.external.notify(JSON.stringify(json));
         });
+        // Toggle fullscreen
+        $('#advancedOptionsModal').find('#toggleFullscreenButton').click(function () {
+            var json = {};
+            json.method = 'toggle_fullscreen';
+            window.external.notify(JSON.stringify(json));
+            var $this = $(this);
+            $this.blur().text((-1 == $this.text().indexOf('Exit')) ? 'Exit fullscreen' : 'Enter fullscreen');
+            $this.closest('.modal').modal('hide');
+        });
     };
     // Write options in the choose path pulldown
     var $choosePathArea = $('#choosePath .card');
@@ -597,18 +606,22 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
           </div>
           <div class="modal-body">
               <!-- restart -->
-              <p><button class="btn btn-default" type="button" data-toggle="collapse" data-target="#restartMessage" aria-expanded="false" aria-controls="restartMessage">Restart CommonPlace</button></p>
+              <p>
+                  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#choosePath" aria-expanded="false" aria-controls="choosePath">Switch to a different collection</button>
+                  &nbsp; &nbsp; 
+                  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#restartMessage" aria-expanded="false" aria-controls="restartMessage">Restart CommonPlace</button>
+                  &nbsp; &nbsp;
+                  <button class="btn btn-default" type="button" id="toggleFullscreenButton">Exit fullscreen</button>
+              </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">
                       Restarting CommonPlace will reload the app with any new content that might exist in connected data sources. CommonPlace will then begin, as typical, with the first project in the default collection.<br />
                       <button class="btn btn-primary">Restart</button>
                   </div>
               </div>
-              <p><button class="btn btn-default" type="button" data-toggle="collapse" data-target="#choosePath" aria-expanded="false" aria-controls="choosePath">Switch to a different collection</button></p>
               <div class="collapse" id="choosePath">
                   <div class="card card-body"></div>
               </div>
-              <!-- choose a new collection -->
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

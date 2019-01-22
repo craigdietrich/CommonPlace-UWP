@@ -31,27 +31,6 @@ body {background-color:#000000; font-family:Verdana; overflow:hidden;}
 #nav #scroll-wrapper button {background-image:url(scroll.png); background-size:1vw; background-repeat:no-repeat; background-position:center center;}
 #nav #pointer-wrapper button {background-image:url(pointer.png); background-size:1.65vw; background-repeat:no-repeat; background-position:center center;}
 #nav .btn .glyph.share {width:14px; height:13px; display:inline-block; margin-right:10px; background-image:url(share.png); background-size:contain; background-repeat:no-repeat; background-position:center center;}
-/*
-#scroll-wrapper {
-    background-image:url(scroll.png); height:92%; flex-grow:0.1; margin-top:1px; cursor:pointer; background-position:center center; background-size:23%; 
-    background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649; box-shadow:0px 0px 3px #666666; opacity:0;
-}
-#logo-wrapper {
-    background-image:url(commonplace-logo.png); height:92%; margin-top:1px; cursor:pointer; background-position:center center; background-size:70%; 
-    background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649; box-shadow:0px 0px 3px #666666;
-}
-#pointer-wrapper {
-    background-image:url(pointer.png); height:92%; flex-grow:0.1; margin-top:1px; cursor:pointer; background-position:center center; background-size:40%; 
-    background-repeat:no-repeat; border-radius:30px; border:dotted 1px #de691b; background-color:#494649; box-shadow:0px 0px 3px #666666; opacity:0;
-}
-#nav .col:not(#logo-wrapper) {text-align:center; color:#777777;}
-.btn-dotted {
-    padding:0.6vh 16px 0px 16px; margin-top:1px; border:dotted 1px #e06029; border-radius:30px; font-size:1.75vh;
-    height:92%; background-color:#494649; text-shadow: 0px 0px 1px #000000; vertical-align:middle; display:inline-block; box-shadow:0px 0px 3px #666666;
-}
-.btn-dotted.blank {color:#494649 !important; text-shadow:none;}
-#nav .col:not(#logo-wrapper).has-btn {}
-*/
 .modal-lg {max-width:70% !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}
 #aboutPlatformModal .thumb, #aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
@@ -65,5 +44,6 @@ body {background-color:#000000; font-family:Verdana; overflow:hidden;}
 #choosePath .card > a {padding-top:0.25rem; padding-bottom:0.25rem; padding-left:1.25rem; padding-right:1.25rem;}
 #choosePath .card > a.active {background-color:#dddddd; text-decoration:none;} 
 #choosePath .card > a:active {background-color:#dddddd; text-decoration:none;} 
+#advancedOptionsModal p button {margin-bottom:22px;}
 #advancedOptionsModal .collapse {margin-bottom:12px;}
 #aboutProjectModal p small {line-height:1; color:#666666;}

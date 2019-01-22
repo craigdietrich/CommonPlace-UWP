@@ -65,6 +65,9 @@ namespace CommonPlace
                     MessageDialog showComingSoonDialog = new MessageDialog("CommonPlace feature coming soon!");
                     var comingSoonResult = await showComingSoonDialog.ShowAsync();
                     break;
+                case "toggle_fullscreen":
+                    ToggleFullScreenMode();
+                    break;
                 case "email":
                     return; 
                     // Load Email SMTP settings
@@ -98,6 +101,19 @@ namespace CommonPlace
             PackageId packageId = package.Id;
             PackageVersion version = packageId.Version;
             return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build, version.Revision);
+        }
+
+        private void ToggleFullScreenMode()
+        {
+            var view = ApplicationView.GetForCurrentView();
+            if (view.IsFullScreenMode)
+            {
+                view.ExitFullScreenMode();
+            }
+            else
+            {
+                view.TryEnterFullScreenMode();
+            }
         }
     }
 }
