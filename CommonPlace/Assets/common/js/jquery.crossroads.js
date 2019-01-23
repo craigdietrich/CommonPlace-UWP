@@ -382,7 +382,7 @@
                 if ('undefined' == typeof(resource)) return;
                 if ('image' != props.type) return;
                 $self.append('<div class="details_screen"></div>');
-                var $details = $('<div class="details"><div><div></div></div><div><div></div></div></div>').appendTo($self);
+                var $details = $('<div class="details"><div><div></div></div><div><div></div><div></div></div></div>').appendTo($self);
                 var $left = $details.children(':first');
                 var $right = $details.children(':last');
                 $left.children(':first').css('background-image', 'url(' + props.url + ')');
@@ -416,7 +416,7 @@
                         $row.children('td:last').append(obj[field][j] + '<br />');
                     }
                 }
-                $metadata.children('tbody').append('<tr><td class="buttons" colspan="2"><button class="btn btn-crossroads">Add resource to project</button><button class="btn btn-secondary">Email resource</button></tr>');
+                $details.find('div:last-of-type > div:last-of-type').append('<button class="btn btn-crossroads">Add resource to project</button>&nbsp; &nbsp; &nbsp; <button class="btn btn-secondary">Email resource</button>');
                 $details.append('<button class="btn btn-secondary close-button">Close</button>');
                 $details.find('.close-button').mousedown(function () {
                     $('.details_screen, .details').remove();

@@ -10,8 +10,9 @@
 #crossroads .details > div {height:100%;}
 #crossroads .details > div:first-of-type {width:60%; float:left; padding:8vh 3vw 8vh 3vw;}
 #crossroads .details > div:first-of-type > div {width:100%; height:100%; background-size:contain; background-position:center center; background-repeat:no-repeat;}
-#crossroads .details > div:last-of-type {width:39%; float:right;}
-#crossroads .details > div:last-of-type > div {position:relative; top:50%; transform:translateY(-50%);}
+#crossroads .details > div:last-of-type {width:39%; float:right; padding:13vh 0vw 0vh 0vw;}
+#crossroads .details > div:last-of-type > div:first-of-type {position:relative; /* top:50%; transform:translateY(-50%); */ height:52vh; overflow:auto;}
+#crossroads .details > div:last-of-type > div:last-of-type {margin-top:20px;}
 #crossroads .details .field {color:#2aaad4; font-weight:bold; font-size:0.85rem; padding:10px 20px 10px 0px;}
 #crossroads .details .value {color:#222222; font-weight:normal; font-size:0.85rem; padding:10px 0px 10px 0px;}
 #crossroads .details .buttons {padding-top:50px !important; white-space:nowrap;}
