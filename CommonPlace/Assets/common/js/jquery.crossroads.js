@@ -182,21 +182,27 @@
                 var browser_width = parseInt($(window).width());
                 var x = (position * -1) + (browser_width / 2) - (width / 2);
                 $clone.remove();
-                // Center the intended node after removing the cloned resources
+                // Chris' staggered vert
+                var stagger_top_margins = ['10vh', '30vh', '50vh', '70vh', '90vh'];
+                var stagger_index = 2;
+                // Center the intended node
                 $table = $self.find('table').eq(0);
                 $el = $table.find('tr').eq(0).children(':eq(' + index + ')').eq(0);
                 if (!anim) {
                     // Hide old
                     $table.find('td').find('.mast:visible').hide();
-                    $table.find('td').each(function () {
-                        $(this).removeClass('current').css({
+                    $table.find('td').each(function (_index) {
+                        $(this).removeClass('current').data('stagger_index', stagger_index).css({
                             'padding-top': '5vh'
                         }).children('div').css({
                             'zoom': '30%',
-                            'margin-top': '50vh'
+                            'margin-top': stagger_top_margins[stagger_index]
                         }).children('div:not(.title, .credit, .address)').css({
                             'height': '45vh'
                         });
+                        stagger_index = stagger_index + (Math.random() < 0.5 ? -1 : 1);
+                        if (stagger_index < 0) stagger_index = stagger_top_margins.length - 1;
+                        if (stagger_index > stagger_top_margins.length - 1) stagger_index = 0;
                     });
                     // Show new
                     $table.css('left', x);
@@ -209,12 +215,15 @@
                 } else {
                     // Hide old
                     $table.find('td').find('.mast:visible, .anno:visible').fadeOut({ duration: (opts.duration / 4), queue: false });
-                    $table.find('td').not($el).removeClass('current').each(function() {
-                        $(this).animate({
+                    $table.find('td').not($el).removeClass('current').each(function () {
+                        var $this = $(this);
+                        var _stagger = stagger_top_margins[$this.data('stagger_index')];
+                        console.log('_stagger_index ' + _stagger);
+                        $this.animate({
                             'padding-top': '5vh'
                         }, { duration: opts.duration, queue: false }).children('div').animate({
                             'zoom': '30%',
-                            'margin-top': '50vh'
+                            'margin-top': _stagger
                         }, { duration: opts.duration, queue: false }).children('div:not(.title, .credit, .address)').animate({
                             'height': '45vh'
                         }, { duration: opts.duration, queue: false });
@@ -283,7 +292,7 @@
                         var props = get_props(opts.buckets[j].bucket_resources[k]);
                         //console.log(props);
                         if (!props) continue;
-                        var $cell = $('<td class="' + props.type + '"><div><div class="inner"></div></div><div class="mast"></div><div class="anno"></div></td>').appendTo($row);
+                        var $cell = $('<td class="' + props.type + '"><div><div class="inner slot-1"></div></div><div class="mast"></div><div class="anno"></div></td>').appendTo($row);
                         $cell.data('bucket', opts.buckets[j]);
                         $cell.data('resource', opts.buckets[j].bucket_resources[k]);
                         $cell.data('props', props);

@@ -29,7 +29,7 @@
 #crossroads .content td > .mast .credit {font-size:1.05rem; line-height:130%; padding-top:4px;}
 #crossroads .content td > .mast .address {font-size:0.70rem; line-height:120%; padding-top:8px;}
 
-#crossroads .content td> .anno {
+#crossroads .content td > .anno {
     font-size:0.75rem; position:absolute; width:50vw; color:#969a9c; font-family:Arial;
     left: 50%; transform: translate(-50%, -50%); display:none;
 }
