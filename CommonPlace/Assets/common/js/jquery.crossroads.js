@@ -218,7 +218,6 @@
                     $table.find('td').not($el).removeClass('current').each(function () {
                         var $this = $(this);
                         var _stagger = stagger_top_margins[$this.data('stagger_index')];
-                        console.log('_stagger_index ' + _stagger);
                         $this.animate({
                             'padding-top': '5vh'
                         }, { duration: opts.duration, queue: false }).children('div').animate({
@@ -374,12 +373,12 @@
                 });
             });
 
-            var show_details = function(index) {
+            var show_details = function (index) {
                 var $cell = $table.find('td').eq(index);
                 var bucket = $cell.data('bucket');
                 var resource = $cell.data('resource');
                 var props = $cell.data('props');
-                if ('undefined' == typeof(resource)) return;
+                if ('undefined' == typeof (resource)) return;
                 if ('image' != props.type) return;
                 $self.append('<div class="details_screen"></div>');
                 var $details = $('<div class="details"><div><div></div></div><div><div></div><div></div></div></div>').appendTo($self);
@@ -395,10 +394,11 @@
                     'Topics': [],
                     'Keywords': [],
                     'Added By': [resource.resource.Owner.name],
-                    'Annotation': [resource.annotation]
+                    'Annotation': [resource.annotation],
+                    'URL': ['https://crossroads.oxy.edu/resources/'+resource.resource.id]
                 };
                 for (var j = 0; j < resource.resource.courses.length; j++) {
-                    obj['Courses'].push(resource.resource.courses[j].code + ' ' +resource.resource.courses[j].title);
+                    obj['Courses'].push(resource.resource.courses[j].code + ' ' + resource.resource.courses[j].title);
                 };
                 for (var j = 0; j < resource.resource.keywords.length; j++) {
                     obj['Keywords'].push(resource.resource.keywords[j].title);
@@ -413,17 +413,51 @@
                     $row.append('<td class="value" valugn="top"></td>');
                     for (var j = 0; j < obj[field].length; j++) {
                         if (null == obj[field][j]) continue;
-                        $row.children('td:last').append(obj[field][j] + '<br />');
+                        $row.children('td:last').append(obj[field][j].replace('https://','') + '<br />');
                     }
                 }
-                $details.find('div:last-of-type > div:last-of-type').append('<button class="btn btn-crossroads">Add resource to project</button>&nbsp; &nbsp; &nbsp; <button class="btn btn-secondary">Email resource</button>');
+                $details.find('div:last-of-type > div:last-of-type').append('<button class="btn btn-crossroads btn-add-resource">Add resource to my project</button>&nbsp; &nbsp; &nbsp; <button class="btn btn-secondary btn-email">Email resource</button>');
                 $details.append('<button class="btn btn-secondary close-button">Close</button>');
                 $details.find('.close-button').mousedown(function () {
                     $('.details_screen, .details').remove();
                 });
-                $details.find('.buttons .btn').mousedown(function () {
+                $details.find('.btn-add-resource').click(function () {
                     var json = { method: 'coming_soon' };
                     window.external.notify(JSON.stringify(json));
+                });
+                try {
+                    window.external.notify('');
+                    $details.find('.btn-email').click(function () {
+                        send_email(obj);
+                    });
+                } catch (err) {
+                    $details.find('.btn-email').hide();
+                };   
+            }
+
+            var send_email = function (obj) {
+                var $modal = $('<div id="crossroadsEmailModal" class="modal fade"></div>').appendTo('body');
+                $modal.append('<div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-body"><p></p><form><div class="form-group"><input type="email" class="keyboard form-control" placeholder="me@example.com"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary">Send email</button></div></div></div>');
+                $modal.find('p:first').html('Send me<br /><b>' + obj['Excerpt Text'] + '</b>');
+                $modal.modal({ backdrop: 'static' });
+                $modal.find('input[type="email"]').val('').keyboard();
+                $modal.find('.btn-primary:last').click(function (event) {
+                    event.stopPropagation();
+                    var address = $modal.find('input[type="email"]').val();
+                    if (!address.length || -1 == address.indexOf('@') || -1 == address.indexOf('.')) {
+                        $modal.find('input[type="email"]').focus();
+                        return;
+                    };
+                    $('#crossroadsEmailModal').modal('hide');
+                    var json = {};
+                    json.method = 'email';
+                    json.address = address;
+                    json.title = obj['Excerpt Text'][0];
+                    json.url = obj['URL'][0];
+                    window.external.notify(JSON.stringify(json));
+                });
+                $modal.off('hidden.bs.modal').on('hidden.bs.modal', function (event) {
+                    child_timer(true);
                 });
             }
 

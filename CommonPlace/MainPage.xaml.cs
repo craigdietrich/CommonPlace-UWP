@@ -54,6 +54,7 @@ namespace CommonPlace
 
         private async void MainWebView_ScriptNotify(object sender, NotifyEventArgs e)
         {
+            if (string.IsNullOrEmpty(e.Value)) return;
             var json = JsonValue.Parse(e.Value).GetObject();
             string method = json.GetObject().GetNamedString("method");
             switch (method)
@@ -69,7 +70,6 @@ namespace CommonPlace
                     ToggleFullScreenMode();
                     break;
                 case "email":
-                    return; 
                     // Load Email SMTP settings
                     string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
                     XDocument loadedData = XDocument.Load(XMLFilePath);
@@ -89,7 +89,7 @@ namespace CommonPlace
                     emailMessage.To.Add(new EmailRecipient(address));
                     //emailMessage.Bcc.Add(new EmailRecipient("someone3@anotherdomain.com"));
                     emailMessage.Subject = "[OXY CommonPlace] "+title;
-                    emailMessage.Body = "<b>" + title + "</b>\r\n\r\n" + url;
+                    emailMessage.Body = title + "\r\n\r\n" + url;
                     await client.SendMailAsync(emailMessage);
                     break;
             }

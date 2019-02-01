@@ -208,10 +208,14 @@ function go_to_site(_url) {
             '<button class="btn btn-light">About project</button>',
             '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('button').on('mousedown', about_project);
+                $(col).find('button').on('mousedown', function() {
+                    about_project();
+                });
             },
             function (col) {
-                $(col).find('button').on('mousedown', send_email);
+                $(col).find('button').on('click', function() {
+                    send_email();
+                });
             }
         );
 	};
@@ -222,10 +226,14 @@ function go_to_site(_url) {
             '<button class="btn btn-light">About project</button>',
             '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('button').on('mousedown', about_project);
+                $(col).find('button').on('mousedown', function() {
+                    about_project();
+                });
             },
             function (col) {
-                $(col).find('button').on('mousedown', send_email);
+                $(col).find('button').on('click', function() {
+                    send_email();
+                });
             }
         );
 	};
@@ -250,10 +258,14 @@ function go_to_site(_url) {
             '<button class="btn btn-light">About project</button>',
             '<button class="btn btn-light">Email project</button>',
             function (col) {
-                $(col).find('button').on('mousedown', about_project);
+                $(col).find('button').on('mousedown', function() {
+                    about_project();
+                });
             },
             function (col) {
-                $(col).find('button').on('mousedown', send_email);
+                $(col).find('button').on('click', function () {
+                    send_email();
+                });
             }
         );
     };
@@ -306,13 +318,18 @@ function set_buttons(first, last, first_callback, last_callback) {
     if ('undefined' == typeof(first)) first = '';
     if ('undefined' == typeof(last)) last = '';
     var $nav = $('#nav');
-    $nav.find('.col:not(#logo-wrapper)').fadeOut(function() {
-        $nav.find('.col:nth-of-type(2)').html(first);
-        $nav.find('.col:nth-of-type(4)').html(last);
-        $nav.find('.col:not(#logo-wrapper)').fadeIn(function() {
-            if ('function' == typeof (first_callback)) first_callback($nav.find('.col:nth-of-type(2)'));
+    $nav.find('.col:nth-of-type(2)').fadeOut(function() {
+        $(this).html(first).fadeIn(function() {
+            if ('function' == typeof(first_callback)) first_callback($nav.find('.col:nth-of-type(2)'));
+        });
+    });
+    $nav.find('.col:nth-of-type(4)').fadeOut(function() {
+        $(this).html(last).fadeIn(function () {
             if ('function' == typeof (last_callback)) last_callback($nav.find('.col:nth-of-type(4)'));
         });
+    });
+    $nav.find('.col:nth-of-type(1), .col:nth-of-type(5)').fadeOut(function() {
+        $(this).fadeIn();
         $nav.find('button').blur();
     });
 };
@@ -406,7 +423,7 @@ function send_email() {
     $modal.find('p:first').html('Send me<br /><b>' + title + '</b>');
     $modal.modal({backdrop:'static'});
     $modal.find('input[type="email"]').val('').keyboard();
-    $modal.find('.btn-primary:last').click(function (event) {
+    $modal.find('.btn-primary:last').click(function(event) {
         event.stopPropagation();
         var address = $modal.find('input[type="email"]').val();
         if (!address.length || -1 == address.indexOf('@') || -1 == address.indexOf('.')) {
@@ -509,10 +526,14 @@ function set_panel() {
                     '<button class="btn btn-light">About project</button>',
                     '<button class="btn btn-light">Email project</button>',
                     function (col) {
-                        $(col).find('button').on('mousedown', about_project);
+                        $(col).find('button').on('mousedown', function() {
+                            about_project();
+                        });
                     },
                     function (col) {
-                        $(col).find('button').on('mousedown', send_email);
+                        $(col).find('button').on('click', function() {
+                            send_email();
+                        });
                     }
                 );
             } else {
