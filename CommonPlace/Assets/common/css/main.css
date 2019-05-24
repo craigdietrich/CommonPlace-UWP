@@ -1,5 +1,5 @@
-﻿html, body {-ms-content-zooming:none;}
-body {background-color:#000000; font-family:Verdana; overflow:hidden;}
+﻿html, body {-ms-content-zooming:none; overflow:hidden;}
+body {background-color:#000000; font-family:Verdana;}
 .btn {border-radius:0px;}
 #site {position:absolute; left:0px; top:0px; width:100%; z-index:7; border:0; background-color:#000000;}
 .custom_msg {

@@ -26,7 +26,11 @@ var path_index = 1;
 var project_index = -1;
 $(document).ready(function() {
     // Set the iframe height to account for the height of the nav
-    $('#site').height( parseInt($(window).height()) - parseInt($('#nav').height()) );
+    var iframe_height = function () {
+        $('#site').height(parseInt($(window).height()) - parseInt($('#nav').height()));
+    };
+    iframe_height();
+    $(window).resize(iframe_height);
     // Get projects and start the rotation
     get_paths(primary, function (_paths) {
         paths = _paths.slice();
