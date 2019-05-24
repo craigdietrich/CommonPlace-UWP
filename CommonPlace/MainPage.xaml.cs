@@ -11,6 +11,7 @@ using Windows.ApplicationModel;
 using Windows.Data.Json;
 using LightBuzz.SMTP;
 using Windows.ApplicationModel.Email;
+using Windows.UI.Core;
 
 namespace CommonPlace
 {
@@ -28,15 +29,26 @@ namespace CommonPlace
             // Extend the application over the task bar
             // ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
+            // Title bar chrome
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ForegroundColor = Windows.UI.Colors.Gray;
+            titleBar.BackgroundColor = Windows.UI.Colors.Black;
+            titleBar.ButtonForegroundColor = Windows.UI.Colors.Gray;
+            titleBar.ButtonBackgroundColor = Windows.UI.Colors.Black;
+            titleBar.ButtonHoverForegroundColor = Windows.UI.Colors.White;
+            titleBar.ButtonHoverBackgroundColor = Windows.UI.Colors.Black;
+            titleBar.ButtonPressedForegroundColor = Windows.UI.Colors.White;
+            titleBar.ButtonPressedBackgroundColor = Windows.UI.Colors.Black;
+            titleBar.InactiveForegroundColor = Windows.UI.Colors.Gray;
+            titleBar.InactiveBackgroundColor = Windows.UI.Colors.Black;
+            titleBar.ButtonInactiveForegroundColor = Windows.UI.Colors.Gray;
+            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Black;
         }
-
-        private async void MainPage_Loaded(object sender, RoutedEventArgs e)
+    
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             string src = "ms-appx-web:///Assets/index.html";
             this.MyWebView.Navigate(new Uri(src));
-            // Alert for testing
-            //MessageDialog showDialog = new MessageDialog("smtpPassword: " + smtpPassword);
-            //var result = await showDialog.ShowAsync();
         }
 
         private async void MyWebView_ContendLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
@@ -106,13 +118,16 @@ namespace CommonPlace
         private void ToggleFullScreenMode()
         {
             var view = ApplicationView.GetForCurrentView();
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             if (view.IsFullScreenMode)
             {
                 view.ExitFullScreenMode();
+                coreTitleBar.ExtendViewIntoTitleBar = false;
             }
             else
             {
                 view.TryEnterFullScreenMode();
+                coreTitleBar.ExtendViewIntoTitleBar = true;
             }
         }
     }

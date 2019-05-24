@@ -3,7 +3,7 @@
   <Identity Name="1f7df8ad-4184-4b89-8d54-f0b2a283c3c7" Publisher="CN=owner" Version="1.0.59.0" />
   <mp:PhoneIdentity PhoneProductId="1f7df8ad-4184-4b89-8d54-f0b2a283c3c7" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>CommonPlace</DisplayName>
+    <DisplayName>CommonPlace Screen</DisplayName>
     <PublisherDisplayName>owner</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="CommonPlace.App">
-      <uap:VisualElements DisplayName="CommonPlace" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="CommonPlace" BackgroundColor="#676767">
+      <uap:VisualElements DisplayName="CommonPlace" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="CommonPlace for presentation screens that may also be touchscreens." BackgroundColor="#676767">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="CommonPlace" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
@@ -24,6 +24,9 @@
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#676767" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape" />
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>
