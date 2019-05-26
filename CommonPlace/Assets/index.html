@@ -345,7 +345,7 @@ function about_platform() {
     if ('undefined' != typeof(app_info.long_description)) $('.app_long_description').html(nl2br(app_info.long_description.trim()));
     $('#aboutPlatformModal').modal({ backdrop: 'static' });
 }
-// Advanced features in the panel
+// Advanced options
 function advanced_options() {
     $('#advancedOptionsModal').modal({ backdrop: 'static' });
     $('#advancedOptionsModal').find('.modal-body .show').collapse('hide');
@@ -363,13 +363,19 @@ function advanced_options() {
             window.external.notify(JSON.stringify(json));
         });
         // Toggle fullscreen
-        $('#advancedOptionsModal').find('#toggleFullscreenButton').click(function () {
+        $('#advancedOptionsModal').find('#toggleFullscreenButton').click(function() {
             var json = {};
             json.method = 'toggle_fullscreen';
             window.external.notify(JSON.stringify(json));
             var $this = $(this);
             $this.blur().text((-1 == $this.text().indexOf('Exit')) ? 'Exit fullscreen' : 'Enter fullscreen');
             $this.closest('.modal').modal('hide');
+        });
+        $('#advancedOptionsModal').find('#showEmailConfigButton').click(function() {
+            var json = {};
+            json.method = 'show_email_config';
+            window.external.notify(JSON.stringify(json));
+            $(this).closest('.modal').modal('hide');
         });
     };
     // Write options in the choose path pulldown
@@ -601,7 +607,7 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                     <div class="col">
                         <img src="common/css/Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
                         <p>
-                            <b>CommonPlace</b>
+                            <b>CommonPlace Screen</b>
                             <small class="app_authors"></small>
                             <small class="version_num"></small>
                         </p>
@@ -631,12 +637,17 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
           </div>
           <div class="modal-body">
               <!-- restart -->
+              <h6>Actions</h6>
               <p>
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#choosePath" aria-expanded="false" aria-controls="choosePath">Switch to a different collection</button>
-                  &nbsp; &nbsp; 
+                  &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#restartMessage" aria-expanded="false" aria-controls="restartMessage">Restart CommonPlace</button>
                   &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" id="toggleFullscreenButton">Exit fullscreen</button>
+              </p>
+              <h6>Configuration</h6>
+              <p>
+                  <button class="btn btn-default" type="button" id="showEmailConfigButton">Set email SMTP fields</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">

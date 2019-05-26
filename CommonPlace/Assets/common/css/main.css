@@ -46,4 +46,5 @@ body {background-color:#000000; font-family:Verdana;}
 #choosePath .card > a:active {background-color:#dddddd; text-decoration:none;} 
 #advancedOptionsModal p button {margin-bottom:22px;}
 #advancedOptionsModal .collapse {margin-bottom:12px;}
+#advancedOptionsModal h6 {padding-bottom:6px;}
 #aboutProjectModal p small {line-height:1; color:#666666;}

@@ -9,7 +9,9 @@
     Background="Black">
 
     <Grid Background="Black">
-        <WebView 
+
+        <Grid>
+            <WebView 
             x:Name="MyWebView" 
             DOMContentLoaded="MyWebView_ContendLoaded"  
             HorizontalAlignment="Stretch" 
@@ -17,5 +19,44 @@
             DefaultBackgroundColor="Black" 
             ScriptNotify="MainWebView_ScriptNotify" 
         />
+        </Grid>
+
+        <Grid Margin="0,40,8,0" Visibility="Collapsed" x:Name="emailConfigView">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" Background="LightGray" BorderThickness="1" BorderBrush="DarkGray">
+                <TextBlock Text="CommonPlace Screen" Margin="40,30,0,0" FontSize="20" FontWeight="Bold"/>
+                <TextBlock Text="Email configuration" Margin="40,20,0,0" FontSize="18" FontWeight="Normal"/>
+                <TextBox x:Name="host"
+                         Header="SMTP Host" PlaceholderText="smtp.gmail.com"
+                         Width="300" HorizontalAlignment="Left" Margin="40,20,0,0"/>
+                <TextBox x:Name="username"
+                         Header="Username" PlaceholderText=""
+                         Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
+                <PasswordBox x:Name="password"
+                         Header="Password" PlaceholderText=""
+                         Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="port"
+                         Header="Port" PlaceholderText="465"
+                         Width="60" HorizontalAlignment="Left" Margin="40,10,0,0"/>
+                    <ComboBox x:Name="secure" Margin="20,38,0,0"  Width="60" SelectedIndex="0">
+                        <x:String>ssl</x:String>
+                        <x:String>tls</x:String>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Save changes" Margin="40,40,0,40" />
+                    <Button Content="Cancel" Margin="20,40,0,40" Background="LightGray" Click="emailConfigCancelButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
     </Grid>
+
 </Page>

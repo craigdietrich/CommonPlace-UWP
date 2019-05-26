@@ -12,6 +12,8 @@ using Windows.Data.Json;
 using LightBuzz.SMTP;
 using Windows.ApplicationModel.Email;
 using Windows.UI.Core;
+using Windows.Storage;
+using System.Diagnostics;
 
 namespace CommonPlace
 {
@@ -64,6 +66,11 @@ namespace CommonPlace
             string returnValue = await this.MyWebView.InvokeScriptAsync("set_app_vars", js_args);
         }
 
+        private void emailConfigCancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.emailConfigView.Visibility = Visibility.Collapsed;
+        }
+
         private async void MainWebView_ScriptNotify(object sender, NotifyEventArgs e)
         {
             if (string.IsNullOrEmpty(e.Value)) return;
@@ -81,16 +88,38 @@ namespace CommonPlace
                 case "toggle_fullscreen":
                     ToggleFullScreenMode();
                     break;
+                case "show_email_config":
+                    this.emailConfigView.Visibility = Visibility.Visible;
+                    break;
                 case "email":
-                    // Load Email SMTP settings
-                    string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
-                    XDocument loadedData = XDocument.Load(XMLFilePath);
-                    XElement generalElement = loadedData.Element("emailSettings");
-                    string smtpHost = (string)generalElement.Element("smtpHost");
-                    string smtpUsername = (string)generalElement.Element("smtpUsername");
-                    string smtpPassword = (string)generalElement.Element("smtpPassword");
-                    string smtpSecure = (string)generalElement.Element("smtpSecure");
-                    string smtpPort = (string)generalElement.Element("smtpPort");
+                    string smtpHost, smtpUsername, smtpPassword, smtpSecure, smtpPort;
+                    smtpHost = smtpUsername = smtpPassword = smtpSecure = smtpPort = String.Empty;
+                    try
+                    {
+                        // See if SMTP settings have been set in local data
+                        Debug.WriteLine("Trying local folder");
+                        StorageFile file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("EmailConfig.xml");
+                    }
+                    catch
+                    {
+                        // Load fallback SMTP settings
+                        Debug.WriteLine("Trying installed location");
+                        string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
+                        XDocument loadedData = XDocument.Load(XMLFilePath);
+                        XElement generalElement = loadedData.Element("emailSettings");
+                        smtpHost = (string)generalElement.Element("smtpHost");
+                        smtpUsername = (string)generalElement.Element("smtpUsername");
+                        smtpPassword = (string)generalElement.Element("smtpPassword");
+                        smtpSecure = (string)generalElement.Element("smtpSecure");
+                        smtpPort = (string)generalElement.Element("smtpPort");
+                    }
+                    Debug.WriteLine("smtpHost: "+smtpHost+" smtpUsername: "+smtpUsername+" smtpPasswrod: "+smtpPassword+" smtpPort: "+smtpPort+" smtpSecure: "+smtpSecure);
+                    if (String.IsNullOrEmpty(smtpHost))
+                    {
+                        MessageDialog showCantEmailDialog = new MessageDialog("Unfotunately, email can't be sent at this time because email SMTP settings haven't been setup.");
+                        var cantEmailResult = await showCantEmailDialog.ShowAsync();
+                        return;
+                    }
                     // Load values from interface
                     string address = json.GetObject().GetNamedString("address");
                     string title = json.GetObject().GetNamedString("title");
