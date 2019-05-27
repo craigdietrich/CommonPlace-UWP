@@ -71,6 +71,31 @@ namespace CommonPlace
             this.emailConfigView.Visibility = Visibility.Collapsed;
         }
 
+        private void emailConfigSaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            string errorMsg = String.Empty;
+            var smtpSecureBox = (ComboBox)this.smtp_secure;
+            var smtpSecureItem = (ComboBoxItem)smtpSecureBox.SelectedItem;
+            string smtpSecure = smtpSecureItem.Content.ToString();
+            string smtpPort = this.smtp_port.Text;
+            if (String.IsNullOrWhiteSpace(smtpPort)) errorMsg = "SMTP Port is a required field.";
+            string smtpPassword = this.smtp_password.Password;
+            if (String.IsNullOrWhiteSpace(smtpPassword)) errorMsg = "Password is a required field.";
+            string smtpUsername = this.smtp_username.Text;
+            if (String.IsNullOrWhiteSpace(smtpUsername)) errorMsg = "Username is a required field.";
+            string smtpHost = this.smtp_host.Text;
+            if (String.IsNullOrWhiteSpace(smtpHost)) errorMsg = "SMTP Host is a required field.";
+            Debug.WriteLine("smtpHost: " + smtpHost + " smtpUsername: "+ smtpUsername + " smtpPassword: "+ smtpPassword + " smtpPort: "+ smtpPort + " smtpSecure: "+ smtpSecure);
+            if (!String.IsNullOrEmpty(errorMsg))
+            {
+                smtp_validation_error.Text = errorMsg;
+                smtp_validation_error.Visibility = Visibility.Visible;
+                return;
+            }
+            smtp_validation_error.Text = String.Empty;
+            this.emailConfigView.Visibility = Visibility.Collapsed;
+        }
+
         private async void MainWebView_ScriptNotify(object sender, NotifyEventArgs e)
         {
             if (string.IsNullOrEmpty(e.Value)) return;

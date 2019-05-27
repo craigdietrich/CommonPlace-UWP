@@ -33,27 +33,28 @@
             <StackPanel Grid.Column="1" Background="LightGray" BorderThickness="1" BorderBrush="DarkGray">
                 <TextBlock Text="CommonPlace Screen" Margin="40,30,0,0" FontSize="20" FontWeight="Bold"/>
                 <TextBlock Text="Email configuration" Margin="40,20,0,0" FontSize="18" FontWeight="Normal"/>
-                <TextBox x:Name="host"
+                <TextBox x:Name="smtp_host"
                          Header="SMTP Host" PlaceholderText="smtp.gmail.com"
                          Width="300" HorizontalAlignment="Left" Margin="40,20,0,0"/>
-                <TextBox x:Name="username"
+                <TextBox x:Name="smtp_username"
                          Header="Username" PlaceholderText=""
                          Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
-                <PasswordBox x:Name="password"
+                <PasswordBox x:Name="smtp_password"
                          Header="Password" PlaceholderText=""
                          Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="port"
-                         Header="Port" PlaceholderText="465"
+                    <TextBox x:Name="smtp_port"
+                         Header="SMTP Port" PlaceholderText="465"
                          Width="60" HorizontalAlignment="Left" Margin="40,10,0,0"/>
-                    <ComboBox x:Name="secure" Margin="20,38,0,0"  Width="60" SelectedIndex="0">
-                        <x:String>ssl</x:String>
-                        <x:String>tls</x:String>
+                    <ComboBox x:Name="smtp_secure" Margin="20,38,0,0"  Width="60" SelectedIndex="0">
+                        <ComboBoxItem Content="ssl" />
+                        <ComboBoxItem Content="tls" />
                     </ComboBox>
                 </StackPanel>
+                <TextBlock x:Name="smtp_validation_error" Foreground="Red" Text="" Margin="40,14,0,10" FontSize="16"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Save changes" Margin="40,40,0,40" />
-                    <Button Content="Cancel" Margin="20,40,0,40" Background="LightGray" Click="emailConfigCancelButton_Click"/>
+                    <Button Content="Save changes" Margin="40,0,0,40" Click="emailConfigSaveButton_Click" />
+                    <Button Content="Cancel" Margin="20,0,0,40" Background="LightGray" Click="emailConfigCancelButton_Click"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
