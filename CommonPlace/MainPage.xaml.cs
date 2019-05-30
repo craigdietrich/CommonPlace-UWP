@@ -33,18 +33,18 @@ namespace CommonPlace
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             // Title bar chrome
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ForegroundColor = Windows.UI.Colors.Gray;
-            titleBar.BackgroundColor = Windows.UI.Colors.Black;
-            titleBar.ButtonForegroundColor = Windows.UI.Colors.Gray;
-            titleBar.ButtonBackgroundColor = Windows.UI.Colors.Black;
-            titleBar.ButtonHoverForegroundColor = Windows.UI.Colors.White;
-            titleBar.ButtonHoverBackgroundColor = Windows.UI.Colors.Black;
-            titleBar.ButtonPressedForegroundColor = Windows.UI.Colors.White;
-            titleBar.ButtonPressedBackgroundColor = Windows.UI.Colors.Black;
-            titleBar.InactiveForegroundColor = Windows.UI.Colors.Gray;
-            titleBar.InactiveBackgroundColor = Windows.UI.Colors.Black;
-            titleBar.ButtonInactiveForegroundColor = Windows.UI.Colors.Gray;
-            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Black;
+            titleBar.ForegroundColor = Colors.Gray;
+            titleBar.BackgroundColor = Colors.Black;
+            titleBar.ButtonForegroundColor = Colors.Gray;
+            titleBar.ButtonBackgroundColor = Colors.Black;
+            titleBar.ButtonHoverForegroundColor = Colors.White;
+            titleBar.ButtonHoverBackgroundColor = Colors.Black;
+            titleBar.ButtonPressedForegroundColor = Colors.White;
+            titleBar.ButtonPressedBackgroundColor = Colors.Black;
+            titleBar.InactiveForegroundColor = Colors.Gray;
+            titleBar.InactiveBackgroundColor = Colors.Black;
+            titleBar.ButtonInactiveForegroundColor = Colors.Gray;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Black;
         }
     
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -92,6 +92,7 @@ namespace CommonPlace
                 smtp_validation_error.Visibility = Visibility.Visible;
                 return;
             }
+            // TODO: save to app storage
             smtp_validation_error.Text = String.Empty;
             this.emailConfigView.Visibility = Visibility.Collapsed;
         }
@@ -127,24 +128,11 @@ namespace CommonPlace
                     }
                     catch
                     {
-                        // Load fallback SMTP settings
-                        Debug.WriteLine("Trying installed location");
-                        string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "EmailConfig.xml");
-                        XDocument loadedData = XDocument.Load(XMLFilePath);
-                        XElement generalElement = loadedData.Element("emailSettings");
-                        smtpHost = (string)generalElement.Element("smtpHost");
-                        smtpUsername = (string)generalElement.Element("smtpUsername");
-                        smtpPassword = (string)generalElement.Element("smtpPassword");
-                        smtpSecure = (string)generalElement.Element("smtpSecure");
-                        smtpPort = (string)generalElement.Element("smtpPort");
-                    }
-                    Debug.WriteLine("smtpHost: "+smtpHost+" smtpUsername: "+smtpUsername+" smtpPasswrod: "+smtpPassword+" smtpPort: "+smtpPort+" smtpSecure: "+smtpSecure);
-                    if (String.IsNullOrEmpty(smtpHost))
-                    {
                         MessageDialog showCantEmailDialog = new MessageDialog("Unfotunately, email can't be sent at this time because email SMTP settings haven't been setup.");
                         var cantEmailResult = await showCantEmailDialog.ShowAsync();
                         return;
                     }
+                    Debug.WriteLine("smtpHost: "+smtpHost+" smtpUsername: "+smtpUsername+" smtpPasswrod: "+smtpPassword+" smtpPort: "+smtpPort+" smtpSecure: "+smtpSecure);
                     // Load values from interface
                     string address = json.GetObject().GetNamedString("address");
                     string title = json.GetObject().GetNamedString("title");
