@@ -68,10 +68,14 @@
             console.log('Current project URL: ' + opts.url);
 
             var $header = $('<div class="sidebar"><div class="header"></div></div>').appendTo($self);
-            if ('string' == typeof (opts.title) && opts.title.length) $('<div class="title"><div class="justify">&nbsp;</div>' + opts.title + '</div>').appendTo($header);
-            $header.mousedown(function () {
-                var json = { method: 'coming_soon' };
-                window.external.notify(JSON.stringify(json));
+            if ('string' == typeof (opts.title) && opts.title.length) {
+                $('<div class="title"><div class="justify">&nbsp;</div>' + opts.title + '</div>').appendTo($header);
+                var $header_content = $('<div class="header_content"><h3>' + opts.title + '</h3></div>').appendTo($header);
+            };
+            $header.find('.header, .title').mousedown(function (e) {
+                e.stopPropagation();
+                var width = parseInt($header.width());
+                $header.find('.header_content').width(width).slideToggle('fast');
             });
 
             var $wrapper = $('<div class="wrapper"></div>').appendTo($self);
@@ -276,12 +280,17 @@
                         break;
                     }
                     if (null != project) {
+                        // Title card
                         var $cell = $('<td class="title_card"><div><div class="inner"></div></div><div class="mast"></div></td>').appendTo($row);
                         $cell.find('.inner').html('<h4>' + project.title + '</h4>');
                         //$cell.find('.inner').append('<h6>Question</h6>');
                         $cell.find('.inner').append('<p>' + project.description + '</p>');
                         $cell.find('.inner').append('<h6>Author</h6>');
                         $cell.find('.inner').append('<p>' + project.Owner.name + '</p>');
+                        // Header bar 
+                        $header_content.prepend('<div class="options"><a class="active" href="javascript:void(null);">Main</a><a href="javascript:void(null);">Tags</a><a href="javascript:void(null);">Comments</a></div>');
+                        $header_content.append('<div class="description">'+project.description+'</div>');
+
                     };
                 };
                 // Buckets
