@@ -70,7 +70,7 @@
             var $header = $('<div class="sidebar"><div class="header"></div></div>').appendTo($self);
             if ('string' == typeof (opts.title) && opts.title.length) {
                 $('<div class="title"><div class="justify">&nbsp;</div>' + opts.title + '</div>').appendTo($header);
-                var $header_content = $('<div class="header_content"><h3>' + opts.title + '</h3></div>').appendTo($header);
+                var $header_content = $('<div class="header_content"></div>').appendTo($header);
             };
             $header.find('.header, .title').mousedown(function (e) {
                 e.stopPropagation();
@@ -288,9 +288,35 @@
                         $cell.find('.inner').append('<h6>Author</h6>');
                         $cell.find('.inner').append('<p>' + project.Owner.name + '</p>');
                         // Header bar 
-                        $header_content.prepend('<div class="options"><a class="active" href="javascript:void(null);">Main</a><a href="javascript:void(null);">Tags</a><a href="javascript:void(null);">Comments</a></div>');
-                        $header_content.append('<div class="description">'+project.description+'</div>');
-
+                        $header_content.append('<div class="options"><a class="active" data-id="main" href="javascript:void(null);">Main</a><a data-id="tags" href="javascript:void(null);">Tags</a><a data-id="comments" href="javascript:void(null);">Comments</a></div>');
+                        $header_content.append('<h3>'+project.title+'</div>');
+                        $header_content.append('<div class="description main">' + project.description + '</div>');
+                        $header_content.append('<h6 class="main">Author</h6>');
+                        $header_content.append('<div class="descriptor main">' + project.Owner.name + '</div>');
+                        $header_content.append('<h6 class="tags">Course</h6>');
+                        $header_content.append('<div class="descriptor tags">' + project.course_label + '</div>');
+                        var topics = [];
+                        for (var j = 0; j < project.topics.length; j++) {
+                            topics.push(project.topics[j].title);
+                        };
+                        $header_content.append('<h6 class="tags">Topics</h6>');
+                        $header_content.append('<div class="descriptor tags">' + ((topics.length) ? topics.join('<br />') : '&nbsp;') + '</div>');
+                        var keywords = [];
+                        for (var j = 0; j < project.keywords.length; j++) {
+                            keywords.push(project.keywords[j].title);
+                        };
+                        $header_content.append('<h6 class="tags">Keywords</h6>');
+                        $header_content.append('<div class="descriptor tags">' + ((keywords.length) ? keywords.join('<br />') : '&nbsp;') + '</div>');
+                        var all_options = [];
+                        $header_content.find('.options > a').each(function () {
+                            if (-1 == all_options.indexOf('.' + $(this).data('id'))) all_options.push('.' + $(this).data('id'));
+                        }).click(function () {
+                            var $this = $(this);
+                            $header_content.find(all_options.join(',')).hide();
+                            $header_content.find('.' + $this.data('id')).show();
+                            $this.closest('.options').find('a').removeClass('active');
+                            $this.addClass('active');
+                        });
                     };
                 };
                 // Buckets
