@@ -92,7 +92,18 @@ namespace CommonPlace
                 smtp_validation_error.Visibility = Visibility.Visible;
                 return;
             }
-            // TODO: save to app storage
+            // Save SMTP settings
+            Debug.WriteLine("Saving to local folder");
+            Debug.WriteLine("smtpHost: " + smtpHost + " smtpUsername: " + smtpUsername + " smtpPassword: " + smtpPassword + " smtpPort: " + smtpPort + " smtpSecure: " + smtpSecure);
+            Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
+            composite["smtpHost"] = smtpHost;
+            composite["smtpUsername"] = smtpUsername;
+            composite["smtpPassword"] = smtpPassword;
+            composite["smtpPort"] = smtpPort;
+            composite["smtpSecure"] = smtpSecure;
+            localSettings.Values["smtpSettings"] = composite;
+            // Close box
             smtp_validation_error.Text = String.Empty;
             this.emailConfigView.Visibility = Visibility.Collapsed;
         }
@@ -115,6 +126,17 @@ namespace CommonPlace
                     ToggleFullScreenMode();
                     break;
                 case "show_email_config":
+                    Windows.Storage.ApplicationDataContainer theLocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                    Windows.Storage.ApplicationDataCompositeValue theComposite = (Windows.Storage.ApplicationDataCompositeValue)theLocalSettings.Values["smtpSettings"];
+                    if (theComposite != null)
+                    {
+                        smtp_host.Text = (String)theComposite["smtpHost"];
+                        smtp_username.Text = (String)theComposite["smtpUsername"];
+                        smtp_password.Password = "";  // Password must be re-entered to save again
+                        smtp_port.Text = (String)theComposite["smtpPort"];
+                        var smtpSecureBox = (ComboBox)this.smtp_secure;
+                        smtpSecureBox.SelectedIndex = ((String)theComposite["smtpSecure"] == "tls") ? 1 : 0;
+                    }
                     this.emailConfigView.Visibility = Visibility.Visible;
                     break;
                 case "email":
@@ -122,9 +144,13 @@ namespace CommonPlace
                     smtpHost = smtpUsername = smtpPassword = smtpSecure = smtpPort = String.Empty;
                     try
                     {
-                        // See if SMTP settings have been set in local data
-                        Debug.WriteLine("Trying local folder");
-                        StorageFile file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("EmailConfig.xml");
+                        Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                        Windows.Storage.ApplicationDataCompositeValue composite = (Windows.Storage.ApplicationDataCompositeValue) localSettings.Values["smtpSettings"];
+                        smtpHost = (String) composite["smtpHost"];
+                        smtpUsername = (String) composite["smtpUsername"];
+                        smtpPassword = (String) composite["smtpPassword"];
+                        smtpPort = (String) composite["smtpPort"];
+                        smtpSecure = (String) composite["smtpSecure"];
                     }
                     catch
                     {
@@ -133,15 +159,12 @@ namespace CommonPlace
                         return;
                     }
                     Debug.WriteLine("smtpHost: "+smtpHost+" smtpUsername: "+smtpUsername+" smtpPasswrod: "+smtpPassword+" smtpPort: "+smtpPort+" smtpSecure: "+smtpSecure);
-                    // Load values from interface
                     string address = json.GetObject().GetNamedString("address");
                     string title = json.GetObject().GetNamedString("title");
                     string url = json.GetObject().GetNamedString("url");
-                    // Create email
-                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), false, smtpUsername, smtpPassword);
+                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), true, smtpUsername, smtpPassword);
                     EmailMessage emailMessage = new EmailMessage();
                     emailMessage.To.Add(new EmailRecipient(address));
-                    //emailMessage.Bcc.Add(new EmailRecipient("someone3@anotherdomain.com"));
                     emailMessage.Subject = "[OXY CommonPlace] "+title;
                     emailMessage.Body = title + "\r\n\r\n" + url;
                     await client.SendMailAsync(emailMessage);

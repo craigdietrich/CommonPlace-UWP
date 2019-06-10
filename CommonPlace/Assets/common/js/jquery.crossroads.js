@@ -271,7 +271,6 @@
             }
 
             set_data(project_id(opts.url), function () {
-                // Title page
                 if (null !== opts.projects) {
                     var project = null;
                     for (var j = 0; j < opts.projects.length; j++) {
