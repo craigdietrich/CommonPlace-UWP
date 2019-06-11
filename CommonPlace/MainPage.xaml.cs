@@ -14,6 +14,7 @@ using Windows.ApplicationModel.Email;
 using Windows.UI.Core;
 using Windows.Storage;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace CommonPlace
 {
@@ -47,6 +48,16 @@ namespace CommonPlace
             titleBar.ButtonInactiveBackgroundColor = Colors.Black;
         }
     
+        private async void test_get_page()
+        {
+            var handler = new HttpClientHandler { AllowAutoRedirect = true };
+            var client = new HttpClient(handler);
+            var response = await client.GetAsync(new Uri("https://craigdietrich.com"));
+            response.EnsureSuccessStatusCode();
+            var html = await response.Content.ReadAsStringAsync();
+            Debug.Write(html);
+        }
+
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             string src = "ms-appx-web:///Assets/index.html";
@@ -61,8 +72,9 @@ namespace CommonPlace
             string authors = (string)generalElement.Element("authors");
             string short_description = (string)generalElement.Element("shortDescription");
             string long_description = (string)generalElement.Element("longDescription");
+            string default_source = (string)generalElement.Element("defaultSource");
             var version_num = GetAppVersion();
-            string[] js_args = { version_num, authors, short_description, long_description };
+            string[] js_args = { version_num, authors, short_description, long_description, default_source };
             string returnValue = await this.MyWebView.InvokeScriptAsync("set_app_vars", js_args);
         }
 
@@ -121,6 +133,10 @@ namespace CommonPlace
                 case "coming_soon":
                     MessageDialog showComingSoonDialog = new MessageDialog("CommonPlace feature coming soon!");
                     var comingSoonResult = await showComingSoonDialog.ShowAsync();
+                    break;
+                case "no_source":
+                    MessageDialog showNoSourceDialog = new MessageDialog("Could not run CommonPlace because a source of projects couldn't be found!");
+                    var noSourceResult = await showNoSourceDialog.ShowAsync();
                     break;
                 case "toggle_fullscreen":
                     ToggleFullScreenMode();

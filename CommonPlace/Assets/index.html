@@ -19,11 +19,6 @@
 <script src="common/js/hammer.min.js"></script>
 <script src="common/js/jquery.crossroads.js"></script>
 <script>
-var app_info = {};
-var primary = 'http://scalar.cdla.oxycreates.org/commonplace/';
-var paths = [];
-var path_index = 1;
-var project_index = -1;
 $(document).ready(function() {
     // Set the iframe height to account for the height of the nav
     var iframe_height = function () {
@@ -31,17 +26,6 @@ $(document).ready(function() {
     };
     iframe_height();
     $(window).resize(iframe_height);
-    // Get projects and start the rotation
-    get_paths(primary, function (_paths) {
-        paths = _paths.slice();
-        console.log(paths);
-        path_index = get_path_index();
-        console.log('path_index: ' + path_index);
-        set_panel();
-        $('#nav').fadeTo('slow', 1, function () {
-            animate_next_project();
-        });
-    });
     // Messages from the auto-navigate plugin
     window.addEventListener("message", function (event) {
         switch (event.data) {
@@ -54,13 +38,38 @@ $(document).ready(function() {
                 break;
         }
     }, false);
+    // Set globals
+    paths = [];
+    path_index = 1;
+    project_index = -1;
+    // Determine the data source
+    var source = $.jStorage.get('commonplace_source');
+    //source = 'https://docs.google.com/spreadsheets/d/1Xtj4xuukN2h_yBsuJ7mCONnkGB17Q2ZDM3fsUbrVWqc/edit#gid=0';  // TODO
+    if (!source && 'undefined' != typeof(app_info) && 'undefined' != typeof(app_info.default_source)) source = app_info.default_source;
+    if (!source) {
+        window.external.notify(JSON.stringify({ method: 'no_source' }));
+        return;
+    }
+    // Go get the paths and start the application
+    get_paths(source, function (_paths) {
+        paths = _paths.slice();
+        console.log(paths);
+        path_index = get_path_index();
+        console.log('path_index: ' + path_index);
+        set_panel();
+        $('#nav').fadeTo('slow', 1, function () {
+            animate_next_project();
+        });
+    });
 });
-// Get info from the app itself
-function set_app_vars(version_num, authors, short_description, long_description) {
+// Get info about the app
+function set_app_vars(version_num, authors, short_description, long_description, default_source) {
+    app_info = {};  // Global
     app_info.version_num = version_num;
     app_info.authors = authors;
     app_info.short_description = short_description;
     app_info.long_description = long_description;
+    app_info.default_source = default_source;
 };
 // Sort paths by title
 function path_compare(a,b) {
@@ -70,58 +79,67 @@ function path_compare(a,b) {
 };
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
-    if('/' != url.substr(-1)) url += '/';
-	var paths = [];
-    var parsed = [];
-	$.ajax({
-	    url: url+'rdf/instancesof/path?rec=1&format=json&t='+(new Date().getTime()),
-	    jsonp: "callback",
-	    dataType: "jsonp",
-	    format:'json',
-	    success: function(response) {
-            for (var uri in response) {
-				var path = {};
-				if ('http://www.openannotation.org/ns/Annotation' != response[uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
-				path.version_uri = response[uri]['http://www.openannotation.org/ns/hasBody'][0].value;
-                path.content_uri = version_uri_to_content_uri(path.version_uri);
-                if (-1 != parsed.indexOf(path.content_uri)) continue;
-                parsed.push(path.content_uri);
-				path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
-				path.desc = ('undefined'!=typeof(response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
-				path.contents = [];
-				for (var key in response) {
-					if ('http://www.openannotation.org/ns/Annotation' != response[key]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
-					if (path.version_uri != response[key]['http://www.openannotation.org/ns/hasBody'][0].value) continue;
-					var content = {};
-					content.target = response[key]['http://www.openannotation.org/ns/hasTarget'][0].value;
-					content.version_uri = content.target.substr(0, content.target.lastIndexOf('#'));
-					content.content_uri = version_uri_to_content_uri(content.version_uri);
-					content.index = parseInt(content.target.substr(content.target.indexOf('index=')+6));
-                    content.title = response[content.version_uri]['http://purl.org/dc/terms/title'][0].value;
-                    content.description = ('undefined' != typeof (response[content.version_uri]['http://purl.org/dc/terms/description'])) ? response[content.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
-                    content.content = ('undefined' != typeof (response[content.version_uri]['http://rdfs.org/sioc/ns#content'])) ? response[content.version_uri]['http://rdfs.org/sioc/ns#content'][0].value : null;
-                    content.thumb = ('undefined' != typeof (response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
-                    if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png'; 
-                    content.url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'][0].value : null;
-                    content.short_url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'][0].value : '(no url)';
-                    content.authors = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'][0].value : null;
-                    content.institution = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'][0].value : null;
-                    content.publisher = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'][0].value : null;
-                    content.date = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'][0].value : null;
-                    content.slideDeckNumSlides = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'][0].value) : 0;
-                    content.slideDeckSecondsPerSlide = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'][0].value) : 0;
-                    path.contents.push(content);
-				};
-                paths.push(path);
-            };
-            paths.sort(path_compare);
-			callback(paths);
-	    },
-	    error: function(err) {
-	    	console.log(err);
-	    	callback(paths);
-	    }
-	});	
+    var is_google_spreadsheet = (-1 != url.indexOf('google.com')) ? true : false;
+    if (is_google_spreadsheet) {  // Google Spreadsheet
+        var spreadsheet_id = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(url)[1];
+        var google_spreadsheet_url = 'https://spreadsheets.google.com/feeds/cells/' + spreadsheet_id + '/1/public/values?alt=json-in-script&callback=?';
+        $.getJSON(google_spreadsheet_url, function (data) {
+            console.log(data);
+        });
+    } else {  // Scalar
+        if ('/' != url.substr(-1)) url += '/';
+        var paths = [];
+        var parsed = [];
+        $.ajax({
+            url: url + 'rdf/instancesof/path?rec=1&format=json&t=' + (new Date().getTime()),
+            jsonp: "callback",
+            dataType: "jsonp",
+            format: 'json',
+            success: function (response) {
+                for (var uri in response) {
+                    var path = {};
+                    if ('http://www.openannotation.org/ns/Annotation' != response[uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
+                    path.version_uri = response[uri]['http://www.openannotation.org/ns/hasBody'][0].value;
+                    path.content_uri = version_uri_to_content_uri(path.version_uri);
+                    if (-1 != parsed.indexOf(path.content_uri)) continue;
+                    parsed.push(path.content_uri);
+                    path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
+                    path.desc = ('undefined' != typeof (response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
+                    path.contents = [];
+                    for (var key in response) {
+                        if ('http://www.openannotation.org/ns/Annotation' != response[key]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
+                        if (path.version_uri != response[key]['http://www.openannotation.org/ns/hasBody'][0].value) continue;
+                        var content = {};
+                        content.target = response[key]['http://www.openannotation.org/ns/hasTarget'][0].value;
+                        content.version_uri = content.target.substr(0, content.target.lastIndexOf('#'));
+                        content.content_uri = version_uri_to_content_uri(content.version_uri);
+                        content.index = parseInt(content.target.substr(content.target.indexOf('index=') + 6));
+                        content.title = response[content.version_uri]['http://purl.org/dc/terms/title'][0].value;
+                        content.description = ('undefined' != typeof (response[content.version_uri]['http://purl.org/dc/terms/description'])) ? response[content.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
+                        content.content = ('undefined' != typeof (response[content.version_uri]['http://rdfs.org/sioc/ns#content'])) ? response[content.version_uri]['http://rdfs.org/sioc/ns#content'][0].value : null;
+                        content.thumb = ('undefined' != typeof (response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'])) ? response[content.content_uri]['http://simile.mit.edu/2003/10/ontologies/artstor#thumbnail'][0].value : null;
+                        if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png';
+                        content.url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/url'][0].value : null;
+                        content.short_url = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/shortUrl'][0].value : '(no url)';
+                        content.authors = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/authors'][0].value : null;
+                        content.institution = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/institution'][0].value : null;
+                        content.publisher = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/publisher'][0].value : null;
+                        content.date = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'])) ? response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/date'][0].value : null;
+                        content.slideDeckNumSlides = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckNumSlides'][0].value) : 0;
+                        content.slideDeckSecondsPerSlide = ('undefined' != typeof (response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'])) ? parseInt(response[content.version_uri]['http://scalar.cdla.oxycreates.org/commonplace/terms/slideDeckSecondsPerSlide'][0].value) : 0;
+                        path.contents.push(content);
+                    };
+                    paths.push(path);
+                };
+                paths.sort(path_compare);
+                callback(paths);
+            },
+            error: function (err) {
+                console.log(err);
+                callback(paths);
+            }
+        });
+    };
 };
 // Get the path index either from localStorage or default to the first path
 function get_path_index() {
@@ -648,6 +666,8 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
               <h6>Configuration</h6>
               <p>
                   <button class="btn btn-default" type="button" id="showEmailConfigButton">Set email SMTP fields</button>
+                  &nbsp; &nbsp;
+                  <button class="btn btn-default" type="button" id="enterSource">Change projects source</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">
