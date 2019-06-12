@@ -14,7 +14,6 @@ using Windows.ApplicationModel.Email;
 using Windows.UI.Core;
 using Windows.Storage;
 using System.Diagnostics;
-using System.Net.Http;
 
 namespace CommonPlace
 {
@@ -46,16 +45,6 @@ namespace CommonPlace
             titleBar.InactiveBackgroundColor = Colors.Black;
             titleBar.ButtonInactiveForegroundColor = Colors.Gray;
             titleBar.ButtonInactiveBackgroundColor = Colors.Black;
-        }
-    
-        private async void test_get_page()
-        {
-            var handler = new HttpClientHandler { AllowAutoRedirect = true };
-            var client = new HttpClient(handler);
-            var response = await client.GetAsync(new Uri("https://craigdietrich.com"));
-            response.EnsureSuccessStatusCode();
-            var html = await response.Content.ReadAsStringAsync();
-            Debug.Write(html);
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)

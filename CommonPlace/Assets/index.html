@@ -44,12 +44,12 @@ $(document).ready(function() {
     project_index = -1;
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
-    //source = 'https://docs.google.com/spreadsheets/d/1Xtj4xuukN2h_yBsuJ7mCONnkGB17Q2ZDM3fsUbrVWqc/edit#gid=0';  // TODO
     if (!source && 'undefined' != typeof(app_info) && 'undefined' != typeof(app_info.default_source)) source = app_info.default_source;
     if (!source) {
-        window.external.notify(JSON.stringify({ method: 'no_source' }));
+        $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
+        advanced_options();
         return;
-    }
+    };
     // Go get the paths and start the application
     get_paths(source, function (_paths) {
         paths = _paths.slice();
@@ -84,7 +84,60 @@ function get_paths(url, callback) {
         var spreadsheet_id = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(url)[1];
         var google_spreadsheet_url = 'https://spreadsheets.google.com/feeds/cells/' + spreadsheet_id + '/1/public/values?alt=json-in-script&callback=?';
         $.getJSON(google_spreadsheet_url, function (data) {
-            console.log(data);
+            var fields = [];
+            var rows = {};
+            var paths = []
+            for (var j = 0; j < data.feed.entry.length; j++) {
+                if (data.feed.entry[j]["gs$cell"].row == 1) {
+                    fields.push(data.feed.entry[j].content["$t"]);
+                } else {
+                    var col_index = data.feed.entry[j]["gs$cell"].col - 1;
+                    var row_num = data.feed.entry[j]["gs$cell"].row;
+                    var fieldname = fields[col_index];
+                    var value = data.feed.entry[j].content["$t"];
+                    console.log(row_num);
+                    if ('undefined' == typeof (rows[row_num])) rows[row_num] = {};
+                    rows[row_num][fieldname] = value;
+                };
+            };
+            for (var j in rows) {
+                rows[j]['Path name(s)'] = rows[j]['Path name(s)'].split(';');
+            };
+            for (var j in rows) {
+                for (var k = 0; k < rows[j]["Path name(s)"].length; k++) {
+                    var exists = false;
+                    for (var m = 0; m < paths.length; m++) {
+                        if (paths[m].title == rows[j]["Path name(s)"][k]) exists = true;
+                    };
+                    if (!exists) {
+                        var path = {};
+                        path.title = rows[j]["Path name(s)"][k];
+                        path.desc = '';
+                        path.contents = [];
+                        paths.push(path);
+                    }
+                };
+            };
+            for (var j in rows) {
+                for (var k = 0; k < rows[j]["Path name(s)"].length; k++) {
+                    var pathname = rows[j]["Path name(s)"][k];
+                    var content = {};
+                    content.title = ('undefined' != typeof (rows[j]["dcterms:title"])) ? rows[j]["dcterms:title"] : null;
+                    content.description = ('undefined' != typeof (rows[j]["dcterms:description"])) ? rows[j]["dcterms:title"] : null;
+                    content.content = ('undefined' != typeof (rows[j]["sioc:content"])) ? rows[j]["sioc:content"] : null;
+                    content.thumb = ('undefined' != typeof (rows[j]["art:thumbnail"])) ? rows[j]["art:thumbnail"] : null;
+                    content.url = ('undefined' != typeof (rows[j]["cp:url"])) ? rows[j]["cp:url"] : null;
+                    content.authors = ('undefined' != typeof (rows[j]["cp:authors"])) ? rows[j]["cp:authors"] : null;
+                    content.institution = ('undefined' != typeof (rows[j]["cp:institution"])) ? rows[j]["cp:institution"] : null;
+                    content.publisher = ('undefined' != typeof (rows[j]["cp:publisher"])) ? rows[j]["cp:publisher"] : null;
+                    content.date = ('undefined' != typeof (rows[j]["cp:date"])) ? rows[j]["cp:date"] : null;
+                    for (var m = 0; m < paths.length; m++) {
+                        if (paths[m].title == pathname) paths[m].contents.push(content);
+                    };
+                };
+            };
+            paths.sort(path_compare);
+            callback(paths);
         });
     } else {  // Scalar
         if ('/' != url.substr(-1)) url += '/';
@@ -416,6 +469,17 @@ function advanced_options() {
             }, 700);
         }
     });
+    $('#enterSourceForm').find('[name="enterSourceURL"]').val($.jStorage.get('commonplace_source', ''));
+    $('#enterSourceForm').find('form').submit(function() {
+        var url = $(this).find('[name="enterSourceURL"]').val();
+        $.jStorage.set('commonplace_source', url);
+        setTimeout(function () {
+            var json = {};
+            json.method = 'restart';
+            window.external.notify(JSON.stringify(json));
+            return false;
+        }, 500);
+    });
 }
 // Provide information about the current project
 function about_project() {
@@ -667,7 +731,7 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
               <p>
                   <button class="btn btn-default" type="button" id="showEmailConfigButton">Set email SMTP fields</button>
                   &nbsp; &nbsp;
-                  <button class="btn btn-default" type="button" id="enterSource">Change projects source</button>
+                  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#enterSourceForm">Change projects source</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">
@@ -677,6 +741,15 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
               </div>
               <div class="collapse" id="choosePath">
                   <div class="card card-body"></div>
+              </div>
+              <div class="collapse" id="enterSourceForm">
+                  <div class="card card-body">
+                      Enter the URL to a Scalar book or Google Spreadsheet formatted to be a projects source for CommonPlace. To remove later, delete the URL and save.<br />
+                      <form class="form-inline" style="margin-top:20px;">
+                          <input type="text" name="enterSourceURL" class="form-control col-10" style="margin-bottom:12px;" />
+                          <button class="btn btn-primary" style="margin-bottom:12px;">Save and load</button>
+                      </form>
+                  </div>
               </div>
           </div>
           <div class="modal-footer">
