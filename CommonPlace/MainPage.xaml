@@ -27,7 +27,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="390"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1" Background="LightGray" BorderThickness="1" BorderBrush="DarkGray">
@@ -39,8 +39,8 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBox x:Name="smtp_port" Header="SMTP Port" Width="60" HorizontalAlignment="Left" Margin="40,10,0,0" Text="465"/>
                     <ComboBox x:Name="smtp_secure" Margin="20,38,0,0"  Width="60" SelectedIndex="0">
+                        <ComboBoxItem Content="" />
                         <ComboBoxItem Content="ssl" />
-                        <ComboBoxItem Content="tls" />
                     </ComboBox>
                 </StackPanel>
                 <TextBlock x:Name="smtp_validation_error" Foreground="Red" Text="" Margin="40,14,0,10" FontSize="16"/>

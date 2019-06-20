@@ -135,18 +135,19 @@ namespace CommonPlace
                     Windows.Storage.ApplicationDataCompositeValue theComposite = (Windows.Storage.ApplicationDataCompositeValue)theLocalSettings.Values["smtpSettings"];
                     if (theComposite != null)
                     {
-                        smtp_host.Text = (String)theComposite["smtpHost"];
-                        smtp_username.Text = (String)theComposite["smtpUsername"];
+                        smtp_host.Text = (String) theComposite["smtpHost"];
+                        smtp_username.Text = (String) theComposite["smtpUsername"];
                         smtp_password.Password = "";  // Password must be re-entered to save again
-                        smtp_port.Text = (String)theComposite["smtpPort"];
-                        var smtpSecureBox = (ComboBox)this.smtp_secure;
-                        smtpSecureBox.SelectedIndex = ((String)theComposite["smtpSecure"] == "tls") ? 1 : 0;
+                        smtp_port.Text = (String) theComposite["smtpPort"];
+                        var smtpSecureBox = (ComboBox) this.smtp_secure;
+                        smtpSecureBox.SelectedIndex = ((String) theComposite["smtpSecure"] == "ssl") ? 1 : 0;
                     }
                     this.emailConfigView.Visibility = Visibility.Visible;
                     break;
                 case "email":
                     string smtpHost, smtpUsername, smtpPassword, smtpSecure, smtpPort;
                     smtpHost = smtpUsername = smtpPassword = smtpSecure = smtpPort = String.Empty;
+                    var ssl_bool = false;
                     try
                     {
                         Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -156,6 +157,7 @@ namespace CommonPlace
                         smtpPassword = (String) composite["smtpPassword"];
                         smtpPort = (String) composite["smtpPort"];
                         smtpSecure = (String) composite["smtpSecure"];
+                        ssl_bool = (smtpSecure.Length > 0) ? true : false;  // "SSL" or none
                     }
                     catch
                     {
@@ -167,7 +169,7 @@ namespace CommonPlace
                     string address = json.GetObject().GetNamedString("address");
                     string title = json.GetObject().GetNamedString("title");
                     string url = json.GetObject().GetNamedString("url");
-                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), true, smtpUsername, smtpPassword);
+                    SmtpClient client = new SmtpClient(smtpHost, int.Parse(smtpPort), ssl_bool, smtpUsername, smtpPassword);
                     EmailMessage emailMessage = new EmailMessage();
                     emailMessage.To.Add(new EmailRecipient(address));
                     emailMessage.Subject = "[OXY CommonPlace] "+title;
