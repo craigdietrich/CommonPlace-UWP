@@ -42,6 +42,7 @@ $(document).ready(function() {
     paths = [];
     path_index = 1;
     project_index = -1;
+    global_stop_timer = false;
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
     if (!source && 'undefined' != typeof(app_info) && 'undefined' != typeof(app_info.default_source)) source = app_info.default_source;
@@ -448,6 +449,19 @@ function advanced_options() {
             window.external.notify(JSON.stringify(json));
             $(this).closest('.modal').modal('hide');
         });
+        // Start/stop auto-navigation
+        $('#startStopAutoNavigate').click(function () {
+            var $this = $(this);
+            var is_stopped = ($this.data('stopped')) ? true : false;
+            $this.data('stopped', ((is_stopped)?false:true));
+            if (!is_stopped) {
+                $this.text('Start all auto-navigation').removeClass('btn-default').addClass('btn-success');
+                kill_child_timer(true);
+            } else {
+                $this.text('Stop all auto-navigation').removeClass('btn-success').addClass('btn-default');
+                kill_child_timer(false);
+            }
+        });
     };
     // Write options in the choose path pulldown
     var $choosePathArea = $('#choosePath .card');
@@ -563,10 +577,20 @@ function stop_timer() {
 // Start/stop auto-navigate timer
 function child_timer(bool) {
     if ('undefined' == typeof (bool)) bool = false;
-    if (bool) {
+    if (bool && !global_stop_timer) {
         $('#site')[0].contentWindow.postMessage("autonavigate_reset_timer", '*');
     } else {
         $('#site')[0].contentWindow.postMessage("autonavigate_stop_timer", '*');
+    };
+    }
+function kill_child_timer(bool) {
+    if ('undefined' == typeof (bool)) bool = false;
+    if (bool) {
+        global_stop_timer = true;
+        $('#site')[0].contentWindow.postMessage("autonavigate_kill_timer", '*');
+    } else {
+        global_stop_timer = false;
+        $('#site')[0].contentWindow.postMessage("autonavigate_birth_timer", '*');
     };
 }
 // Set the project panel's content based on the current path
@@ -732,6 +756,8 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                   <button class="btn btn-default" type="button" id="showEmailConfigButton">Set email SMTP fields</button>
                   &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#enterSourceForm">Change projects source</button>
+                  &nbsp; &nbsp;
+                  <button class="btn btn-default" type="button" id="startStopAutoNavigate">Stop all auto-navigation</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">

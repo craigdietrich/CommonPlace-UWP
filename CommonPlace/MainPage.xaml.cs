@@ -33,7 +33,7 @@ namespace CommonPlace
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             // Title bar chrome
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ForegroundColor = Colors.Gray;
+            titleBar.ForegroundColor = Colors.LightGray;
             titleBar.BackgroundColor = Colors.Black;
             titleBar.ButtonForegroundColor = Colors.Gray;
             titleBar.ButtonBackgroundColor = Colors.Black;
