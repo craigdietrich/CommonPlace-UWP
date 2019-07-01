@@ -14,13 +14,13 @@
 #crossroads .sidebar .header_content .descriptor {font-size:0.75rem; padding:0px 0px 12px 17px; margin:0px; font-weight:bold;}
 #crossroads .sidebar .header_content .tags, #crossroads .sidebar .header_content .comments {display:none;}
 
-#crossroads .details_screen {position:absolute; z-index:8; background-color:#000000; opacity:0.30; top:0px; left:0px; width:100%; height:100%; border-radius:5px;}
+#crossroads .details_screen {position:absolute; z-index:8; background-color:#000000; opacity:0.70; top:0px; left:0px; width:100%; height:100%; border-radius:0px;}
 #crossroads .details {position:relative; z-index:9; top:5vh; left:5vw; height:87vh; width:90vw; background-color:#edede7; border-radius:5px;}
 #crossroads .details > div {height:100%;}
 #crossroads .details > div:first-of-type {width:60%; float:left; padding:8vh 3vw 8vh 3vw;}
 #crossroads .details > div:first-of-type > div {width:100%; height:100%; background-size:contain; background-position:center center; background-repeat:no-repeat;}
 #crossroads .details > div:last-of-type {width:39%; float:right; padding:13vh 0vw 0vh 0vw;}
-#crossroads .details > div:last-of-type > div:first-of-type {position:relative; /* top:50%; transform:translateY(-50%); */ height:52vh; overflow:auto;}
+#crossroads .details > div:last-of-type > div:first-of-type {position:relative; /* top:50%; transform:translateY(-50%); */ height:52vh; overflow:auto; padding-right:20px;}
 #crossroads .details > div:last-of-type > div:last-of-type {margin-top:20px;}
 #crossroads .details .field {color:#2aaad4; font-weight:bold; font-size:0.85rem; padding:10px 20px 10px 0px;}
 #crossroads .details .value {color:#222222; font-weight:normal; font-size:0.85rem; padding:10px 0px 10px 0px;}
@@ -50,16 +50,16 @@
 #crossroads .content td.title_card > div:first-of-type > div h6 {font-size:0.75rem; font-weight:bold; color:#ed7e42; text-transform:uppercase;}
 #crossroads .content td.title_card > div:first-of-type > div p {font-size:1.25rem; line-height:130%; margin-bottom:0.75rem;}
 
-#crossroads .content td.bucket > div:first-of-type {}
 #crossroads .content td.bucket > div:first-of-type > div {width:45vw; height:45vh; background-color:#bbc1bc; color:#333333; font-weight:900; padding:40px 40px 40px 40px;}
 #crossroads .content td.bucket > div:first-of-type > div .by {color:#cccccc; font-size:smaller;}
 
-#crossroads .content td.quote > div:first-of-type {}
 #crossroads .content td.quote > div:first-of-type > div {width:45vw; height:45vh; background-color:#000000; color:#ffffff; padding:40px 40px 40px 40px;}
 #crossroads .content td.quote > div:first-of-type > div .by {color:#2ebb9b; font-size:small;}
+#crossroads .details .quote > div:first-of-type > div {background-color:#000000; color:#ffffff; padding:40px 40px 40px 40px;}
+#crossroads .details .quote > div:first-of-type > div .by {color:#2ebb9b; font-size:small;}
 
-#crossroads .content td.assertion > div:first-of-type {}
 #crossroads .content td.assertion > div:first-of-type > div {width:45vw; height:45vh; background-color:#2aaad4; color:#ffffff; padding:40px 40px 50px 40px;}
+#crossroads .details .assertion > div:first-of-type > div {background-color:#2aaad4; color:#ffffff; padding:40px 40px 40px 40px;}
 
 #crossroads .content td.image > div:first-of-type > div {height:45vh;}
 #crossroads .content td.image > div:first-of-type > div > img {height:100%; display:block; margin-left:auto; margin-right:auto;}

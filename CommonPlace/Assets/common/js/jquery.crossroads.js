@@ -323,7 +323,6 @@
                     var $cell = $('<td class="bucket"><div><div class="inner"><span>' + opts.buckets[j].label + '</span></div></div><div class="mast"></div></td>').appendTo($row);
                     for (var k = 0; k < opts.buckets[j].bucket_resources.length; k++) {
                         var props = get_props(opts.buckets[j].bucket_resources[k]);
-                        //console.log(props);
                         if (!props) continue;
                         var $cell = $('<td class="' + props.type + '"><div><div class="inner slot-1"></div></div><div class="mast"></div><div class="anno"></div></td>').appendTo($row);
                         $cell.data('bucket', opts.buckets[j]);
@@ -411,15 +410,34 @@
                 var $cell = $table.find('td').eq(index);
                 var bucket = $cell.data('bucket');
                 var resource = $cell.data('resource');
+                console.log(resource);
                 var props = $cell.data('props');
-                if ('undefined' == typeof (resource)) return;
-                if ('image' != props.type) return;
+                console.log(props);
+                if ('undefined' == typeof(resource)) return;
                 $self.append('<div class="details_screen"></div>');
                 var $details = $('<div class="details"><div><div></div></div><div><div></div><div></div></div></div>').appendTo($self);
                 var $left = $details.children(':first');
                 var $right = $details.children(':last');
-                $left.children(':first').css('background-image', 'url(' + props.url + ')');
-                console.log(resource);
+                $left.children(':first').addClass(props.type);
+                if ('image' == props.type) {
+                    $left.children(':first').css('background-image', 'url(' + props.url + ')');
+                } else {
+                    $left.children(':first').html('<div><div class="inner slot-1"></div></div><div class="mast"></div><div class="anno"></div>');
+                    switch (props.type) {
+                        case 'quote':
+                            props.content = '&ldquo;' + props.title + '&rdquo;';
+                            props.content += '<br /><span class="by">' + props.credit + '</span>';
+                            $left.find('.inner').html('<span>' + props.content + '</span>');
+                            break;
+                        case 'dispatch':
+                            props.content += ' <span class="by">&mdash;&nbsp;' + props.title + '</span>';
+                            $left.find('.inner').html('<span>' + props.content + '</span>');
+                        case 'link':
+                        case 'assertion':
+                            $left.find('.inner').html('<span>' + props.title + '</span>');
+                            break;
+                    };
+                };
                 var obj = {
                     'Excerpt Text': [resource.resource.excerpt],
                     'Credit/Citation': [resource.credit_formatted],
@@ -443,6 +461,7 @@
                 var $metadata = $('<table><tbody></tbody></table>').appendTo($right.children(':first'));
                 for (var field in obj) {
                     if ('url' == field.toLowerCase()) continue;
+                    if ('undefined' == typeof(obj[field][0]) || !obj[field][0] || !obj[field][0].length) continue;
                     var $row = $('<tr></tr>').appendTo($metadata.children('tbody'));
                     $row.append('<td class="field" valign="top">' + field + '</td>');
                     $row.append('<td class="value" valugn="top"></td>');
@@ -451,7 +470,7 @@
                         $row.children('td:last').append(obj[field][j] + '<br />');
                     }
                 }
-                $details.find('div:last-of-type > div:last-of-type').append('<button class="btn btn-crossroads btn-add-resource">Add resource to my project</button>&nbsp; &nbsp; &nbsp; <button class="btn btn-secondary btn-email">Email resource</button>');
+                $details.children('div:last').children('div:last').append('<button class="btn btn-crossroads btn-add-resource">Add resource to my project</button>&nbsp; &nbsp; &nbsp; <button class="btn btn-secondary btn-email">Email resource</button>');
                 $details.append('<button class="btn btn-secondary close-button">Close</button>');
                 $details.find('.close-button').mousedown(function () {
                     $('.details_screen, .details').remove();
@@ -459,6 +478,7 @@
                 });
                 $details.find('.btn-add-resource').click(function () {
                     var $iframe = $('<iframe src="' + obj['URL'] + '" class="crossroads-iframe" frameBorder="0"></iframe>').appendTo($details);
+                    //var $iframe = $('<iframe src="https://crossroads.oxy.edu/resources/29030" class="crossroads-iframe" frameBorder="0"></iframe>').appendTo($details);
                 });
                 try {
                     window.external.notify('');
@@ -467,7 +487,16 @@
                     });
                 } catch (err) {
                     $details.find('.btn-email').hide();
-                };   
+                };
+                if ('image' != props.type) {
+                    var ratio = parseInt($(window).height()) / parseInt($(window).width());
+                    var height = parseInt($left.find('.inner').width()) * ratio;
+                    $left.find('.inner').height(height);
+                    var margin = ( parseInt($left.children(':first').innerHeight()) - parseInt($left.children(':first').children(':first').height()) ) / 2;
+                    $left.children(':first').children(':first').css('margin-top', margin).height(height).textfill({
+                        maxFontPixels: 100
+                    });
+                };
             }
 
             var send_email = function (obj) {

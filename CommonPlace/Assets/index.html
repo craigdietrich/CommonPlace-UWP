@@ -45,7 +45,8 @@ $(document).ready(function() {
     global_stop_timer = false;
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
-    if (!source && 'undefined' != typeof(app_info) && 'undefined' != typeof(app_info.default_source)) source = app_info.default_source;
+    if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
+    source = 'http://scalar.cdla.oxycreates.org/commonplace';
     if (!source) {
         $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
         advanced_options();
