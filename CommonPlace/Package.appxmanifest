@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="1f7df8ad-4184-4b89-8d54-f0b2a283c3c7" Publisher="CN=owner" Version="1.0.61.0" />
-  <mp:PhoneIdentity PhoneProductId="1f7df8ad-4184-4b89-8d54-f0b2a283c3c7" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="35133craigdietrich.com.CommonPlaceScreen" Publisher="CN=914BF67F-DE68-4EDB-A74A-F30130BD3D4F" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="c27694c5-3a02-4e9d-a9fe-7a3232d99742" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>CommonPlace Screen</DisplayName>
-    <PublisherDisplayName>owner</PublisherDisplayName>
+    <PublisherDisplayName>craigdietrich.com</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -25,6 +25,7 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#676767" />
         <uap:InitialRotationPreference>
+          <uap:Rotation Preference="portrait" />
           <uap:Rotation Preference="landscape" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>

@@ -423,6 +423,8 @@
                     $left.children(':first').css('background-image', 'url(' + props.url + ')');
                 } else {
                     $left.children(':first').html('<div><div class="inner slot-1"></div></div><div class="mast"></div><div class="anno"></div>');
+                    // Go to project: title card, buckets, assertions
+                    // Go to resource: image, data, video, audio, link, document, dispatch, quote
                     switch (props.type) {
                         case 'quote':
                             props.content = '&ldquo;' + props.title + '&rdquo;';

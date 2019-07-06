@@ -46,7 +46,6 @@ $(document).ready(function() {
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
     if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
-    source = 'http://scalar.cdla.oxycreates.org/commonplace';
     if (!source) {
         $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
         advanced_options();
@@ -97,48 +96,50 @@ function get_paths(url, callback) {
                     var row_num = data.feed.entry[j]["gs$cell"].row;
                     var fieldname = fields[col_index];
                     var value = data.feed.entry[j].content["$t"];
-                    console.log(row_num);
                     if ('undefined' == typeof (rows[row_num])) rows[row_num] = {};
                     rows[row_num][fieldname] = value;
                 };
             };
-            for (var j in rows) {
-                rows[j]['Path name(s)'] = rows[j]['Path name(s)'].split(';');
+            for (var j in rows) {  // Path title
+                var exists = false;
+                for (var m = 0; m < paths.length; m++) {
+                    if (paths[m].title == rows[j]["Path name"]) exists = true;
+                };
+                if (!exists) {
+                    var path = {};
+                    path.title = rows[j]["Path name"];
+                    path.description = '';
+                    path.contents = [];
+                    paths.push(path);
+                };
             };
-            for (var j in rows) {
-                for (var k = 0; k < rows[j]["Path name(s)"].length; k++) {
-                    var exists = false;
-                    for (var m = 0; m < paths.length; m++) {
-                        if (paths[m].title == rows[j]["Path name(s)"][k]) exists = true;
-                    };
-                    if (!exists) {
-                        var path = {};
-                        path.title = rows[j]["Path name(s)"][k];
-                        path.desc = '';
-                        path.contents = [];
-                        paths.push(path);
-                    }
+            var path_desc_fieldname = "Path description (only need to enter once per path name)";
+            for (var j in rows) {  // Path description
+                if ('undefined' == typeof(rows[j][path_desc_fieldname])) continue;
+                var title = rows[j]["Path name"];
+                var description = $.trim(rows[j][path_desc_fieldname]);
+                if (!description || !description.length) continue;
+                for (var m = 0; m < paths.length; m++) {
+                    if (paths[m].title == title) paths[m].description = description;
                 };
             };
             for (var j in rows) {
-                for (var k = 0; k < rows[j]["Path name(s)"].length; k++) {
-                    var pathname = rows[j]["Path name(s)"][k];
-                    var content = {};
-                    content.title = ('undefined' != typeof (rows[j]["dcterms:title"])) ? rows[j]["dcterms:title"] : null;
-                    content.description = ('undefined' != typeof (rows[j]["dcterms:description"])) ? rows[j]["dcterms:title"] : null;
-                    content.content = ('undefined' != typeof (rows[j]["sioc:content"])) ? rows[j]["sioc:content"] : null;
-                    content.thumb = ('undefined' != typeof (rows[j]["art:thumbnail"])) ? rows[j]["art:thumbnail"] : null;
-                    content.url = ('undefined' != typeof (rows[j]["cp:url"])) ? rows[j]["cp:url"] : null;
-                    content.authors = ('undefined' != typeof (rows[j]["cp:authors"])) ? rows[j]["cp:authors"] : null;
-                    content.institution = ('undefined' != typeof (rows[j]["cp:institution"])) ? rows[j]["cp:institution"] : null;
-                    content.publisher = ('undefined' != typeof (rows[j]["cp:publisher"])) ? rows[j]["cp:publisher"] : null;
-                    content.date = ('undefined' != typeof (rows[j]["cp:date"])) ? rows[j]["cp:date"] : null;
-                    for (var m = 0; m < paths.length; m++) {
-                        if (paths[m].title == pathname) paths[m].contents.push(content);
-                    };
+                var pathname = rows[j]["Path name"];
+                var content = {};
+                content.title = ('undefined' != typeof (rows[j]["dcterms:title"])) ? rows[j]["dcterms:title"] : null;
+                content.description = ('undefined' != typeof (rows[j]["dcterms:description"])) ? rows[j]["dcterms:title"] : null;
+                content.content = ('undefined' != typeof (rows[j]["sioc:content"])) ? rows[j]["sioc:content"] : null;
+                content.thumb = ('undefined' != typeof (rows[j]["art:thumbnail"])) ? rows[j]["art:thumbnail"] : null;
+                content.url = ('undefined' != typeof (rows[j]["cp:url"])) ? rows[j]["cp:url"] : null;
+                content.authors = ('undefined' != typeof (rows[j]["cp:authors"])) ? rows[j]["cp:authors"] : null;
+                content.institution = ('undefined' != typeof (rows[j]["cp:institution"])) ? rows[j]["cp:institution"] : null;
+                content.publisher = ('undefined' != typeof (rows[j]["cp:publisher"])) ? rows[j]["cp:publisher"] : null;
+                content.date = ('undefined' != typeof (rows[j]["cp:date"])) ? rows[j]["cp:date"] : null;
+                for (var m = 0; m < paths.length; m++) {
+                    if (paths[m].title == pathname) paths[m].contents.push(content);
                 };
             };
-            paths.sort(path_compare);
+            //paths.sort(path_compare);
             callback(paths);
         });
     } else {  // Scalar
@@ -159,7 +160,7 @@ function get_paths(url, callback) {
                     if (-1 != parsed.indexOf(path.content_uri)) continue;
                     parsed.push(path.content_uri);
                     path.title = response[path.version_uri]['http://purl.org/dc/terms/title'][0].value;
-                    path.desc = ('undefined' != typeof (response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
+                    path.description = ('undefined' != typeof (response[path.version_uri]['http://purl.org/dc/terms/description'])) ? response[path.version_uri]['http://purl.org/dc/terms/description'][0].value : null;
                     path.contents = [];
                     for (var key in response) {
                         if ('http://www.openannotation.org/ns/Annotation' != response[key]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'][0].value) continue;
@@ -456,10 +457,10 @@ function advanced_options() {
             var is_stopped = ($this.data('stopped')) ? true : false;
             $this.data('stopped', ((is_stopped)?false:true));
             if (!is_stopped) {
-                $this.text('Start all auto-navigation').removeClass('btn-default').addClass('btn-success');
+                $this.text('Start auto-navigation').removeClass('btn-default').addClass('btn-success');
                 kill_child_timer(true);
             } else {
-                $this.text('Stop all auto-navigation').removeClass('btn-success').addClass('btn-default');
+                $this.text('Stop auto-navigation').removeClass('btn-success').addClass('btn-default');
                 kill_child_timer(false);
             }
         });
@@ -599,7 +600,7 @@ function set_panel() {
 	$('#panel .row:not(:first)').remove();
 	$pathTitle = $('#panel .path-title:first');
 	$pathTitle.find('.title').html(paths[path_index].title);
-	$pathTitle.find('.desc').html(paths[path_index].desc);
+	$pathTitle.find('.desc').html(paths[path_index].description);
     var $row = null;
     var colspan = 6;
     // Write project icons
@@ -758,7 +759,7 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                   &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#enterSourceForm">Change projects source</button>
                   &nbsp; &nbsp;
-                  <button class="btn btn-default" type="button" id="startStopAutoNavigate">Stop all auto-navigation</button>
+                  <button class="btn btn-default" type="button" id="startStopAutoNavigate">Stop auto-navigation</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">

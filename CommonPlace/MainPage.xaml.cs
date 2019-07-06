@@ -11,8 +11,6 @@ using Windows.ApplicationModel;
 using Windows.Data.Json;
 using LightBuzz.SMTP;
 using Windows.ApplicationModel.Email;
-using Windows.UI.Core;
-using Windows.Storage;
 using System.Diagnostics;
 
 namespace CommonPlace
