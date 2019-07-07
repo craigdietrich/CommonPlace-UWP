@@ -46,6 +46,7 @@ $(document).ready(function() {
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
     if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
+    source = 'https://docs.google.com/spreadsheets/d/1PspK45pREtZSheTooWqvvDIncAgcei5fFzWl4rDehrM/edit#gid=0';
     if (!source) {
         $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
         advanced_options();
@@ -130,11 +131,14 @@ function get_paths(url, callback) {
                 content.description = ('undefined' != typeof (rows[j]["dcterms:description"])) ? rows[j]["dcterms:title"] : null;
                 content.content = ('undefined' != typeof (rows[j]["sioc:content"])) ? rows[j]["sioc:content"] : null;
                 content.thumb = ('undefined' != typeof (rows[j]["art:thumbnail"])) ? rows[j]["art:thumbnail"] : null;
+                if (!content.thumb) content.thumb = 'http://scalar.cdla.oxycreates.org/system/application/views/modules/oxy_book_list/common/images/default_book_logo.png';
                 content.url = ('undefined' != typeof (rows[j]["cp:url"])) ? rows[j]["cp:url"] : null;
                 content.authors = ('undefined' != typeof (rows[j]["cp:authors"])) ? rows[j]["cp:authors"] : null;
                 content.institution = ('undefined' != typeof (rows[j]["cp:institution"])) ? rows[j]["cp:institution"] : null;
                 content.publisher = ('undefined' != typeof (rows[j]["cp:publisher"])) ? rows[j]["cp:publisher"] : null;
                 content.date = ('undefined' != typeof (rows[j]["cp:date"])) ? rows[j]["cp:date"] : null;
+                content.slideDeckNumSlides = ('undefined' != typeof (rows[j]["cp:slideDeckNumSlides"])) ? parseInt(rows[j]["cp:slideDeckNumSlides"]) : 0;
+                content.slideDeckSecondsPerSlide = ('undefined' != typeof (rows[j]["cp:slideDeckSecondsPerSlide"])) ? parseInt(rows[j]["cp:slideDeckSecondsPerSlide"]) : 0;
                 for (var m = 0; m < paths.length; m++) {
                     if (paths[m].title == pathname) paths[m].contents.push(content);
                 };
@@ -314,7 +318,27 @@ function go_to_site(_url) {
                 });
             }
         );
-	};
+    };
+    var _omekas = function (url) {
+        var base_url = url.substr(0, url.indexOf('/s/'));
+        var plugin = base_url + '/modules/AutoNavigate/index.html?t=' + (new Date().getTime());
+        plugin += '&site=' + encodeURIComponent(url);
+        $('#site').fadeIn('slow').attr('src', plugin);
+        set_buttons(
+            '<button class="btn btn-light">About project</button>',
+            '<button class="btn btn-light">Email project</button>',
+            function (col) {
+                $(col).find('button').on('mousedown', function () {
+                    about_project();
+                });
+            },
+            function (col) {
+                $(col).find('button').on('click', function () {
+                    send_email();
+                });
+            }
+        );
+    };
     var _crossroads = function (url) {
         $('#site').attr('src', '');
         if ('undefined' == typeof (crossroads_projects)) crossroads_projects = null;  // Global
@@ -349,6 +373,7 @@ function go_to_site(_url) {
     };
     var _googleslides = function (url) {
         var $site = $('#site');
+        console.log(url);
         $site.fadeIn('slow').off('load').on('load', function () {
             var $custom = $('<div class="custom_msg"></div>').insertAfter($site).hide();
             $custom.html('<b>' + paths[path_index].contents[project_index].title + '</b> by ' + paths[path_index].contents[project_index].authors);
@@ -358,9 +383,6 @@ function go_to_site(_url) {
         the_time = the_time + Math.round((paths[path_index].contents[project_index].slideDeckNumSlides + 1) * 0.4);
         reset_timer(the_time);
         set_buttons();
-    };
-    var html5site = function (url) {
-        // TODO
     };
     // Stop any customizations from previously loaded project
     stop_timer();
@@ -375,6 +397,8 @@ function go_to_site(_url) {
         _crossroads(_url);
     } else if (-1 != _url.toLowerCase().indexOf('.google.com/presentation')) {
         _googleslides(_url);
+    } else if (-1 != _url.toLowerCase().indexOf('/s/')) {
+        _omekas(_url);
     } else {
         var url = _url + '/rdf/?format=json';
         $.ajax({
