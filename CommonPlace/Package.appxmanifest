@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="CommonPlace.App">
-      <uap:VisualElements DisplayName="CommonPlace" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="CommonPlace for presentation screens that may also be touchscreens." BackgroundColor="#676767">
+      <uap:VisualElements DisplayName="CommonPlace Screen" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="CommonPlace for presentation screens that may also be touchscreens." BackgroundColor="#676767">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="CommonPlace" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
