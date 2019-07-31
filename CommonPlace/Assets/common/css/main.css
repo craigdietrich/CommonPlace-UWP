@@ -34,7 +34,7 @@ body {background-color:#000000; font-family:Verdana;}
 .modal-lg {max-width:70% !important;}
 #aboutPlatformModal .modal-footer, #aboutProjectModal .modal-footer, #emailModal .modal-footer {border-top:none; padding-top:0;}
 #aboutPlatformModal .thumb, #aboutProjectModal .thumb {margin:0px 14px 0.8rem 0px; width:50px; height:50px;}
-#aboutPlatformModal p small {font-size:0.7rem; display:block;}
+#aboutPlatformModal p small {font-size:0.8rem; display:block; padding:2px 0px 2px 0px; line-height:1.5;}
 #aboutPlatformModal .content, #aboutProjectModal .content {font-size:0.7rem;}
 #aboutPlatformModal .thumb {background-color:#6e6e6e;}
 #advancedOptionsModal .modal-header, #advancedOptionsModal .modal-footer {border:0;}

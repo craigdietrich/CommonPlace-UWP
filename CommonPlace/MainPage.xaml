@@ -37,7 +37,7 @@
                 <TextBox x:Name="smtp_username" Header="Username" Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
                 <PasswordBox x:Name="smtp_password" Header="Password" Width="300" HorizontalAlignment="Left" Margin="40,10,0,0"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="smtp_port" Header="SMTP Port" Width="60" HorizontalAlignment="Left" Margin="40,10,0,0" Text="465"/>
+                    <TextBox x:Name="smtp_port" Header="Port" Width="60" HorizontalAlignment="Left" Margin="40,10,0,0" Text="465"/>
                     <ComboBox x:Name="smtp_secure" Margin="20,38,0,0"  Width="60" SelectedIndex="0">
                         <ComboBoxItem Content="" />
                         <ComboBoxItem Content="ssl" />

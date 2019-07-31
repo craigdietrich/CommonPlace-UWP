@@ -46,6 +46,7 @@ $(document).ready(function() {
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
     if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
+    //source = 'https://docs.google.com/spreadsheets/d/1PspK45pREtZSheTooWqvvDIncAgcei5fFzWl4rDehrM/edit#gid=0';
     if (!source) {
         $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
         advanced_options();
@@ -84,6 +85,7 @@ function get_paths(url, callback) {
     if (is_google_spreadsheet) {  // Google Spreadsheet
         var spreadsheet_id = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(url)[1];
         var google_spreadsheet_url = 'https://spreadsheets.google.com/feeds/cells/' + spreadsheet_id + '/1/public/values?alt=json-in-script&callback=?';
+        console.log(google_spreadsheet_url);
         $.getJSON(google_spreadsheet_url, function (data) {
             var fields = [];
             var rows = {};
@@ -398,6 +400,7 @@ function go_to_site(_url) {
         _googleslides(_url);
     } else if (-1 != _url.toLowerCase().indexOf('/s/')) {
         _omekas(_url);
+    // TODO: put omeka here
     } else {
         var url = _url + '/rdf/?format=json';
         $.ajax({
@@ -409,6 +412,7 @@ function go_to_site(_url) {
                 _scalar(response, _url);
             },
             error: function (err) {
+                // TODO: create _other()
                 _omeka(_url);
             }
         });
@@ -436,8 +440,8 @@ function set_buttons(first, last, first_callback, last_callback) {
 };
 // Provide information about CommonPlace
 function about_platform() {
-    if ('undefined' != typeof(app_info.version_num)) $('.version_num').text("Version "+app_info.version_num);
-    if ('undefined' != typeof(app_info.authors)) $('.app_authors').html(nl2br(app_info.authors.trim()));
+    if ('undefined' != typeof (app_info.version_num)) $('.version_num').text("Version " + app_info.version_num);
+    if ('undefined' != typeof (app_info.authors)) $('.app_authors').html( nl2br(app_info.authors.trim()) );
     if ('undefined' != typeof(app_info.short_description)) $('.app_short_description').html(nl2br(app_info.short_description.trim()));
     if ('undefined' != typeof(app_info.long_description)) $('.app_long_description').html(nl2br(app_info.long_description.trim()));
     $('#aboutPlatformModal').modal({ backdrop: 'static' });
@@ -739,8 +743,8 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                         <img src="common/css/Square44x44Logo.scale-400.png" class="thumb rounded" /><br />
                         <p>
                             <b>CommonPlace Screen</b>
-                            <small class="app_authors"></small>
                             <small class="version_num"></small>
+                            <small class="app_authors"></small>
                         </p>
                         <p class="content">
                             <span class="app_short_description"></span>
@@ -775,14 +779,14 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#restartMessage" aria-expanded="false" aria-controls="restartMessage">Restart CommonPlace</button>
                   &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" id="toggleFullscreenButton">Exit fullscreen</button>
+                  &nbsp; &nbsp;
+                  <button class="btn btn-default" type="button" id="startStopAutoNavigate">Stop auto-navigation</button>
               </p>
               <h6>Configuration</h6>
               <p>
                   <button class="btn btn-default" type="button" id="showEmailConfigButton">Set email SMTP fields</button>
                   &nbsp; &nbsp;
                   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#enterSourceForm">Change projects source</button>
-                  &nbsp; &nbsp;
-                  <button class="btn btn-default" type="button" id="startStopAutoNavigate">Stop auto-navigation</button>
               </p>
               <div class="collapse" id="restartMessage">
                   <div class="card card-body">

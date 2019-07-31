@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <appSettings>
-  <authors>By Christopher Gilman &amp; Craig Dietrich</authors>
+  <authors>Christopher Gilman &lt;a href=&quot;christopherjgilman.com&quot;&gt;christopherjgilman.com&lt;a&gt; 
+  Craig Dietrich &lt;a href=&quot;craigdietrich.com&quot;&gt;craigdietrich.com&lt;a&gt;</authors>
   <shortDescription></shortDescription>
   <longDescription></longDescription>
   <defaultSource>https://docs.google.com/spreadsheets/d/1PspK45pREtZSheTooWqvvDIncAgcei5fFzWl4rDehrM/edit#gid=0</defaultSource>
