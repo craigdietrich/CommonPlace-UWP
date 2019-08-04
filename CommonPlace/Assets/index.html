@@ -46,12 +46,7 @@ $(document).ready(function() {
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
     if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
-    //source = 'https://docs.google.com/spreadsheets/d/1PspK45pREtZSheTooWqvvDIncAgcei5fFzWl4rDehrM/edit#gid=0';
-    if (!source) {
-        $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
-        advanced_options();
-        return;
-    };
+    if (!source) return source_error();
     // Go get the paths and start the application
     get_paths(source, function (_paths) {
         paths = _paths.slice();
@@ -79,6 +74,14 @@ function path_compare(a,b) {
     if (a.title > b.title) return 1;
     return 0;
 };
+// If there is an error in the source, show the advanced panel
+function source_error() {
+    $('#logo-wrapper button').removeClass('btn-light').addClass('btn-secondary');
+    advanced_options();
+    $('#enterSourceError').show();
+    $('#advancedOptionsModal').find('[data-target="#enterSourceForm"]').click();
+    return;    
+}
 // Go get the paths from a Scalar book and build an array of paths and projects
 function get_paths(url, callback) {
     var is_google_spreadsheet = (-1 != url.indexOf('google.com')) ? true : false;
@@ -117,7 +120,7 @@ function get_paths(url, callback) {
             };
             var path_desc_fieldname = "Path description (only need to enter once per path name)";
             for (var j in rows) {  // Path description
-                if ('undefined' == typeof(rows[j][path_desc_fieldname])) continue;
+                if ('undefined' == typeof (rows[j][path_desc_fieldname])) continue;
                 var title = rows[j]["Path name"];
                 var description = $.trim(rows[j][path_desc_fieldname]);
                 if (!description || !description.length) continue;
@@ -146,6 +149,8 @@ function get_paths(url, callback) {
             };
             //paths.sort(path_compare);
             callback(paths);
+        }).error(function () {
+            return source_error();
         });
     } else {  // Scalar
         if ('/' != url.substr(-1)) url += '/';
@@ -197,7 +202,7 @@ function get_paths(url, callback) {
             },
             error: function (err) {
                 console.log(err);
-                callback(paths);
+                return source_error();
             }
         });
     };
@@ -800,8 +805,9 @@ function nl2br(str, is_xhtml) {  // http://kevin.vanzonneveld.net
               <div class="collapse" id="enterSourceForm">
                   <div class="card card-body">
                       Enter the URL to a Scalar book or Google Spreadsheet formatted to be a projects source for CommonPlace. To remove later, delete the URL and save.<br />
+                      <div id="enterSourceError" class="text-danger">There was a problem loading the entered URL. Please try a different source.</div>
                       <form class="form-inline" style="margin-top:20px;">
-                          <input type="text" name="enterSourceURL" class="form-control col-10" style="margin-bottom:12px;" />
+                          <input type="url" name="enterSourceURL" class="form-control col-10" style="margin-bottom:12px;" />
                           <button class="btn btn-primary" style="margin-bottom:12px;">Save and load</button>
                       </form>
                   </div>

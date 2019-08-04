@@ -40,6 +40,7 @@ body {background-color:#000000; font-family:Verdana;}
 #advancedOptionsModal .modal-header, #advancedOptionsModal .modal-footer {border:0;}
 #advancedOptionsModal .card-body > button {width:100px; margin-top:12px;}
 #advancedOptionsModal .card-body > .btn-group {margin-top:12px;}
+#enterSourceError {margin:12px 0px 0px 0px; display:none;}
 #choosePath .card {padding-top:0.5rem; padding-bottom:0.5rem; max-height:28vh; overflow:auto; padding-left:0; padding-right:0;}
 #choosePath .card > a {padding-top:0.25rem; padding-bottom:0.25rem; padding-left:1.25rem; padding-right:1.25rem;}
 #choosePath .card > a.active {background-color:#dddddd; text-decoration:none;} 
