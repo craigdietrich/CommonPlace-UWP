@@ -45,6 +45,7 @@ $(document).ready(function() {
     global_stop_timer = false;
     // Determine the data source
     var source = $.jStorage.get('commonplace_source');
+    source = 'https://docs.google.com/spreadsheets/d/1PspK45pREtZSheTooWqvvDIncAgcei5fFzWl4rDehrM/edit#gid=0';
     if (!source && 'undefined' != typeof (app_info) && 'undefined' != typeof (app_info.default_source)) source = app_info.default_source;
     if (!source) return source_error();
     // Go get the paths and start the application
@@ -500,10 +501,14 @@ function advanced_options() {
     // Write options in the choose path pulldown
     var $choosePathArea = $('#choosePath .card');
     $choosePathArea.empty();
+    var has_other_paths = false;
     for (var j = 0; j < paths.length; j++) {
         if (j == path_index) continue;
+        if ('undefined' == typeof (paths[j]).title) continue;
+        has_other_paths = true;
         var $el = $('<a href="javascript:void(null);" data-path-index="' + j + '">' + paths[j].title + '</a>').appendTo($choosePathArea);
     };
+    if (!has_other_paths) $choosePathArea.html('<div style="padding-left:10px;">There are no other paths to choose from.</div>');
     $choosePathArea.find('a').click(function () {
         var index = parseInt($(this).data('path-index'));
         if ('undefined' != typeof (index)) {
